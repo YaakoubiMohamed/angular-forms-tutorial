@@ -474,8 +474,6 @@ h4 {
     grid-template-columns: 1fr;
   }
 }
-  box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
-}
 
 .form-group.checkbox {
   display: flex;

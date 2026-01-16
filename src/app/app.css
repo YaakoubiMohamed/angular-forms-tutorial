@@ -170,9 +170,6 @@
   font-weight: 600;
   margin-top: 0.5rem;
 }
-  border-left-color: var(--primary-color);
-  font-weight: 600;
-}
 
 /* Main Content */
 .app-main {

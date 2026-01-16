@@ -1,0 +1,608 @@
+<div class="chapter-content">
+  <h1>Validation</h1>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p><strong>Angular Forms - Guide de Validation Complet</strong></p>
+    <p>
+      <a routerLink="/documentation/state-properties">← Propriétés d'État</a> | 
+      <a routerLink="/documentation">Index</a> | 
+      <a routerLink="/documentation/reactive-programming">Suivant : Programmation Réactive →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+
+  <ul>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#validators-integres">Validators Intégrés</a></li>
+    <li><a href="#validateurs-personnalises">Validateurs Personnalisés</a></li>
+    <li><a href="#validateurs-asynchrones">Validateurs Asynchrones</a></li>
+    <li><a href="#validation-cross-field">Validation Cross-Field</a></li>
+    <li><a href="#messages-derreur">Messages d'Erreur</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="apercu">Aperçu</h2>
+
+  <p>La validation garantit que les données saisies par l'utilisateur respectent les règles métier avant traitement.</p>
+
+  <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    TYPES DE VALIDATION                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────┐    ┌─────────────────────┐
+│    SYNCHRONE        │    │    ASYNCHRONE       │
+├─────────────────────┤    ├─────────────────────┤
+│                     │    │                     │
+│ • Exécution         │    │ • Retourne          │
+│   immédiate         │    │   Observable/Promise│
+│                     │    │                     │
+│ • Validators        │    │ • Appels HTTP       │
+│   intégrés          │    │                     │
+│                     │    │ • Vérification      │
+│ • Validateurs       │    │   base de données   │
+│   personnalisés     │    │                     │
+│                     │    │                     │
+└─────────────────────┘    └─────────────────────┘</code></pre>
+
+  <h3>Import</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} Validators, ValidatorFn, AsyncValidatorFn {{ '}' }} from '@angular/forms';</code></pre>
+
+  <hr>
+
+  <h2 id="validators-integres">Validators Intégrés</h2>
+
+  <p>Angular fournit des validateurs prêts à l'emploi dans la classe <code>Validators</code>.</p>
+
+  <h3>Tableau de Référence</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Validator</th>
+        <th>Usage</th>
+        <th>Erreur Retournée</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Validators.required</code></td>
+        <td>Champ obligatoire</td>
+        <td><code>{{ '{' }} required: true {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.requiredTrue</code></td>
+        <td>Doit être <code>true</code></td>
+        <td><code>{{ '{' }} required: true {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.min(n)</code></td>
+        <td>Valeur minimum</td>
+        <td><code>{{ '{' }} min: {{ '{' }} min: n, actual: x {{ '}' }} {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.max(n)</code></td>
+        <td>Valeur maximum</td>
+        <td><code>{{ '{' }} max: {{ '{' }} max: n, actual: x {{ '}' }} {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.minLength(n)</code></td>
+        <td>Longueur minimum</td>
+        <td><code>{{ '{' }} minlength: {{ '{' }} requiredLength: n, actualLength: x {{ '}' }} {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.maxLength(n)</code></td>
+        <td>Longueur maximum</td>
+        <td><code>{{ '{' }} maxlength: {{ '{' }} requiredLength: n, actualLength: x {{ '}' }} {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.email</code></td>
+        <td>Format email</td>
+        <td><code>{{ '{' }} email: true {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.pattern(regex)</code></td>
+        <td>Expression régulière</td>
+        <td><code>{{ '{' }} pattern: {{ '{' }} requiredPattern: '...', actualValue: '...' {{ '}' }} {{ '}' }}</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.nullValidator</code></td>
+        <td>Toujours valide</td>
+        <td><code>null</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Exemples d'Utilisation</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} FormControl, FormGroup, Validators {{ '}' }} from '@angular/forms';
+
+const form = new FormGroup({{ '{' }}
+  // Champ obligatoire
+  username: new FormControl('', Validators.required),
+  
+  // Email valide
+  email: new FormControl('', [Validators.required, Validators.email]),
+  
+  // Mot de passe avec plusieurs règles
+  password: new FormControl('', [
+    Validators.required,
+    Validators.minLength(8),
+    Validators.maxLength(50),
+    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+  ]),
+  
+  // Âge entre 18 et 120
+  age: new FormControl(null, [
+    Validators.required,
+    Validators.min(18),
+    Validators.max(120)
+  ]),
+  
+  // Case à cocher obligatoire
+  acceptTerms: new FormControl(false, Validators.requiredTrue)
+{{ '}' }});</code></pre>
+
+  <h3>Composition de Validateurs</h3>
+
+  <pre><code class="language-typescript">// Combiner plusieurs validateurs
+const control = new FormControl('', Validators.compose([
+  Validators.required,
+  Validators.minLength(3)
+]));
+
+// Équivalent à
+const control2 = new FormControl('', [
+  Validators.required,
+  Validators.minLength(3)
+]);</code></pre>
+
+  <hr>
+
+  <h2 id="validateurs-personnalises">Validateurs Personnalisés</h2>
+
+  <h3>Créer un Validateur Simple</h3>
+
+  <p>Un validateur est une fonction qui retourne <code>null</code> si valide, ou un objet d'erreur si invalide.</p>
+
+  <pre><code class="language-typescript">import {{ '{' }} AbstractControl, ValidationErrors, ValidatorFn {{ '}' }} from '@angular/forms';
+
+// Fonction validateur simple
+function forbiddenNameValidator(forbiddenName: string): ValidatorFn {{ '{' }}
+  return (control: AbstractControl): ValidationErrors | null => {{ '{' }}
+    const forbidden = control.value === forbiddenName;
+    return forbidden ? {{ '{' }} forbiddenName: {{ '{' }} value: control.value {{ '}' }} {{ '}' }} : null;
+  {{ '}' }};
+{{ '}' }}
+
+// Utilisation
+const nameControl = new FormControl('', [
+  Validators.required,
+  forbiddenNameValidator('admin')
+]);</code></pre>
+
+  <h3>Validateur avec Regex</h3>
+
+  <pre><code class="language-typescript">function patternValidator(pattern: RegExp, errorKey: string): ValidatorFn {{ '{' }}
+  return (control: AbstractControl): ValidationErrors | null => {{ '{' }}
+    if (!control.value) return null; // Ne pas valider si vide
+    const valid = pattern.test(control.value);
+    return valid ? null : {{ '{' }} [errorKey]: true {{ '}' }};
+  {{ '}' }};
+{{ '}' }}
+
+// Validateurs spécifiques
+const hasUppercase = patternValidator(/[A-Z]/, 'noUppercase');
+const hasLowercase = patternValidator(/[a-z]/, 'noLowercase');
+const hasDigit = patternValidator(/\d/, 'noDigit');
+const hasSpecialChar = patternValidator(/[!@#$%^&*]/, 'noSpecialChar');
+
+// Mot de passe fort
+const password = new FormControl('', [
+  Validators.required,
+  Validators.minLength(8),
+  hasUppercase,
+  hasLowercase,
+  hasDigit,
+  hasSpecialChar
+]);</code></pre>
+
+  <h3>Validateur avec Paramètres</h3>
+
+  <pre><code class="language-typescript">function rangeValidator(min: number, max: number): ValidatorFn {{ '{' }}
+  return (control: AbstractControl): ValidationErrors | null => {{ '{' }}
+    const value = control.value;
+    if (value === null || value === undefined) return null;
+    
+    if (value < min || value > max) {{ '{' }}
+      return {{ '{' }} 
+        range: {{ '{' }} 
+          min, 
+          max, 
+          actual: value 
+        {{ '}' }} 
+      {{ '}' }};
+    {{ '}' }}
+    return null;
+  {{ '}' }};
+{{ '}' }}
+
+// Utilisation
+const price = new FormControl(0, rangeValidator(0.01, 9999.99));</code></pre>
+
+  <h3>Validateur pour Dates</h3>
+
+  <pre><code class="language-typescript">function futureDateValidator(): ValidatorFn {{ '{' }}
+  return (control: AbstractControl): ValidationErrors | null => {{ '{' }}
+    if (!control.value) return null;
+    
+    const inputDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return inputDate > today ? null : {{ '{' }} pastDate: true {{ '}' }};
+  {{ '}' }};
+{{ '}' }}
+
+function minAgeValidator(minAge: number): ValidatorFn {{ '{' }}
+  return (control: AbstractControl): ValidationErrors | null => {{ '{' }}
+    if (!control.value) return null;
+    
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {{ '{' }}
+      age--;
+    {{ '}' }}
+    
+    return age >= minAge ? null : {{ '{' }} minAge: {{ '{' }} required: minAge, actual: age {{ '}' }} {{ '}' }};
+  {{ '}' }};
+{{ '}' }}
+
+// Utilisation
+const birthDate = new FormControl('', [
+  Validators.required,
+  minAgeValidator(18)
+]);</code></pre>
+
+  <hr>
+
+  <h2 id="validateurs-asynchrones">Validateurs Asynchrones</h2>
+
+  <p>Les validateurs asynchrones sont utilisés pour des vérifications côté serveur.</p>
+
+  <h3>Structure de Base</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} AbstractControl, AsyncValidatorFn, ValidationErrors {{ '}' }} from '@angular/forms';
+import {{ '{' }} Observable, of {{ '}' }} from 'rxjs';
+import {{ '{' }} map, catchError, debounceTime, switchMap, first {{ '}' }} from 'rxjs/operators';
+
+function asyncValidator(): AsyncValidatorFn {{ '{' }}
+  return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => {{ '{' }}
+    return someAsyncCheck(control.value).pipe(
+      map(isValid => isValid ? null : {{ '{' }} asyncError: true {{ '}' }}),
+      catchError(() => of(null))
+    );
+  {{ '}' }};
+{{ '}' }}</code></pre>
+
+  <h3>Vérification de Disponibilité</h3>
+
+  <pre><code class="language-typescript">@Injectable({{ '{' }} providedIn: 'root' {{ '}' }})
+export class UsernameValidator {{ '{' }}
+  constructor(private http: HttpClient) {{ '{' }}}
+  
+  checkUsernameAvailable(): AsyncValidatorFn {{ '{' }}
+    return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => {{ '{' }}
+      if (!control.value) {{ '{' }}
+        return of(null);
+      {{ '}' }}
+      
+      return control.valueChanges.pipe(
+        debounceTime(400),
+        switchMap(value => 
+          this.http.get&lt;boolean&gt;(`/api/users/check/${{ '{' }}value{{ '}' }}`)
+        ),
+        map(available => available ? null : {{ '{' }} usernameTaken: true {{ '}' }}),
+        catchError(() => of(null)),
+        first()
+      );
+    {{ '}' }};
+  {{ '}' }}
+{{ '}' }}
+
+// Utilisation
+@Component({{ '{' }}...{{ '}' }})
+export class RegisterComponent {{ '{' }}
+  private usernameValidator = inject(UsernameValidator);
+  
+  form = new FormGroup({{ '{' }}
+    username: new FormControl('', 
+      [Validators.required, Validators.minLength(3)],
+      [this.usernameValidator.checkUsernameAvailable()]
+    )
+  {{ '}' }});
+{{ '}' }}</code></pre>
+
+  <h3>Vérification d'Email Unique</h3>
+
+  <pre><code class="language-typescript">function uniqueEmailValidator(userService: UserService): AsyncValidatorFn {{ '{' }}
+  return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => {{ '{' }}
+    return timer(500).pipe(
+      switchMap(() => userService.checkEmail(control.value)),
+      map(exists => exists ? {{ '{' }} emailExists: true {{ '}' }} : null),
+      catchError(() => of(null))
+    );
+  {{ '}' }};
+{{ '}' }}</code></pre>
+
+  <h3>Indicateur de Chargement</h3>
+
+  <pre><code class="language-html">&lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+
+&lt;span *ngIf="form.get('username')?.pending"&gt;
+  Vérification en cours...
+&lt;/span&gt;
+
+&lt;span *ngIf="form.get('username')?.hasError('usernameTaken')"&gt;
+  Ce nom d'utilisateur est déjà pris
+&lt;/span&gt;</code></pre>
+
+  <hr>
+
+  <h2 id="validation-cross-field">Validation Cross-Field</h2>
+
+  <p>La validation cross-field valide plusieurs champs en relation les uns avec les autres.</p>
+
+  <h3>Confirmation de Mot de Passe</h3>
+
+  <pre><code class="language-typescript">function passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {{ '{' }}
+  const password = group.get('password')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  
+  return password === confirm ? null : {{ '{' }} passwordMismatch: true {{ '}' }};
+{{ '}' }};
+
+// Utilisation sur le FormGroup
+const form = new FormGroup({{ '{' }}
+  password: new FormControl('', [
+    Validators.required,
+    Validators.minLength(8)
+  ]),
+  confirmPassword: new FormControl('', Validators.required)
+{{ '}' }}, {{ '{' }} validators: passwordMatchValidator {{ '}' }});</code></pre>
+
+  <h3>Validation de Plage de Dates</h3>
+
+  <pre><code class="language-typescript">function dateRangeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {{ '{' }}
+  const start = group.get('startDate')?.value;
+  const end = group.get('endDate')?.value;
+  
+  if (!start || !end) return null;
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  
+  return startDate <= endDate ? null : {{ '{' }} dateRange: true {{ '}' }};
+{{ '}' }};
+
+const form = new FormGroup({{ '{' }}
+  startDate: new FormControl('', Validators.required),
+  endDate: new FormControl('', Validators.required)
+{{ '}' }}, {{ '{' }} validators: dateRangeValidator {{ '}' }});</code></pre>
+
+  <h3>Au Moins Un Champ Rempli</h3>
+
+  <pre><code class="language-typescript">function atLeastOneRequired(...fields: string[]): ValidatorFn {{ '{' }}
+  return (group: AbstractControl): ValidationErrors | null => {{ '{' }}
+    const hasValue = fields.some(field => {{ '{' }}
+      const control = group.get(field);
+      return control && control.value && control.value.trim() !== '';
+    {{ '}' }});
+    
+    return hasValue ? null : {{ '{' }} atLeastOneRequired: fields {{ '}' }};
+  {{ '}' }};
+{{ '}' }}
+
+const contactForm = new FormGroup({{ '{' }}
+  email: new FormControl(''),
+  phone: new FormControl(''),
+  address: new FormControl('')
+{{ '}' }}, {{ '{' }} validators: atLeastOneRequired('email', 'phone') {{ '}' }});</code></pre>
+
+  <h3>Afficher les Erreurs Cross-Field</h3>
+
+  <pre><code class="language-html">&lt;form [formGroup]="form"&gt;
+  &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
+  &lt;input formControlName="confirmPassword" type="password" placeholder="Confirmer"&gt;
+  
+  &lt;!-- Erreur au niveau du groupe --&gt;
+  &lt;div *ngIf="form.hasError('passwordMismatch')" class="error"&gt;
+    Les mots de passe ne correspondent pas
+  &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+
+  <hr>
+
+  <h2 id="messages-derreur">Messages d'Erreur</h2>
+
+  <h3>Composant de Message d'Erreur Réutilisable</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-form-error',
+  standalone: true,
+  template: `
+    &lt;div class="error-message" *ngIf="control && control.invalid && control.touched"&gt;
+      &lt;ng-container *ngFor="let error of errorMessages"&gt;
+        &lt;p *ngIf="control.hasError(error.key)"&gt;{{ error.message }}&lt;/p&gt;
+      &lt;/ng-container&gt;
+    &lt;/div&gt;
+  `,
+  styles: [`
+    .error-message {{ '{' }}
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    {{ '}' }}
+  `]
+{{ '}' }})
+export class FormErrorComponent {{ '{' }}
+  @Input() control: AbstractControl | null = null;
+  @Input() errorMessages: {{ '{' }} key: string; message: string {{ '}' }}[] = [];
+{{ '}' }}</code></pre>
+
+  <h3>Utilisation</h3>
+
+  <pre><code class="language-html">&lt;input formControlName="email" placeholder="Email"&gt;
+&lt;app-form-error 
+  [control]="form.get('email')"
+  [errorMessages]="[
+    {{ '{' }} key: 'required', message: 'L\'email est obligatoire' {{ '}' }},
+    {{ '{' }} key: 'email', message: 'Format d\'email invalide' {{ '}' }},
+    {{ '{' }} key: 'emailExists', message: 'Cet email est déjà utilisé' {{ '}' }}
+  ]"&gt;
+&lt;/app-form-error&gt;</code></pre>
+
+  <h3>Service de Messages Centralisé</h3>
+
+  <pre><code class="language-typescript">@Injectable({{ '{' }} providedIn: 'root' {{ '}' }})
+export class ValidationMessageService {{ '{' }}
+  private messages: Record&lt;string, string | ((params: any) => string)&gt; = {{ '{' }}
+    required: 'Ce champ est obligatoire',
+    email: 'Veuillez entrer un email valide',
+    minlength: (params) => `Minimum ${{ '{' }}params.requiredLength{{ '}' }} caractères`,
+    maxlength: (params) => `Maximum ${{ '{' }}params.requiredLength{{ '}' }} caractères`,
+    min: (params) => `La valeur minimum est ${{ '{' }}params.min{{ '}' }}`,
+    max: (params) => `La valeur maximum est ${{ '{' }}params.max{{ '}' }}`,
+    pattern: 'Format invalide',
+    passwordMismatch: 'Les mots de passe ne correspondent pas',
+    usernameTaken: 'Ce nom d\'utilisateur est déjà pris',
+    emailExists: 'Cet email est déjà utilisé'
+  {{ '}' }};
+  
+  getErrorMessage(control: AbstractControl): string {{ '{' }}
+    if (!control.errors) return '';
+    
+    const errorKey = Object.keys(control.errors)[0];
+    const errorValue = control.errors[errorKey];
+    const message = this.messages[errorKey];
+    
+    if (typeof message === 'function') {{ '{' }}
+      return message(errorValue);
+    {{ '}' }}
+    
+    return message || 'Erreur de validation';
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <h3>Directive de Validation</h3>
+
+  <pre><code class="language-typescript">@Directive({{ '{' }}
+  selector: '[appShowErrors]',
+  standalone: true
+{{ '}' }})
+export class ShowErrorsDirective implements OnInit, OnDestroy {{ '{' }}
+  @Input('appShowErrors') controlName!: string;
+  
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private controlContainer: ControlContainer,
+    private validationService: ValidationMessageService
+  ) {{ '{' }}}
+  
+  ngOnInit() {{ '{' }}
+    const control = this.controlContainer.control?.get(this.controlName);
+    if (!control) return;
+    
+    merge(control.statusChanges, control.valueChanges)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateErrorMessage(control));
+  {{ '}' }}
+  
+  private updateErrorMessage(control: AbstractControl) {{ '{' }}
+    // Supprimer l'ancien message
+    const existing = this.el.nativeElement.parentNode.querySelector('.error-message');
+    if (existing) existing.remove();
+    
+    // Ajouter le nouveau message si erreur
+    if (control.invalid && control.touched) {{ '{' }}
+      const message = this.validationService.getErrorMessage(control);
+      const errorEl = this.renderer.createElement('span');
+      this.renderer.addClass(errorEl, 'error-message');
+      this.renderer.appendChild(errorEl, this.renderer.createText(message));
+      this.renderer.appendChild(this.el.nativeElement.parentNode, errorEl);
+    {{ '}' }}
+  {{ '}' }}
+  
+  ngOnDestroy() {{ '{' }}
+    this.destroy$.next();
+    this.destroy$.complete();
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
+
+  <h3>1. Ordre des Validateurs</h3>
+
+  <pre><code class="language-typescript">// Mettre les validateurs les plus importants en premier
+const password = new FormControl('', [
+  Validators.required,          // D'abord vérifier si rempli
+  Validators.minLength(8),      // Puis la longueur
+  Validators.pattern(/[A-Z]/),  // Enfin le pattern
+]);</code></pre>
+
+  <h3>2. Éviter la Sur-validation</h3>
+
+  <pre><code class="language-typescript">// ❌ Trop de validateurs
+const email = new FormControl('', [
+  Validators.required,
+  Validators.email,
+  Validators.minLength(5),  // Inutile avec email
+  Validators.maxLength(100), // Raisonnable
+  Validators.pattern(/.*@.*\..*/), // Redondant avec email
+]);
+
+// ✅ Juste ce qu'il faut
+const email = new FormControl('', [
+  Validators.required,
+  Validators.email,
+  Validators.maxLength(100)
+]);</code></pre>
+
+  <h3>3. Debounce pour les Validateurs Async</h3>
+
+  <pre><code class="language-typescript">// Toujours utiliser debounceTime pour éviter trop d'appels API
+return control.valueChanges.pipe(
+  debounceTime(400),  // Attendre 400ms après la dernière frappe
+  distinctUntilChanged(),
+  switchMap(value => this.checkAvailability(value))
+);</code></pre>
+
+  <hr>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p>
+      <a routerLink="/documentation/state-properties">← Propriétés d'État</a> | 
+      <a routerLink="/documentation">Index</a> | 
+      <a routerLink="/documentation/reactive-programming">Suivant : Programmation Réactive →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <p style="text-align: center; font-style: italic;">
+    <em>Tutoriel Angular 20 Forms - Documentation de Référence API</em>
+  </p>
+
+</div>

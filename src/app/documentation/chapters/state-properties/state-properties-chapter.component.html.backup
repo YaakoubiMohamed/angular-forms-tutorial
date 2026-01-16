@@ -1,0 +1,608 @@
+<div class="chapter-content">
+  <h1>Propriétés d'État</h1>
+
+  <div style="text-align: center;">
+    <p><strong>Angular Forms - États et Statuts</strong></p>
+    <p>
+      <a routerLink="/documentation/directives">← Directives</a> | 
+      <a routerLink="/documentation/api-reference">Index</a> | 
+      <a routerLink="/documentation/validation">Suivant : Validation →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+  <ul>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#proprietes-de-valeur">Propriétés de Valeur</a></li>
+    <li><a href="#proprietes-de-validite">Propriétés de Validité</a></li>
+    <li><a href="#proprietes-dinteraction">Propriétés d'Interaction</a></li>
+    <li><a href="#classes-css">Classes CSS</a></li>
+    <li><a href="#exemples-pratiques">Exemples Pratiques</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="apercu">Aperçu</h2>
+  <p>Chaque contrôle de formulaire (FormControl, FormGroup, FormArray) possède des propriétés qui reflètent son état actuel.</p>
+
+  <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    PROPRIÉTÉS D'ÉTAT                             │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  VALEUR           │  VALIDITÉ         │  INTERACTION            │
+├───────────────────┼───────────────────┼─────────────────────────┤
+│  • value          │  • valid          │  • pristine             │
+│  • valueChanges   │  • invalid        │  • dirty                │
+│                   │  • errors         │  • touched              │
+│                   │  • status         │  • untouched            │
+│                   │  • pending        │  • disabled             │
+│                   │  • statusChanges  │  • enabled              │
+└───────────────────┴───────────────────┴─────────────────────────┘</code></pre>
+
+  <hr>
+
+  <h2 id="proprietes-de-valeur">Propriétés de Valeur</h2>
+
+  <h3>value</h3>
+  <p>Retourne la valeur actuelle du contrôle.</p>
+
+  <pre><code class="language-typescript">// FormControl
+const name = new FormControl('Jean');
+console.log(name.value);  // 'Jean'
+
+// FormGroup
+const form = new FormGroup({{ '{' }}
+  firstName: new FormControl('Jean'),
+  lastName: new FormControl('Dupont')
+{{ '}' }});
+console.log(form.value);  // {{ '{' }} firstName: 'Jean', lastName: 'Dupont' {{ '}' }}
+
+// FormArray
+const phones = new FormArray([
+  new FormControl('0601020304'),
+  new FormControl('0102030405')
+]);
+console.log(phones.value);  // ['0601020304', '0102030405']</code></pre>
+
+  <h3>getRawValue()</h3>
+  <p>Retourne la valeur incluant les contrôles désactivés (disabled).</p>
+
+  <pre><code class="language-typescript">const form = new FormGroup({{ '{' }}
+  username: new FormControl('admin'),
+  role: new FormControl({{ '{' }} value: 'super-admin', disabled: true {{ '}' }})
+{{ '}' }});
+
+console.log(form.value);        // {{ '{' }} username: 'admin' {{ '}' }}
+console.log(form.getRawValue()); // {{ '{' }} username: 'admin', role: 'super-admin' {{ '}' }}</code></pre>
+
+  <h3>valueChanges</h3>
+  <p>Observable qui émet à chaque changement de valeur.</p>
+
+  <pre><code class="language-typescript">const email = new FormControl('');
+
+email.valueChanges.subscribe(value => {{ '{' }}
+  console.log('Nouvelle valeur :', value);
+{{ '}' }});
+
+// Peut être combiné avec des opérateurs RxJS
+email.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  filter(value => value.length > 2)
+).subscribe(value => {{ '{' }}
+  this.search(value);
+{{ '}' }});</code></pre>
+
+  <hr>
+
+  <h2 id="proprietes-de-validite">Propriétés de Validité</h2>
+
+  <h3>valid / invalid</h3>
+  <p>Indique si le contrôle passe toutes les validations.</p>
+
+  <pre><code class="language-typescript">const email = new FormControl('', [Validators.required, Validators.email]);
+
+email.setValue('');
+console.log(email.valid);   // false
+console.log(email.invalid); // true
+
+email.setValue('test@example.com');
+console.log(email.valid);   // true
+console.log(email.invalid); // false</code></pre>
+
+  <h3>status</h3>
+  <p>Retourne le statut de validation sous forme de chaîne.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Valeur</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>'VALID'</code></td>
+        <td>Toutes les validations passent</td>
+      </tr>
+      <tr>
+        <td><code>'INVALID'</code></td>
+        <td>Au moins une validation échoue</td>
+      </tr>
+      <tr>
+        <td><code>'PENDING'</code></td>
+        <td>Validation asynchrone en cours</td>
+      </tr>
+      <tr>
+        <td><code>'DISABLED'</code></td>
+        <td>Le contrôle est désactivé</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre><code class="language-typescript">const username = new FormControl('', [
+  Validators.required
+], [
+  asyncUsernameValidator // Vérifie la disponibilité
+]);
+
+// Observation des changements de statut
+username.statusChanges.subscribe(status => {{ '{' }}
+  console.log('Statut :', status);
+  // Émet: 'INVALID' -> 'PENDING' -> 'VALID' ou 'INVALID'
+{{ '}' }});</code></pre>
+
+  <h3>pending</h3>
+  <p><code>true</code> quand une validation asynchrone est en cours.</p>
+
+  <pre><code class="language-typescript">const email = new FormControl('', [], [asyncEmailValidator]);
+
+if (email.pending) {{ '{' }}
+  console.log('Validation en cours...');
+{{ '}' }}</code></pre>
+
+  <h3>errors</h3>
+  <p>Objet contenant les erreurs de validation.</p>
+
+  <pre><code class="language-typescript">const password = new FormControl('abc', [
+  Validators.required,
+  Validators.minLength(8),
+  Validators.pattern(/[A-Z]/)
+]);
+
+console.log(password.errors);
+// {{ '{' }} 
+//   minlength: {{ '{' }} requiredLength: 8, actualLength: 3 {{ '}' }},
+//   pattern: {{ '{' }} requiredPattern: '/[A-Z]/', actualValue: 'abc' {{ '}' }}
+// {{ '}' }}
+
+// Vérifier une erreur spécifique
+if (password.hasError('minlength')) {{ '{' }}
+  const error = password.getError('minlength');
+  console.log(`Minimum ${{ '{' }}error.requiredLength{{ '}' }} caractères requis`);
+{{ '}' }}</code></pre>
+
+  <h3>statusChanges</h3>
+  <p>Observable qui émet à chaque changement de statut.</p>
+
+  <pre><code class="language-typescript">const form = new FormGroup({{ '{' }}...{{ '}' }});
+
+form.statusChanges.subscribe(status => {{ '{' }}
+  if (status === 'VALID') {{ '{' }}
+    this.enableSubmit();
+  {{ '}' }} else {{ '{' }}
+    this.disableSubmit();
+  {{ '}' }}
+{{ '}' }});</code></pre>
+
+  <hr>
+
+  <h2 id="proprietes-dinteraction">Propriétés d'Interaction</h2>
+
+  <h3>pristine / dirty</h3>
+  <ul>
+    <li><strong>pristine</strong> : <code>true</code> si la valeur n'a jamais été modifiée</li>
+    <li><strong>dirty</strong> : <code>true</code> si la valeur a été modifiée</li>
+  </ul>
+
+  <pre><code class="language-typescript">const name = new FormControl('Jean');
+
+console.log(name.pristine); // true
+console.log(name.dirty);    // false
+
+name.setValue('Pierre');
+
+console.log(name.pristine); // false
+console.log(name.dirty);    // true</code></pre>
+
+  <h3>touched / untouched</h3>
+  <ul>
+    <li><strong>touched</strong> : <code>true</code> si le contrôle a reçu le focus puis l'a perdu (blur)</li>
+    <li><strong>untouched</strong> : <code>true</code> si le contrôle n'a jamais été touché</li>
+  </ul>
+
+  <pre><code class="language-typescript">const email = new FormControl('');
+
+console.log(email.touched);   // false
+console.log(email.untouched); // true
+
+// Après que l'utilisateur clique dans le champ puis en sort
+email.markAsTouched();
+
+console.log(email.touched);   // true
+console.log(email.untouched); // false</code></pre>
+
+  <h3>disabled / enabled</h3>
+  <ul>
+    <li><strong>disabled</strong> : <code>true</code> si le contrôle est désactivé</li>
+    <li><strong>enabled</strong> : <code>true</code> si le contrôle est activé</li>
+  </ul>
+
+  <pre><code class="language-typescript">const field = new FormControl('');
+
+console.log(field.enabled);  // true
+console.log(field.disabled); // false
+
+field.disable();
+
+console.log(field.enabled);  // false
+console.log(field.disabled); // true
+
+field.enable();
+
+console.log(field.enabled);  // true
+console.log(field.disabled); // false</code></pre>
+
+  <hr>
+
+  <h2 id="methodes-de-marquage">Méthodes de Marquage</h2>
+
+  <h3>Modifier l'État Manuellement</h3>
+
+  <pre><code class="language-typescript">const control = new FormControl('');
+
+// Marquer comme touché
+control.markAsTouched();
+control.markAsUntouched();
+
+// Marquer comme modifié
+control.markAsDirty();
+control.markAsPristine();
+
+// Options : propager aux enfants/parents
+control.markAsTouched({{ '{' }} onlySelf: true {{ '}' }});     // Ne pas propager aux parents
+control.markAsTouched({{ '{' }} emitEvent: false {{ '}' }});   // Ne pas émettre d'événement</code></pre>
+
+  <h3>Pour les Groupes</h3>
+
+  <pre><code class="language-typescript">const form = new FormGroup({{ '{' }}
+  name: new FormControl(''),
+  email: new FormControl('')
+{{ '}' }});
+
+// Marquer tous les enfants comme touchés
+form.markAllAsTouched();</code></pre>
+
+  <hr>
+
+  <h2 id="classes-css">Classes CSS</h2>
+  <p>Angular ajoute automatiquement des classes CSS selon l'état des contrôles.</p>
+
+  <h3>Tableau des Classes</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>État</th>
+        <th>Classe Vraie</th>
+        <th>Classe Fausse</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Validité</td>
+        <td><code>.ng-valid</code></td>
+        <td><code>.ng-invalid</code></td>
+      </tr>
+      <tr>
+        <td>Modifié</td>
+        <td><code>.ng-dirty</code></td>
+        <td><code>.ng-pristine</code></td>
+      </tr>
+      <tr>
+        <td>Touché</td>
+        <td><code>.ng-touched</code></td>
+        <td><code>.ng-untouched</code></td>
+      </tr>
+      <tr>
+        <td>Validation en cours</td>
+        <td><code>.ng-pending</code></td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Exemple de Style</h3>
+
+  <pre><code class="language-css">/* Champ invalide et touché - bordure rouge */
+input.ng-invalid.ng-touched {{ '{' }}
+  border: 2px solid #dc3545;
+  background-color: #fff5f5;
+{{ '}' }}
+
+/* Champ valide et modifié - bordure verte */
+input.ng-valid.ng-dirty {{ '{' }}
+  border: 2px solid #28a745;
+  background-color: #f5fff5;
+{{ '}' }}
+
+/* Validation en cours - bordure orange */
+input.ng-pending {{ '{' }}
+  border: 2px solid #ffc107;
+{{ '}' }}
+
+/* Champ désactivé */
+input:disabled {{ '{' }}
+  background-color: #e9ecef;
+  cursor: not-allowed;
+{{ '}' }}</code></pre>
+
+  <h3>Inspecteur d'État</h3>
+  <p>Outil pour déboguer l'état des contrôles :</p>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-state-inspector',
+  template: `
+    &lt;div class="inspector"&gt;
+      &lt;h4&gt;Inspecteur d'État : {{ controlName }}&lt;/h4&gt;
+      &lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;value&lt;/td&gt;&lt;td&gt;{{ control.value | json }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;valid&lt;/td&gt;&lt;td [class.true]="control.valid"&gt;{{ control.valid }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;invalid&lt;/td&gt;&lt;td [class.true]="control.invalid"&gt;{{ control.invalid }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;pristine&lt;/td&gt;&lt;td [class.true]="control.pristine"&gt;{{ control.pristine }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;dirty&lt;/td&gt;&lt;td [class.true]="control.dirty"&gt;{{ control.dirty }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;touched&lt;/td&gt;&lt;td [class.true]="control.touched"&gt;{{ control.touched }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;untouched&lt;/td&gt;&lt;td [class.true]="control.untouched"&gt;{{ control.untouched }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;status&lt;/td&gt;&lt;td&gt;{{ control.status }}&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;errors&lt;/td&gt;&lt;td&gt;{{ control.errors | json }}&lt;/td&gt;&lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  `,
+  styles: [`
+    .inspector {{ '{' }} padding: 10px; background: #f8f9fa; border-radius: 4px; {{ '}' }}
+    table {{ '{' }} width: 100%; {{ '}' }}
+    td {{ '{' }} padding: 4px 8px; border-bottom: 1px solid #ddd; {{ '}' }}
+    .true {{ '{' }} color: green; font-weight: bold; {{ '}' }}
+  `]
+{{ '}' }})
+export class StateInspectorComponent {{ '{' }}
+  @Input() control!: AbstractControl;
+  @Input() controlName = '';
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="exemples-pratiques">Exemples Pratiques</h2>
+
+  <h3>Affichage Conditionnel des Erreurs</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  template: `
+    &lt;input 
+      [formControl]="email" 
+      placeholder="Email"
+      [class.error]="email.invalid && email.touched"&gt;
+    
+    &lt;!-- Afficher les erreurs seulement si touché --&gt;
+    &lt;div class="error-messages" *ngIf="email.invalid && email.touched"&gt;
+      &lt;p *ngIf="email.hasError('required')"&gt;
+        L'email est obligatoire
+      &lt;/p&gt;
+      &lt;p *ngIf="email.hasError('email')"&gt;
+        Veuillez entrer un email valide
+      &lt;/p&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Indicateur de statut --&gt;
+    &lt;span class="status-icon"&gt;
+      &lt;span *ngIf="email.pending"&gt;⏳&lt;/span&gt;
+      &lt;span *ngIf="email.valid && email.dirty"&gt;✅&lt;/span&gt;
+      &lt;span *ngIf="email.invalid && email.touched"&gt;❌&lt;/span&gt;
+    &lt;/span&gt;
+  `
+{{ '}' }})
+export class EmailFieldComponent {{ '{' }}
+  email = new FormControl('', [Validators.required, Validators.email]);
+{{ '}' }}</code></pre>
+
+  <h3>Formulaire avec Avertissement de Modifications</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;input formControlName="title" placeholder="Titre"&gt;
+      &lt;textarea formControlName="content" placeholder="Contenu"&gt;&lt;/textarea&gt;
+      
+      &lt;div class="actions"&gt;
+        &lt;button 
+          (click)="save()" 
+          [disabled]="form.invalid || form.pristine"&gt;
+          Sauvegarder
+        &lt;/button&gt;
+        
+        &lt;button 
+          (click)="reset()" 
+          [disabled]="form.pristine"&gt;
+          Annuler les modifications
+        &lt;/button&gt;
+      &lt;/div&gt;
+      
+      &lt;!-- Avertissement de modifications non sauvegardées --&gt;
+      &lt;div class="warning" *ngIf="form.dirty"&gt;
+        ⚠️ Vous avez des modifications non sauvegardées
+      &lt;/div&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class EditFormComponent implements CanDeactivate {{ '{' }}
+  form = new FormGroup({{ '{' }}
+    title: new FormControl('', Validators.required),
+    content: new FormControl('')
+  {{ '}' }});
+  
+  save() {{ '{' }}
+    if (this.form.valid) {{ '{' }}
+      // Sauvegarder...
+      this.form.markAsPristine(); // Réinitialiser l'état dirty
+    {{ '}' }}
+  {{ '}' }}
+  
+  reset() {{ '{' }}
+    this.form.reset();
+  {{ '}' }}
+  
+  canDeactivate(): boolean {{ '{' }}
+    if (this.form.dirty) {{ '{' }}
+      return confirm('Voulez-vous quitter sans sauvegarder ?');
+    {{ '}' }}
+    return true;
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <h3>Suivi de la Progression de Validation</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  template: `
+    &lt;form [formGroup]="registrationForm"&gt;
+      &lt;div class="progress-bar"&gt;
+        &lt;div 
+          class="progress" 
+          [style.width.%]="validationProgress"&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;p&gt;{{ validationProgress }}% complété&lt;/p&gt;
+      
+      &lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
+      &lt;input formControlName="phone" placeholder="Téléphone (optionnel)"&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class ProgressFormComponent {{ '{' }}
+  registrationForm = new FormGroup({{ '{' }}
+    username: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    phone: new FormControl('')
+  {{ '}' }});
+  
+  get validationProgress(): number {{ '{' }}
+    const controls = Object.values(this.registrationForm.controls);
+    const validCount = controls.filter(c => c.valid).length;
+    return Math.round((validCount / controls.length) * 100);
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="resume-des-proprietes">Résumé des Propriétés</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Propriété</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>any</code></td>
+        <td>Valeur actuelle</td>
+      </tr>
+      <tr>
+        <td><code>valid</code></td>
+        <td><code>boolean</code></td>
+        <td>Validation réussie</td>
+      </tr>
+      <tr>
+        <td><code>invalid</code></td>
+        <td><code>boolean</code></td>
+        <td>Validation échouée</td>
+      </tr>
+      <tr>
+        <td><code>pending</code></td>
+        <td><code>boolean</code></td>
+        <td>Validation async en cours</td>
+      </tr>
+      <tr>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td>Contrôle désactivé</td>
+      </tr>
+      <tr>
+        <td><code>enabled</code></td>
+        <td><code>boolean</code></td>
+        <td>Contrôle activé</td>
+      </tr>
+      <tr>
+        <td><code>pristine</code></td>
+        <td><code>boolean</code></td>
+        <td>Jamais modifié</td>
+      </tr>
+      <tr>
+        <td><code>dirty</code></td>
+        <td><code>boolean</code></td>
+        <td>A été modifié</td>
+      </tr>
+      <tr>
+        <td><code>touched</code></td>
+        <td><code>boolean</code></td>
+        <td>A reçu puis perdu le focus</td>
+      </tr>
+      <tr>
+        <td><code>untouched</code></td>
+        <td><code>boolean</code></td>
+        <td>N'a jamais été touché</td>
+      </tr>
+      <tr>
+        <td><code>status</code></td>
+        <td><code>string</code></td>
+        <td>'VALID', 'INVALID', 'PENDING', 'DISABLED'</td>
+      </tr>
+      <tr>
+        <td><code>errors</code></td>
+        <td><code>object|null</code></td>
+        <td>Erreurs de validation</td>
+      </tr>
+      <tr>
+        <td><code>valueChanges</code></td>
+        <td><code>Observable</code></td>
+        <td>Flux de changements de valeur</td>
+      </tr>
+      <tr>
+        <td><code>statusChanges</code></td>
+        <td><code>Observable</code></td>
+        <td>Flux de changements de statut</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div style="text-align: center;">
+    <p>
+      <a routerLink="/documentation/directives">← Directives</a> | 
+      <a routerLink="/documentation/api-reference">Index</a> | 
+      <a routerLink="/documentation/validation">Suivant : Validation →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <p><em>Tutoriel Angular 20 Forms - Documentation de Référence API</em></p>
+</div>

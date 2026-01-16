@@ -1,0 +1,633 @@
+﻿<div class="chapter-content" (click)="onAnchorClick($event)">
+  <h1>Programmation Réactive</h1>
+
+  <div style="text-align: center;">
+    <p><strong>Angular Forms - RxJS et Observables</strong></p>
+    <p>
+      <a routerLink="/documentation/validation">← Validation</a> | 
+      <a routerLink="/documentation/api-reference">Index</a> | 
+      <a routerLink="/documentation/modules">Suivant : Modules →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+
+  <ul>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#valuechanges">valueChanges</a></li>
+    <li><a href="#statuschanges">statusChanges</a></li>
+    <li><a href="#operateurs-rxjs-essentiels">Opérateurs RxJS Essentiels</a></li>
+    <li><a href="#patterns-avances">Patterns Avancés</a></li>
+    <li><a href="#exemples-pratiques">Exemples Pratiques</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="apercu">Aperçu</h2>
+
+  <p>Angular Forms s'intègre parfaitement avec RxJS grâce aux Observables <code>valueChanges</code> et <code>statusChanges</code>.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">┌─────────────────────────────────────────────────────────────────┐
+│                    FLUX RÉACTIF                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+    ┌─────────┐        ┌─────────────┐        ┌─────────────┐
+    │ Saisie  │  ───▶  │ FormControl │  ───▶  │ Observable  │
+    │ Clavier │        │             │        │             │
+    └─────────┘        └─────────────┘        └─────────────┘
+                              │                      │
+                              ▼                      ▼
+                       valueChanges           Opérateurs RxJS
+                       statusChanges          (map, filter, etc.)
+                              │                      │
+                              └──────────┬───────────┘
+                                         │
+                                         ▼
+                              ┌─────────────────────┐
+                              │ Actions Réactives   │
+                              │ • Recherche API     │
+                              │ • Mise à jour UI    │
+                              │ • Validation        │
+                              └─────────────────────┘</code></pre></div>
+
+  <hr>
+
+  <h2 id="valuechanges">valueChanges</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>valueChanges</code> est un Observable qui émet la nouvelle valeur à chaque modification du contrôle.</p>
+
+  <h3>Syntaxe de Base</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormControl &rbrace; from '@angular/forms';
+
+const searchControl = new FormControl('');
+
+// S'abonner aux changements
+searchControl.valueChanges.subscribe(value => &lbrace;
+  console.log('Nouvelle valeur :', value);
+&rbrace;);</code></pre></div>
+
+  <h3>Sur FormControl</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
+
+email.valueChanges.subscribe(value => &lbrace;
+  console.log('Email :', value);
+&rbrace;);</code></pre></div>
+
+  <h3>Sur FormGroup</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  firstName: new FormControl(''),
+  lastName: new FormControl('')
+&rbrace;);
+
+// Écouter tout le groupe
+form.valueChanges.subscribe(value => &lbrace;
+  console.log('Formulaire :', value);
+  // &lbrace; firstName: '...', lastName: '...' &rbrace;
+&rbrace;);
+
+// Écouter un contrôle spécifique
+form.get('firstName')?.valueChanges.subscribe(value => &lbrace;
+  console.log('Prénom :', value);
+&rbrace;);</code></pre></div>
+
+  <h3>Sur FormArray</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">const items = new FormArray([
+  new FormControl(''),
+  new FormControl('')
+]);
+
+items.valueChanges.subscribe(values => &lbrace;
+  console.log('Tous les items :', values);
+  // ['valeur1', 'valeur2']
+&rbrace;);</code></pre></div>
+
+  <hr>
+
+  <h2 id="statuschanges">statusChanges</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>statusChanges</code> est un Observable qui émet le statut de validation à chaque changement.</p>
+
+  <h3>Valeurs Possibles</h3>
+
+  <div ngNonBindable><table>
+    <thead>
+      <tr>
+        <th>Statut</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>'VALID'</code></td>
+        <td>Toutes les validations passent</td>
+      </tr>
+      <tr>
+        <td><code>'INVALID'</code></td>
+        <td>Au moins une validation échoue</td>
+      </tr>
+      <tr>
+        <td><code>'PENDING'</code></td>
+        <td>Validation asynchrone en cours</td>
+      </tr>
+      <tr>
+        <td><code>'DISABLED'</code></td>
+        <td>Le contrôle est désactivé</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>Exemple</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('', [
+  Validators.required,
+  Validators.email
+], [
+  asyncEmailValidator
+]);
+
+email.statusChanges.subscribe(status => &lbrace;
+  switch (status) &lbrace;
+    case 'VALID':
+      console.log('✅ Email valide');
+      break;
+    case 'INVALID':
+      console.log('❌ Email invalide');
+      break;
+    case 'PENDING':
+      console.log('⏳ Vérification en cours...');
+      break;
+    case 'DISABLED':
+      console.log('🚫 Champ désactivé');
+      break;
+  &rbrace;
+&rbrace;);</code></pre></div>
+
+  <hr>
+
+  <h2 id="operateurs-rxjs-essentiels">Opérateurs RxJS Essentiels</h2>
+
+  <h3>debounceTime</h3>
+
+  <p>Attend un délai après la dernière émission avant de transmettre.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; debounceTime &rbrace; from 'rxjs/operators';
+
+searchControl.valueChanges.pipe(
+  debounceTime(300)  // Attend 300ms
+).subscribe(value => &lbrace;
+  this.performSearch(value);
+&rbrace;);</code></pre></div>
+
+  <h3>distinctUntilChanged</h3>
+
+  <p>Émet uniquement si la valeur est différente de la précédente.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; distinctUntilChanged &rbrace; from 'rxjs/operators';
+
+control.valueChanges.pipe(
+  distinctUntilChanged()
+).subscribe(value => &lbrace;
+  // Ne réagit pas aux valeurs identiques consécutives
+&rbrace;);</code></pre></div>
+
+  <h3>filter</h3>
+
+  <p>Filtre les valeurs selon une condition.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; filter &rbrace; from 'rxjs/operators';
+
+searchControl.valueChanges.pipe(
+  filter(value => value.length >= 3)  // Au moins 3 caractères
+).subscribe(value => &lbrace;
+  this.search(value);
+&rbrace;);</code></pre></div>
+
+  <h3>map</h3>
+
+  <p>Transforme les valeurs émises.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; map &rbrace; from 'rxjs/operators';
+
+emailControl.valueChanges.pipe(
+  map(value => value.toLowerCase().trim())
+).subscribe(normalizedEmail => &lbrace;
+  // Email normalisé
+&rbrace;);</code></pre></div>
+
+  <h3>switchMap</h3>
+
+  <p>Annule la requête précédente et lance une nouvelle.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; switchMap &rbrace; from 'rxjs/operators';
+
+searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(query => this.searchService.search(query))
+).subscribe(results => &lbrace;
+  this.results = results;
+&rbrace;);</code></pre></div>
+
+  <h3>tap</h3>
+
+  <p>Exécute un effet secondaire sans modifier le flux.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; tap &rbrace; from 'rxjs/operators';
+
+control.valueChanges.pipe(
+  tap(value => console.log('Valeur reçue :', value)),
+  map(value => value.toUpperCase())
+).subscribe(value => &lbrace;
+  // Traitement
+&rbrace;);</code></pre></div>
+
+  <h3>startWith</h3>
+
+  <p>Émet une valeur initiale avant les autres émissions.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; startWith &rbrace; from 'rxjs/operators';
+
+control.valueChanges.pipe(
+  startWith(control.value)  // Émet la valeur initiale
+).subscribe(value => &lbrace;
+  // Reçoit immédiatement la valeur actuelle
+&rbrace;);</code></pre></div>
+
+  <h3>combineLatest</h3>
+
+  <p>Combine plusieurs Observables.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; combineLatest &rbrace; from 'rxjs';
+
+combineLatest([
+  this.form.get('minPrice')!.valueChanges.pipe(startWith(0)),
+  this.form.get('maxPrice')!.valueChanges.pipe(startWith(1000)),
+  this.form.get('category')!.valueChanges.pipe(startWith('all'))
+]).subscribe(([minPrice, maxPrice, category]) => &lbrace;
+  this.filterProducts(minPrice, maxPrice, category);
+&rbrace;);</code></pre></div>
+
+  <hr>
+
+  <h2 id="patterns-avances">Patterns Avancés</h2>
+
+  <h3>Recherche avec Autocomplete</h3>
+
+  <pre><code class="language-typescript">@Component({
+  template: `
+    &lt;input [formControl]="searchControl" placeholder="Rechercher..."&gt;
+    @if (isLoading) {
+      &lt;div class="loading"&gt;Chargement...&lt;/div&gt;
+    }
+    &lt;ul class="results"&gt;
+      @for (result of results; track result.id) {
+        &lt;li&gt;{{ result.name }}&lt;/li&gt;
+      }
+    &lt;/ul&gt;
+  `
+})
+export class AutocompleteComponent implements OnInit, OnDestroy &lbrace;
+  searchControl = new FormControl('');
+  results: any[] = [];
+  isLoading = false;
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  constructor(private searchService: SearchService) &lbrace;
+  
+  ngOnInit() &lbrace;
+    this.searchControl.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(term => term.length >= 2),
+      tap(() => this.isLoading = true),
+      switchMap(term => this.searchService.search(term).pipe(
+        catchError(() => of([]))
+      )),
+      tap(() => this.isLoading = false)
+    ).subscribe(results => &lbrace;
+      this.results = results;
+    &rbrace;);
+  &rbrace;
+  
+  ngOnDestroy() &lbrace;
+    this.destroy$.next();
+    this.destroy$.complete();
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Sauvegarde Automatique</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;input formControlName="title" placeholder="Titre"&gt;
+      &lt;textarea formControlName="content" placeholder="Contenu"&gt;&lt;/textarea&gt;
+      &lt;span class="status"&gt;&lbrace;&lbrace; saveStatus &rbrace;&rbrace;&lt;/span&gt;
+    &lt;/form&gt;
+  `
+&rbrace;)
+export class AutoSaveComponent implements OnInit, OnDestroy &lbrace;
+  form = new FormGroup(&lbrace;
+    title: new FormControl(''),
+    content: new FormControl('')
+  &rbrace;);
+  
+  saveStatus = 'Prêt';
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  ngOnInit() &lbrace;
+    this.form.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(2000),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      tap(() => this.saveStatus = 'Sauvegarde en cours...'),
+      switchMap(value => this.save(value))
+    ).subscribe(&lbrace;
+      next: () => this.saveStatus = 'Sauvegardé ✓',
+      error: () => this.saveStatus = 'Erreur de sauvegarde ✗'
+    &rbrace;);
+  &rbrace;
+  
+  private save(data: any): Observable&lt;any&gt; &lbrace;
+    return this.http.post('/api/draft', data);
+  &rbrace;
+  
+  ngOnDestroy() &lbrace;
+    this.destroy$.next();
+    this.destroy$.complete();
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Validation Conditionnelle Réactive</h3>
+
+  <pre><code class="language-typescript">@Component({
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;select formControlName="contactMethod"&gt;
+        &lt;option value="email"&gt;Email&lt;/option&gt;
+        &lt;option value="phone"&gt;Téléphone&lt;/option&gt;
+      &lt;/select&gt;
+      
+      @if (contactMethod === 'email') {
+        &lt;input formControlName="email" placeholder="Email"&gt;
+      }
+      
+      @if (contactMethod === 'phone') {
+        &lt;input formControlName="phone" placeholder="Téléphone"&gt;
+      }
+    &lt;/form&gt;
+  `
+})
+export class ConditionalValidationComponent implements OnInit &lbrace;
+  form = new FormGroup(&lbrace;
+    contactMethod: new FormControl('email'),
+    email: new FormControl(''),
+    phone: new FormControl('')
+  &rbrace;);
+  
+  get contactMethod() &lbrace;
+    return this.form.get('contactMethod')?.value;
+  &rbrace;
+  
+  ngOnInit() &lbrace;
+    this.form.get('contactMethod')!.valueChanges.subscribe(method => &lbrace;
+      const emailControl = this.form.get('email')!;
+      const phoneControl = this.form.get('phone')!;
+      
+      if (method === 'email') &lbrace;
+        emailControl.setValidators([Validators.required, Validators.email]);
+        phoneControl.clearValidators();
+      &rbrace; else &lbrace;
+        phoneControl.setValidators([Validators.required, Validators.pattern(/^\d&lbrace;10&rbrace;$/)]);
+        emailControl.clearValidators();
+      &rbrace;
+      
+      emailControl.updateValueAndValidity();
+      phoneControl.updateValueAndValidity();
+    &rbrace;);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Synchronisation de Champs</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+      &lt;input formControlName="slug" placeholder="URL slug" readonly&gt;
+    &lt;/form&gt;
+  `
+&rbrace;)
+export class SlugSyncComponent implements OnInit &lbrace;
+  form = new FormGroup(&lbrace;
+    username: new FormControl(''),
+    slug: new FormControl('')
+  &rbrace;);
+  
+  ngOnInit() &lbrace;
+    this.form.get('username')!.valueChanges.pipe(
+      map(value => this.slugify(value))
+    ).subscribe(slug => &lbrace;
+      this.form.get('slug')!.setValue(slug, &lbrace; emitEvent: false &rbrace;);
+    &rbrace;);
+  &rbrace;
+  
+  private slugify(text: string): string &lbrace;
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="exemples-pratiques">Exemples Pratiques</h2>
+
+  <h3>Filtrage en Temps Réel</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  template: `
+    &lt;form [formGroup]="filterForm"&gt;
+      &lt;input formControlName="search" placeholder="Rechercher..."&gt;
+      &lt;select formControlName="category"&gt;
+        &lt;option value=""&gt;Toutes catégories&lt;/option&gt;
+        &lt;option value="electronics"&gt;Électronique&lt;/option&gt;
+        &lt;option value="clothing"&gt;Vêtements&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;input formControlName="minPrice" type="number" placeholder="Prix min"&gt;
+      &lt;input formControlName="maxPrice" type="number" placeholder="Prix max"&gt;
+    &lt;/form&gt;
+    
+    &lt;div class="products"&gt;
+      @for (product of filteredProducts$ | async; track product.id) {
+        &lt;div&gt;
+          {{ product.name }} - {{ product.price }}€
+        &lt;/div&gt;
+      }
+    &lt;/div&gt;
+  `
+&rbrace;)
+export class ProductFilterComponent implements OnInit &lbrace;
+  filterForm = new FormGroup(&lbrace;
+    search: new FormControl(''),
+    category: new FormControl(''),
+    minPrice: new FormControl(null),
+    maxPrice: new FormControl(null)
+  &rbrace;);
+  
+  filteredProducts$!: Observable&lt;Product[]&gt;;
+  
+  constructor(private productService: ProductService) &lbrace;
+  
+  ngOnInit() &lbrace;
+    this.filteredProducts$ = this.filterForm.valueChanges.pipe(
+      startWith(this.filterForm.value),
+      debounceTime(200),
+      switchMap(filters => this.productService.filter(filters))
+    );
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Formulaire Multi-Étapes avec État</h3>
+
+  <pre><code class="language-typescript">@Component({
+  template: `
+    &lt;div class="steps"&gt;
+      @for (step of steps; track step; let i = $index) {
+        &lt;div 
+          [class.completed]="stepStatus[i] === 'VALID'"
+          [class.current]="currentStep === i"&gt;
+          Étape {{ i + 1 }}
+        &lt;/div&gt;
+      }
+    &lt;/div&gt;
+    
+    &lt;form [formGroup]="forms[currentStep]"&gt;
+      &lt;!-- Contenu dynamique de l'étape --&gt;
+    &lt;/form&gt;
+  `
+&rbrace;)
+export class MultiStepFormComponent implements OnInit &lbrace;
+  forms: FormGroup[] = [
+    new FormGroup(&lbrace; /* étape 1 */ &rbrace;),
+    new FormGroup(&lbrace; /* étape 2 */ &rbrace;),
+    new FormGroup(&lbrace; /* étape 3 */ &rbrace;)
+  ];
+  
+  steps = ['Informations', 'Contact', 'Confirmation'];
+  currentStep = 0;
+  stepStatus: string[] = [];
+  
+  ngOnInit() &lbrace;
+    this.forms.forEach((form, index) => &lbrace;
+      form.statusChanges.subscribe(status => &lbrace;
+        this.stepStatus[index] = status;
+      &rbrace;);
+    &rbrace;);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Gestion de la Mémoire</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
+export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  form = new FormGroup(&lbrace;
+    search: new FormControl('')
+  &rbrace;);
+  
+  ngOnInit() &lbrace;
+    // Utiliser takeUntil pour éviter les fuites de mémoire
+    this.form.get('search')!.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(300)
+    ).subscribe(value => &lbrace;
+      this.search(value);
+    &rbrace;);
+  &rbrace;
+  
+  ngOnDestroy() &lbrace;
+    // Compléter le Subject pour désabonner tous les observables
+    this.destroy$.next();
+    this.destroy$.complete();
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
+
+  <h3>1. Toujours se Désabonner</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// ✅ Utiliser takeUntil
+private destroy$ = new Subject&lt;void&gt;();
+
+ngOnInit() &lbrace;
+  observable.pipe(takeUntil(this.destroy$)).subscribe();
+&rbrace;
+
+ngOnDestroy() &lbrace;
+  this.destroy$.next();
+  this.destroy$.complete();
+&rbrace;
+
+// ✅ Ou utiliser le pipe async dans le template
+// &lbrace;&lbrace; data$ | async &rbrace;&rbrace;</code></pre></div>
+
+  <h3>2. Éviter les Effets en Cascade</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// ❌ Risque de boucle infinie
+control1.valueChanges.subscribe(v => control2.setValue(v));
+control2.valueChanges.subscribe(v => control1.setValue(v));
+
+// ✅ Utiliser emitEvent: false
+control1.valueChanges.subscribe(v => &lbrace;
+  control2.setValue(v, &lbrace; emitEvent: false &rbrace;);
+&rbrace;);</code></pre></div>
+
+  <h3>3. Utiliser startWith pour la Valeur Initiale</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// ✅ Obtenir la valeur initiale immédiatement
+control.valueChanges.pipe(
+  startWith(control.value)
+).subscribe(value => &lbrace;
+  // Reçoit la valeur initiale puis les changements
+&rbrace;);</code></pre></div>
+
+  <hr>
+
+  <div style="text-align: center;">
+    <p>
+      <a routerLink="/documentation/validation">← Validation</a> | 
+      <a routerLink="/documentation/api-reference">Index</a> | 
+      <a routerLink="/documentation/modules">Suivant : Modules →</a>
+    </p>
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+

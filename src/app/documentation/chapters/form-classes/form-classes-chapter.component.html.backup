@@ -1,0 +1,602 @@
+<div class="chapter-content">
+  <h1>Classes de Formulaires</h1>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <strong>Angular Forms - Blocs de Construction</strong>
+    <p style="margin-top: 1rem;">
+      <a routerLink="/documentation/core-concepts">← Concepts Fondamentaux</a> |
+      <a routerLink="/documentation">Index</a> |
+      <a routerLink="/documentation/directives">Suivant : Directives →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+  <ul>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#formcontrol">FormControl</a></li>
+    <li><a href="#formgroup">FormGroup</a></li>
+    <li><a href="#formarray">FormArray</a></li>
+    <li><a href="#formbuilder">FormBuilder</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="apercu">Aperçu</h2>
+
+  <p>Angular Forms repose sur quatre classes principales qui forment une hiérarchie de contrôles. Toutes ces classes héritent de <code>AbstractControl</code>.</p>
+
+  <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    HIÉRARCHIE DES CLASSES                        │
+└─────────────────────────────────────────────────────────────────┘
+
+                      AbstractControl
+                      (Classe de Base)
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+          ▼                  ▼                  ▼
+    ┌───────────┐     ┌───────────┐      ┌───────────┐
+    │FormControl│     │ FormGroup │      │ FormArray │
+    │           │     │           │      │           │
+    │ Valeur    │     │ Groupe de │      │ Tableau   │
+    │ Unique    │     │ Contrôles │      │ de        │
+    │           │     │ (par clé) │      │ Contrôles │
+    └───────────┘     └───────────┘      └───────────┘</code></pre>
+
+  <h3>Import</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} 
+  FormControl, 
+  FormGroup, 
+  FormArray, 
+  FormBuilder 
+{{ '}' }} from '@angular/forms';</code></pre>
+
+  <hr>
+
+  <h2 id="formcontrol">FormControl</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>FormControl</code> suit la valeur et l'état de validation d'un contrôle de formulaire individuel. C'est l'unité atomique du système de formulaires Angular.</p>
+
+  <h3>Signature du Constructeur</h3>
+
+  <pre><code class="language-typescript">new FormControl&lt;T&gt;(
+  value: T,
+  validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions,
+  asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
+)</code></pre>
+
+  <h3>Options de Configuration</h3>
+
+  <pre><code class="language-typescript">interface FormControlOptions {{ '{' }}
+  validators?: ValidatorFn | ValidatorFn[];
+  asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[];
+  updateOn?: 'change' | 'blur' | 'submit';
+  nonNullable?: boolean;
+{{ '}' }}</code></pre>
+
+  <h3>Exemples de Création</h3>
+
+  <pre><code class="language-typescript">// Création simple
+const name = new FormControl('');
+
+// Avec valeur initiale
+const email = new FormControl('user@example.com');
+
+// Avec validateurs
+const password = new FormControl('', [
+  Validators.required,
+  Validators.minLength(8)
+]);
+
+// Avec validateurs synchrones et asynchrones
+const username = new FormControl('', 
+  [Validators.required],
+  [this.checkUsernameAvailable.bind(this)]
+);
+
+// Avec objet de configuration
+const age = new FormControl(18, {{ '{' }}
+  validators: [Validators.min(0), Validators.max(120)],
+  updateOn: 'blur'
+{{ '}' }});
+
+// Non-nullable (Angular 14+)
+const requiredName = new FormControl('', {{ '{' }}
+  nonNullable: true,
+  validators: Validators.required
+{{ '}' }});</code></pre>
+
+  <h3>Typed Forms (Angular 14+)</h3>
+
+  <pre><code class="language-typescript">// Typage explicite
+const email = new FormControl&lt;string&gt;('');
+const age = new FormControl&lt;number | null&gt;(null);
+
+// Le type est inféré de la valeur initiale
+const name = new FormControl('John');  // Type: FormControl&lt;string | null&gt;
+
+// nonNullable supprime null du type
+const required = new FormControl('', {{ '{' }} nonNullable: true {{ '}' }});
+// Type: FormControl&lt;string&gt;</code></pre>
+
+  <h3>Méthodes Principales</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Méthode</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>setValue(value)</code></td>
+        <td>Définit une nouvelle valeur</td>
+      </tr>
+      <tr>
+        <td><code>patchValue(value)</code></td>
+        <td>Alias de setValue pour FormControl</td>
+      </tr>
+      <tr>
+        <td><code>reset(value?)</code></td>
+        <td>Réinitialise à la valeur initiale</td>
+      </tr>
+      <tr>
+        <td><code>enable()</code></td>
+        <td>Active le contrôle</td>
+      </tr>
+      <tr>
+        <td><code>disable()</code></td>
+        <td>Désactive le contrôle</td>
+      </tr>
+      <tr>
+        <td><code>markAsTouched()</code></td>
+        <td>Marque comme touched</td>
+      </tr>
+      <tr>
+        <td><code>markAsDirty()</code></td>
+        <td>Marque comme dirty</td>
+      </tr>
+      <tr>
+        <td><code>markAsPristine()</code></td>
+        <td>Marque comme pristine</td>
+      </tr>
+      <tr>
+        <td><code>updateValueAndValidity()</code></td>
+        <td>Recalcule la validité</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Exemple Complet</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-email-input',
+  template: `
+    &lt;input [formControl]="emailControl" placeholder="Email"&gt;
+    &lt;div *ngIf="emailControl.invalid && emailControl.touched"&gt;
+      &lt;span *ngIf="emailControl.hasError('required')"&gt;L'email est requis&lt;/span&gt;
+      &lt;span *ngIf="emailControl.hasError('email')"&gt;Format email invalide&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;p&gt;Valeur: {{ emailControl.value }}&lt;/p&gt;
+    &lt;p&gt;Statut: {{ emailControl.status }}&lt;/p&gt;
+  `
+{{ '}' }})
+export class EmailInputComponent {{ '{' }}
+  emailControl = new FormControl('', [Validators.required, Validators.email]);
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="formgroup">FormGroup</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>FormGroup</code> agrège plusieurs contrôles en un seul objet. Il suit la valeur et la validité du groupe entier.</p>
+
+  <h3>Signature du Constructeur</h3>
+
+  <pre><code class="language-typescript">new FormGroup&lt;T&gt;(
+  controls: T,
+  validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions,
+  asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
+)</code></pre>
+
+  <h3>Création</h3>
+
+  <pre><code class="language-typescript">// Création basique
+const form = new FormGroup({{ '{' }}
+  firstName: new FormControl(''),
+  lastName: new FormControl(''),
+  email: new FormControl('')
+{{ '}' }});
+
+// Avec validateurs de groupe
+const form = new FormGroup({{ '{' }}
+  password: new FormControl(''),
+  confirmPassword: new FormControl('')
+{{ '}' }}, {{ '{' }}
+  validators: passwordMatchValidator
+{{ '}' }});
+
+// Groupes imbriqués
+const form = new FormGroup({{ '{' }}
+  user: new FormGroup({{ '{' }}
+    name: new FormControl(''),
+    email: new FormControl('')
+  {{ '}' }}),
+  address: new FormGroup({{ '{' }}
+    street: new FormControl(''),
+    city: new FormControl('')
+  {{ '}' }})
+{{ '}' }});</code></pre>
+
+  <h3>Accéder aux Contrôles</h3>
+
+  <pre><code class="language-typescript">const form = new FormGroup({{ '{' }}
+  email: new FormControl(''),
+  password: new FormControl('')
+{{ '}' }});
+
+// Accès par get()
+const emailControl = form.get('email');
+
+// Accès aux contrôles imbriqués
+const cityControl = form.get('address.city');
+// ou
+const cityControl = form.get(['address', 'city']);
+
+// Accès direct (non typé)
+const email = form.controls['email'];</code></pre>
+
+  <h3>setValue vs patchValue</h3>
+
+  <pre><code class="language-typescript">const form = new FormGroup({{ '{' }}
+  firstName: new FormControl(''),
+  lastName: new FormControl(''),
+  email: new FormControl('')
+{{ '}' }});
+
+// setValue - DOIT fournir TOUTES les valeurs
+form.setValue({{ '{' }}
+  firstName: 'Jean',
+  lastName: 'Dupont',
+  email: 'jean@example.com'
+{{ '}' }});
+
+// patchValue - peut fournir un sous-ensemble
+form.patchValue({{ '{' }}
+  firstName: 'Jean'
+  // lastName et email restent inchangés
+{{ '}' }});</code></pre>
+
+  <h3>Exemple Complet</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-user-form',
+  template: `
+    &lt;form [formGroup]="userForm" (ngSubmit)="onSubmit()"&gt;
+      &lt;input formControlName="firstName" placeholder="Prénom"&gt;
+      &lt;input formControlName="lastName" placeholder="Nom"&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      
+      &lt;div formGroupName="address"&gt;
+        &lt;input formControlName="street" placeholder="Rue"&gt;
+        &lt;input formControlName="city" placeholder="Ville"&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="submit" [disabled]="userForm.invalid"&gt;Envoyer&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class UserFormComponent {{ '{' }}
+  userForm = new FormGroup({{ '{' }}
+    firstName: new FormControl('', Validators.required),
+    lastName: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    address: new FormGroup({{ '{' }}
+      street: new FormControl(''),
+      city: new FormControl('')
+    {{ '}' }})
+  {{ '}' }});
+  
+  onSubmit() {{ '{' }}
+    console.log(this.userForm.value);
+    // {{ '{' }} firstName: '...', lastName: '...', email: '...', address: {{ '{' }} street: '...', city: '...' {{ '}' }} {{ '}' }}
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="formarray">FormArray</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>FormArray</code> agrège des contrôles dans un tableau. Idéal pour les collections dynamiques comme les listes d'éléments.</p>
+
+  <h3>Signature du Constructeur</h3>
+
+  <pre><code class="language-typescript">new FormArray&lt;T&gt;(
+  controls: T[],
+  validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions,
+  asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
+)</code></pre>
+
+  <h3>Création et Manipulation</h3>
+
+  <pre><code class="language-typescript">// Création
+const phones = new FormArray([
+  new FormControl(''),
+  new FormControl('')
+]);
+
+// Ajouter un contrôle
+phones.push(new FormControl(''));
+
+// Supprimer un contrôle à l'index
+phones.removeAt(0);
+
+// Insérer à une position
+phones.insert(1, new FormControl('nouveau'));
+
+// Effacer tout
+phones.clear();
+
+// Accéder par index
+const firstPhone = phones.at(0);
+
+// Longueur
+console.log(phones.length);</code></pre>
+
+  <h3>FormArray de FormGroups</h3>
+
+  <pre><code class="language-typescript">const users = new FormArray([
+  new FormGroup({{ '{' }}
+    name: new FormControl(''),
+    email: new FormControl('')
+  {{ '}' }}),
+  new FormGroup({{ '{' }}
+    name: new FormControl(''),
+    email: new FormControl('')
+  {{ '}' }})
+]);
+
+// Ajouter un nouvel utilisateur
+users.push(new FormGroup({{ '{' }}
+  name: new FormControl(''),
+  email: new FormControl('')
+{{ '}' }}));</code></pre>
+
+  <h3>Exemple Complet - Liste Dynamique</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-phone-list',
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;h3&gt;Numéros de téléphone&lt;/h3&gt;
+      
+      &lt;div formArrayName="phones"&gt;
+        &lt;div *ngFor="let phone of phonesArray.controls; let i = index"&gt;
+          &lt;input [formControlName]="i" placeholder="Téléphone {{ i + 1 }}"&gt;
+          &lt;button type="button" (click)="removePhone(i)"&gt;✕&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="button" (click)="addPhone()"&gt;+ Ajouter téléphone&lt;/button&gt;
+      
+      &lt;pre&gt;{{ form.value | json }}&lt;/pre&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class PhoneListComponent {{ '{' }}
+  form = new FormGroup({{ '{' }}
+    phones: new FormArray([
+      new FormControl('')
+    ])
+  {{ '}' }});
+  
+  get phonesArray(): FormArray {{ '{' }}
+    return this.form.get('phones') as FormArray;
+  {{ '}' }}
+  
+  addPhone() {{ '{' }}
+    this.phonesArray.push(new FormControl(''));
+  {{ '}' }}
+  
+  removePhone(index: number) {{ '{' }}
+    this.phonesArray.removeAt(index);
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="formbuilder">FormBuilder</h2>
+
+  <h3>Définition</h3>
+
+  <p><code>FormBuilder</code> est un service qui simplifie la création de formulaires avec une syntaxe plus concise.</p>
+
+  <h3>Injection</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} Component, inject {{ '}' }} from '@angular/core';
+import {{ '{' }} FormBuilder {{ '}' }} from '@angular/forms';
+
+@Component({{ '{' }}...{{ '}' }})
+export class MyComponent {{ '{' }}
+  private fb = inject(FormBuilder);
+  
+  // ou via constructeur
+  // constructor(private fb: FormBuilder) {{ '{' }}}
+{{ '}' }}</code></pre>
+
+  <h3>Méthodes</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Méthode</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>group()</code></td>
+        <td>Crée un FormGroup</td>
+      </tr>
+      <tr>
+        <td><code>array()</code></td>
+        <td>Crée un FormArray</td>
+      </tr>
+      <tr>
+        <td><code>control()</code></td>
+        <td>Crée un FormControl</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Syntaxe Abrégée</h3>
+
+  <pre><code class="language-typescript">// Sans FormBuilder
+const form = new FormGroup({{ '{' }}
+  email: new FormControl('', Validators.required),
+  password: new FormControl('', [Validators.required, Validators.minLength(8)])
+{{ '}' }});
+
+// Avec FormBuilder
+const form = this.fb.group({{ '{' }}
+  email: ['', Validators.required],
+  password: ['', [Validators.required, Validators.minLength(8)]]
+{{ '}' }});</code></pre>
+
+  <h3>Syntaxe Complète</h3>
+
+  <pre><code class="language-typescript">const form = this.fb.group({{ '{' }}
+  // [valeur, validateurs sync, validateurs async]
+  email: ['', [Validators.required, Validators.email], [asyncEmailValidator]],
+  
+  // Objet de configuration
+  password: this.fb.control('', {{ '{' }}
+    validators: [Validators.required],
+    updateOn: 'blur'
+  {{ '}' }}),
+  
+  // Groupe imbriqué
+  address: this.fb.group({{ '{' }}
+    street: [''],
+    city: ['', Validators.required]
+  {{ '}' }}),
+  
+  // Tableau
+  phones: this.fb.array([
+    [''],
+    ['']
+  ])
+{{ '}' }});</code></pre>
+
+  <h3>NonNullableFormBuilder (Angular 14+)</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}...{{ '}' }})
+export class MyComponent {{ '{' }}
+  private fb = inject(FormBuilder);
+  
+  // Tous les contrôles sont non-nullable
+  form = this.fb.nonNullable.group({{ '{' }}
+    name: ['', Validators.required],
+    email: ['', Validators.email]
+  {{ '}' }});
+  
+  resetForm() {{ '{' }}
+    // Reset retourne aux valeurs initiales (pas null)
+    this.form.reset();
+    // name = '', email = '' (pas null)
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <h3>Exemple Complet</h3>
+
+  <pre><code class="language-typescript">@Component({{ '{' }}
+  selector: 'app-registration',
+  template: `
+    &lt;form [formGroup]="registrationForm" (ngSubmit)="onSubmit()"&gt;
+      &lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+      &lt;input formControlName="email" type="email" placeholder="Email"&gt;
+      
+      &lt;div formGroupName="password"&gt;
+        &lt;input formControlName="main" type="password" placeholder="Mot de passe"&gt;
+        &lt;input formControlName="confirm" type="password" placeholder="Confirmer"&gt;
+      &lt;/div&gt;
+      
+      &lt;div formArrayName="skills"&gt;
+        &lt;div *ngFor="let skill of skills.controls; let i = index"&gt;
+          &lt;input [formControlName]="i" placeholder="Compétence {{ i + 1 }}"&gt;
+          &lt;button type="button" (click)="removeSkill(i)"&gt;✕&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;button type="button" (click)="addSkill()"&gt;+ Ajouter compétence&lt;/button&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="submit" [disabled]="registrationForm.invalid"&gt;S'inscrire&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class RegistrationComponent {{ '{' }}
+  private fb = inject(FormBuilder);
+  
+  registrationForm = this.fb.group({{ '{' }}
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: this.fb.group({{ '{' }}
+      main: ['', [Validators.required, Validators.minLength(8)]],
+      confirm: ['', Validators.required]
+    {{ '}' }}, {{ '{' }} validators: this.passwordMatchValidator {{ '}' }}),
+    skills: this.fb.array([
+      ['']
+    ])
+  {{ '}' }});
+  
+  get skills(): FormArray {{ '{' }}
+    return this.registrationForm.get('skills') as FormArray;
+  {{ '}' }}
+  
+  addSkill() {{ '{' }}
+    this.skills.push(this.fb.control(''));
+  {{ '}' }}
+  
+  removeSkill(index: number) {{ '{' }}
+    this.skills.removeAt(index);
+  {{ '}' }}
+  
+  passwordMatchValidator(group: FormGroup) {{ '{' }}
+    const main = group.get('main')?.value;
+    const confirm = group.get('confirm')?.value;
+    return main === confirm ? null : {{ '{' }} mismatch: true {{ '}' }};
+  {{ '}' }}
+  
+  onSubmit() {{ '{' }}
+    if (this.registrationForm.valid) {{ '{' }}
+      console.log(this.registrationForm.value);
+    {{ '}' }}
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <div style="text-align: center; margin: 3rem 0;">
+    <p>
+      <a routerLink="/documentation/core-concepts">← Concepts Fondamentaux</a> |
+      <a routerLink="/documentation">Index</a> |
+      <a routerLink="/documentation/directives">Suivant : Directives →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <p style="text-align: center; font-style: italic; color: #666;">
+    Tutoriel Angular 20 Forms - Documentation de Référence API
+  </p>
+
+</div>

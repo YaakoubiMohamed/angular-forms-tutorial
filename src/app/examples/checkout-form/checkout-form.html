@@ -1,0 +1,408 @@
+<div class="checkout-container">
+  <div class="checkout-header">
+    <h1>Paiement - Formulaire Multi-Étapes</h1>
+    <p>Démonstration: Formulaires complexes avec validation progressive</p>
+  </div>
+
+  <!-- Indicateur de progression -->
+  <div class="progress-indicator">
+    <div class="steps">
+      <div
+        *ngFor="let step of [1, 2, 3, 4]"
+        [class.active]="currentStep === step"
+        [class.completed]="isStepCompleted(step)"
+        class="step"
+      >
+        <div class="step-number">
+          <span *ngIf="!isStepCompleted(step) && currentStep !== step">{{ step }}</span>
+          <span *ngIf="isStepCompleted(step) && currentStep !== step">✓</span>
+          <span *ngIf="currentStep === step">{{ step }}</span>
+        </div>
+        <div class="step-label">{{ getStepLabel(step) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu des étapes -->
+  <div class="steps-content">
+    <!-- Étape 1: Panier -->
+    <div *ngIf="currentStep === 1" class="step-content">
+      <h2>Panier (Étape 1 de 4)</h2>
+      <form [formGroup]="cartForm">
+        <div class="cart-items">
+          <h3>Articles</h3>
+          <table class="cart-table">
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of cartItems">
+                <td>{{ item.name }}</td>
+                <td>{{ item.price | currency: 'EUR' }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price * item.quantity | currency: 'EUR' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="shipping-method">
+          <h3>Méthode d'Expédition</h3>
+          <div class="options">
+            <div *ngFor="let method of shippingMethods" class="option">
+              <input
+                type="radio"
+                [id]="'shipping-' + method.id"
+                [value]="method.id"
+                formControlName="shippingMethod"
+              />
+              <label [for]="'shipping-' + method.id">
+                <span class="method-name">{{ method.name }}</span>
+                <span class="method-price">{{ method.price | currency: 'EUR' }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-summary">
+          <div class="summary-row">
+            <span>Sous-total:</span>
+            <span>{{ getTotals().subtotal | currency: 'EUR' }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Frais d'expédition:</span>
+            <span>{{ getTotals().shipping | currency: 'EUR' }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Taxes (20%):</span>
+            <span>{{ getTotals().tax | currency: 'EUR' }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span>{{ getTotals().total | currency: 'EUR' }}</span>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Étape 2: Expédition -->
+    <div *ngIf="currentStep === 2" class="step-content">
+      <h2>Adresse d'Expédition (Étape 2 de 4)</h2>
+      <form [formGroup]="shippingForm" class="shipping-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Prénom</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              [class.error]="shippingForm.get('firstName')?.invalid && shippingForm.get('firstName')?.touched"
+            />
+            <span *ngIf="shippingForm.get('firstName')?.invalid && shippingForm.get('firstName')?.touched" class="error-message">
+              {{ getErrorMessage('firstName') }}
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Nom</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              [class.error]="shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched"
+            />
+            <span *ngIf="shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched" class="error-message">
+              {{ getErrorMessage('lastName') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              [class.error]="shippingForm.get('email')?.invalid && shippingForm.get('email')?.touched"
+            />
+            <span *ngIf="shippingForm.get('email')?.invalid && shippingForm.get('email')?.touched" class="error-message">
+              {{ getErrorMessage('email') }}
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Téléphone</label>
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              [class.error]="shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched"
+            />
+            <span *ngIf="shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched" class="error-message">
+              {{ getErrorMessage('phone') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Adresse</label>
+          <input
+            id="address"
+            type="text"
+            formControlName="address"
+            [class.error]="shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched"
+          />
+          <span *ngIf="shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched" class="error-message">
+            {{ getErrorMessage('address') }}
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">Ville</label>
+            <input
+              id="city"
+              type="text"
+              formControlName="city"
+              [class.error]="shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched"
+            />
+            <span *ngIf="shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched" class="error-message">
+              {{ getErrorMessage('city') }}
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="postalCode">Code Postal</label>
+            <input
+              id="postalCode"
+              type="text"
+              formControlName="postalCode"
+              [class.error]="shippingForm.get('postalCode')?.invalid && shippingForm.get('postalCode')?.touched"
+            />
+            <span *ngIf="shippingForm.get('postalCode')?.invalid && shippingForm.get('postalCode')?.touched" class="error-message">
+              {{ getErrorMessage('postalCode') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="country">Pays</label>
+          <select id="country" formControlName="country">
+            <option value="FR">France</option>
+            <option value="BE">Belgique</option>
+            <option value="CH">Suisse</option>
+            <option value="DE">Allemagne</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <!-- Étape 3: Paiement -->
+    <div *ngIf="currentStep === 3" class="step-content">
+      <h2>Paiement (Étape 3 de 4)</h2>
+      <form [formGroup]="paymentForm" class="payment-form">
+        <div class="payment-methods">
+          <h3>Méthode de Paiement</h3>
+          <div class="options">
+            <div *ngFor="let method of paymentMethods" class="option">
+              <input
+                type="radio"
+                [id]="'payment-' + method.id"
+                [value]="method.id"
+                formControlName="paymentMethod"
+              />
+              <label [for]="'payment-' + method.id">{{ method.name }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="paymentForm.get('paymentMethod')?.value === 'card'" class="card-details">
+          <h3>Détails de la Carte</h3>
+
+          <div class="form-group">
+            <label for="cardName">Titulaire de la Carte</label>
+            <input
+              id="cardName"
+              type="text"
+              formControlName="cardName"
+              [class.error]="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched"
+            />
+            <span *ngIf="paymentForm.get('cardName')?.invalid && paymentForm.get('cardName')?.touched" class="error-message">
+              {{ getErrorMessage('cardName') }}
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="cardNumber">Numéro de Carte (16 chiffres)</label>
+            <input
+              id="cardNumber"
+              type="text"
+              formControlName="cardNumber"
+              placeholder="0000 0000 0000 0000"
+              [class.error]="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched"
+            />
+            <span *ngIf="paymentForm.get('cardNumber')?.invalid && paymentForm.get('cardNumber')?.touched" class="error-message">
+              {{ getErrorMessage('cardNumber') }}
+            </span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryDate">Date d'Expiration (MM/YY)</label>
+              <input
+                id="expiryDate"
+                type="text"
+                formControlName="expiryDate"
+                placeholder="MM/YY"
+                [class.error]="paymentForm.get('expiryDate')?.invalid && paymentForm.get('expiryDate')?.touched"
+              />
+              <span *ngIf="paymentForm.get('expiryDate')?.invalid && paymentForm.get('expiryDate')?.touched" class="error-message">
+                {{ getErrorMessage('expiryDate') }}
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="cvv">CVV (3-4 chiffres)</label>
+              <input
+                id="cvv"
+                type="text"
+                formControlName="cvv"
+                placeholder="000"
+                [class.error]="paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched"
+              />
+              <span *ngIf="paymentForm.get('cvv')?.invalid && paymentForm.get('cvv')?.touched" class="error-message">
+                {{ getErrorMessage('cvv') }}
+              </span>
+            </div>
+          </div>
+
+          <div class="billing-address">
+            <h4>Adresse de Facturation</h4>
+            <div class="checkbox-group">
+              <input id="sameAddress" type="checkbox" formControlName="billingAddress" />
+              <label for="sameAddress">Même que l'adresse d'expédition</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="paymentForm.get('paymentMethod')?.value === 'paypal'" class="payment-info">
+          <p>Vous serez redirigé vers PayPal pour compléter le paiement.</p>
+        </div>
+
+        <div *ngIf="paymentForm.get('paymentMethod')?.value === 'bank'" class="payment-info">
+          <p>Les informations de virement bancaire seront fournies après confirmation.</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Étape 4: Confirmation -->
+    <div *ngIf="currentStep === 4" class="step-content">
+      <h2>Confirmation de Commande (Étape 4 de 4)</h2>
+
+      <div *ngIf="!orderData" class="confirmation-section">
+        <div class="summary-box">
+          <h3>Résumé de Votre Commande</h3>
+
+          <div class="summary-section">
+            <h4>Articles</h4>
+            <ul>
+              <li *ngFor="let item of cartItems">
+                {{ item.name }} - {{ item.quantity }}x {{ item.price | currency: 'EUR' }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="summary-section">
+            <h4>Expédition vers</h4>
+            <p>
+              {{ shippingForm.get('firstName')?.value }} {{ shippingForm.get('lastName')?.value }}<br />
+              {{ shippingForm.get('address')?.value }}<br />
+              {{ shippingForm.get('postalCode')?.value }} {{ shippingForm.get('city')?.value }}<br />
+              {{ shippingForm.get('country')?.value }}
+            </p>
+          </div>
+
+          <div class="summary-section">
+            <h4>Totaux</h4>
+            <div class="summary-row">
+              <span>Sous-total:</span>
+              <span>{{ getTotals().subtotal | currency: 'EUR' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Frais d'expédition:</span>
+              <span>{{ getTotals().shipping | currency: 'EUR' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Taxes:</span>
+              <span>{{ getTotals().tax | currency: 'EUR' }}</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total à Payer:</span>
+              <span>{{ getTotals().total | currency: 'EUR' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="confirmationForm" class="confirmation-form">
+          <div class="checkbox-group">
+            <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" />
+            <label for="acceptTerms">
+              J'accepte les <a href="#">conditions générales de vente</a>
+            </label>
+            <span *ngIf="confirmationForm.get('acceptTerms')?.invalid && confirmationForm.get('acceptTerms')?.touched" class="error-message">
+              {{ getErrorMessage('acceptTerms') }}
+            </span>
+          </div>
+
+          <div class="checkbox-group">
+            <input id="acceptPrivacy" type="checkbox" formControlName="acceptPrivacy" />
+            <label for="acceptPrivacy">
+              J'accepte la <a href="#">politique de confidentialité</a>
+            </label>
+            <span *ngIf="confirmationForm.get('acceptPrivacy')?.invalid && confirmationForm.get('acceptPrivacy')?.touched" class="error-message">
+              {{ getErrorMessage('acceptPrivacy') }}
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="orderData" class="order-confirmation">
+        <div class="success-message">
+          <h3>✓ Commande Confirmée!</h3>
+          <p>Numéro de commande: <strong>{{ orderData.orderNumber }}</strong></p>
+          <p>Date: <strong>{{ orderData.date }}</strong></p>
+        </div>
+        <div class="order-details">
+          <p>Un email de confirmation a été envoyé à {{ orderData.shipping.email }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boutons de Navigation -->
+  <div class="button-group">
+    <button *ngIf="currentStep > 1" (click)="previousStep()" class="btn btn-secondary">
+      ← Retour
+    </button>
+    <button
+      *ngIf="currentStep < totalSteps"
+      (click)="nextStep()"
+      class="btn btn-primary"
+      [disabled]="!getCurrentForm()?.valid"
+    >
+      Suivant →
+    </button>
+    <button *ngIf="currentStep === totalSteps && !orderData" (click)="placeOrder()" class="btn btn-success" [disabled]="!confirmationForm.valid">
+      Valider la Commande
+    </button>
+    <button *ngIf="orderData" (click)="currentStep = 1; orderData = null" class="btn btn-primary">
+      Nouvelle Commande
+    </button>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="app-container" [class.documentation-mode]="isDocumentationActive">
+  <header class="app-header" [class.hidden]="isDocumentationActive">
+    <div class="header-content">
+      <div class="logo-section">
+        <h1>Tutoriel Formulaires Angular</h1>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/documentation" class="doc-button">
+          Documentation
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <aside class="sidebar" [class.hidden]="isDocumentationActive">
+      <nav class="sidebar-nav">
+        <h3>Exemples</h3>
+        <ul class="nav-list">
+          <li>
+            <a routerLink="/examples/form-basics" routerLinkActive="active" class="nav-link">
+              <span class="text">Bases de FormControl</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/reactive-forms" routerLinkActive="active" class="nav-link">
+              <span class="text">Formulaires Réactifs</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/template-forms" routerLinkActive="active" class="nav-link">
+              <span class="text">Formulaires Pilotés par modèle</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/registration-form" routerLinkActive="active" class="nav-link">
+              <span class="text">Formulaire d'Enregistrement</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/dynamic-todo-list" routerLinkActive="active" class="nav-link">
+              <span class="text">Liste To-Do Dynamique</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/survey-form" routerLinkActive="active" class="nav-link">
+              <span class="text">Formulaire Sondage</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/examples/checkout-form" routerLinkActive="active" class="nav-link">
+              <span class="text">Paiement Multi-Étapes</span>
+            </a>
+          </li>
+        </ul>
+        
+        <h3 style="margin-top: 2rem;">Référence</h3>
+        <ul class="nav-list">
+          <li>
+            <a routerLink="/documentation" routerLinkActive="active" class="nav-link doc-link">
+              <span class="text">Ouvrir la Documentation</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="app-main" [class.fullwidth]="isDocumentationActive">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <footer class="app-footer" [class.hidden]="isDocumentationActive">
+    <div class="footer-content">
+      <p>&copy; 2024 Tutoriel Formulaires Angular </p>
+    </div>
+  </footer>
+</div>

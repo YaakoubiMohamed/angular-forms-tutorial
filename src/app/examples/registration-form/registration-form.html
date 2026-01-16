@@ -1,0 +1,209 @@
+<div class="container">
+  <h2>📝 Formulaire d'Inscription avec Validation</h2>
+
+  <p class="description">
+    Cet exemple démontre la validation complète: validateurs intégrés, personnalisés, cross-field,
+    et asynchrones. Force du mot de passe, vérification d'email unique, et âge requis.
+  </p>
+
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="form">
+    <!-- Username -->
+    <div class="form-group">
+      <label for="username">Nom d'Utilisateur:</label>
+      <input
+        id="username"
+        type="text"
+        formControlName="username"
+        placeholder="3-20 caractères"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched"
+      />
+      @if (registrationForm.get('username')?.touched && registrationForm.get('username')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('username') }}
+        </div>
+      }
+    </div>
+
+    <!-- Email avec validation asynchrone -->
+    <div class="form-group">
+      <label for="email">Email (unique):</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="votre@email.com"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+      />
+      @if (registrationForm.get('email')?.pending) {
+        <small class="pending-message">🔄 Vérification en cours...</small>
+      }
+      @if (registrationForm.get('email')?.touched && registrationForm.get('email')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('email') }}
+        </div>
+      }
+    </div>
+
+    <!-- Password avec indicateur de force -->
+    <div class="form-group">
+      <label for="password">Mot de Passe:</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Minimum 8 caractères"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+      />
+      @if (passwordStrength > 0) {
+        <div class="password-strength">
+          <div class="strength-bar">
+            <div
+              class="strength-fill"
+              [style.width.%]="passwordStrength * 20"
+              [style.background-color]="getPasswordStrengthColor()"
+            ></div>
+          </div>
+          <small [style.color]="getPasswordStrengthColor()">
+            Force: {{ getPasswordStrengthText() }}
+          </small>
+        </div>
+      }
+      @if (registrationForm.get('password')?.touched && registrationForm.get('password')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('password') }}
+        </div>
+      }
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirmer le Mot de Passe:</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="Confirmez votre mot de passe"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+      />
+      @if (registrationForm.get('confirmPassword')?.touched && registrationForm.get('confirmPassword')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('confirmPassword') }}
+        </div>
+      }
+      @if (registrationForm.get('confirmPassword')?.touched && registrationForm.hasError('passwordMismatch')) {
+        <div class="error-message group-error">
+          ⚠️ Les mots de passe ne correspondent pas
+        </div>
+      }
+    </div>
+
+    <!-- Birth Date -->
+    <div class="form-group">
+      <label for="birthDate">Date de Naissance:</label>
+      <input
+        id="birthDate"
+        type="date"
+        formControlName="birthDate"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('birthDate')?.invalid && registrationForm.get('birthDate')?.touched"
+      />
+      @if (registrationForm.get('birthDate')?.touched && registrationForm.get('birthDate')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('birthDate') }}
+        </div>
+      }
+    </div>
+
+    <!-- Gender -->
+    <div class="form-group">
+      <label for="gender">Genre:</label>
+      <select
+        id="gender"
+        formControlName="gender"
+        class="form-control"
+        [class.is-invalid]="registrationForm.get('gender')?.invalid && registrationForm.get('gender')?.touched"
+      >
+        <option value="">Sélectionnez un genre</option>
+        <option value="male">Homme</option>
+        <option value="female">Femme</option>
+        <option value="other">Autre</option>
+        <option value="prefer-not-to-say">Préfère ne pas dire</option>
+      </select>
+      @if (registrationForm.get('gender')?.touched && registrationForm.get('gender')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('gender') }}
+        </div>
+      }
+    </div>
+
+    <!-- Checkboxes -->
+    <div class="form-group checkbox">
+      <input
+        id="acceptTerms"
+        type="checkbox"
+        formControlName="acceptTerms"
+      />
+      <label for="acceptTerms">J'accepte les conditions d'utilisation</label>
+      @if (registrationForm.get('acceptTerms')?.touched && registrationForm.get('acceptTerms')?.invalid) {
+        <div class="error-message">
+          {{ getErrorMessage('acceptTerms') }}
+        </div>
+      }
+    </div>
+
+    <div class="form-group checkbox">
+      <input
+        id="newsletter"
+        type="checkbox"
+        formControlName="newsletter"
+      />
+      <label for="newsletter">Je souhaite recevoir la newsletter</label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-group">
+      <button
+        type="submit"
+        [disabled]="registrationForm.invalid"
+        class="btn btn-primary"
+      >
+        S'Inscrire
+      </button>
+      <button
+        type="button"
+        (click)="resetForm()"
+        class="btn btn-secondary"
+      >
+        Réinitialiser
+      </button>
+    </div>
+  </form>
+
+  <!-- Submitted Data -->
+  @if (submittedData) {
+    <div class="submitted-data">
+      <h3>✅ Inscription Réussie!</h3>
+      <pre>{{ submittedData | json }}</pre>
+    </div>
+  }
+
+  <!-- Concepts -->
+  <div class="concepts">
+    <h3>🎓 Validateurs Utilisés:</h3>
+    <ul>
+      <li>✓ required - Champ requis</li>
+      <li>✓ minlength - Longueur minimale</li>
+      <li>✓ maxlength - Longueur maximale</li>
+      <li>✓ email - Format email</li>
+      <li>✓ emailTaken (async) - Email unique (serveur)</li>
+      <li>✓ minAge (custom) - Âge minimum 18 ans</li>
+      <li>✓ passwordMismatch (cross-field) - Correspondance mots de passe</li>
+      <li>✓ requiredTrue - Acceptation obligatoire</li>
+      <li>✓ passwordStrength - Indicateur de force (UI)</li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,660 @@
+<div class="chapter-content">
+  <h1>Angular Forms Modules</h1>
+
+  <div align="center">
+    <p><strong>Angular Forms - Module Configuration</strong></p>
+    <p>
+      <a routerLink="/documentation/reactive-programming">← Reactive Programming</a> | 
+      <a routerLink="/documentation/index">Index</a> | 
+      <a routerLink="/documentation/patterns">Next: Patterns →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-of-contents">Table of Contents</h2>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#formsmodule">FormsModule</a></li>
+    <li><a href="#reactiveformsmodule">ReactiveFormsModule</a></li>
+    <li><a href="#module-configuration">Module Configuration</a></li>
+    <li><a href="#standalone-components">Standalone Components</a></li>
+    <li><a href="#feature-module-patterns">Feature Module Patterns</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="overview">Overview</h2>
+
+  <p>Angular provides two separate modules for forms functionality. Understanding their differences and proper usage is essential for building Angular applications.</p>
+
+  <pre><code class="language-text">┌─────────────────────────────────────────────────────────────────┐
+│                    @angular/forms PACKAGE                        │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+            ┌─────────────────┼─────────────────┐
+            │                                   │
+            ▼                                   ▼
+   ┌─────────────────┐                ┌─────────────────────┐
+   │   FormsModule   │                │ ReactiveFormsModule │
+   └────────┬────────┘                └──────────┬──────────┘
+            │                                    │
+            │  Template-Driven                   │  Reactive Forms
+            │  Approach                          │  Approach
+            │                                    │
+   ┌────────┴────────┐                ┌──────────┴──────────┐
+   │  Directives:    │                │   Directives:       │
+   │  • ngModel      │                │   • formControl     │
+   │  • ngForm       │                │   • formControlName │
+   │  • ngModelGroup │                │   • formGroup       │
+   │                 │                │   • formGroupName   │
+   │                 │                │   • formArrayName   │
+   └─────────────────┘                └─────────────────────┘</code></pre>
+
+  <h3>Module Comparison</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Aspect</th>
+        <th>FormsModule</th>
+        <th>ReactiveFormsModule</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Approach</strong></td>
+        <td>Template-driven</td>
+        <td>Model-driven</td>
+      </tr>
+      <tr>
+        <td><strong>Form Model</strong></td>
+        <td>Created by directives</td>
+        <td>Created in component class</td>
+      </tr>
+      <tr>
+        <td><strong>Data Binding</strong></td>
+        <td>Two-way with <code>ngModel</code></td>
+        <td>Reactive streams</td>
+      </tr>
+      <tr>
+        <td><strong>Validation</strong></td>
+        <td>Template attributes</td>
+        <td>Functions in code</td>
+      </tr>
+      <tr>
+        <td><strong>Testing</strong></td>
+        <td>Requires DOM</td>
+        <td>No DOM needed</td>
+      </tr>
+      <tr>
+        <td><strong>Dynamic Forms</strong></td>
+        <td>Difficult</td>
+        <td>Easy</td>
+      </tr>
+      <tr>
+        <td><strong>Use Case</strong></td>
+        <td>Simple forms</td>
+        <td>Complex forms</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2 id="formsmodule">FormsModule</h2>
+
+  <p>The <code>FormsModule</code> provides directives for template-driven forms.</p>
+
+  <h3>Import</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} FormsModule {{ '}' }} from '@angular/forms';</code></pre>
+
+  <h3>Exported Directives</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Directive</th>
+        <th>Selector</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>NgModel</code></td>
+        <td><code>[ngModel]</code></td>
+        <td>Two-way data binding</td>
+      </tr>
+      <tr>
+        <td><code>NgForm</code></td>
+        <td><code>form</code>, <code>[ngForm]</code></td>
+        <td>Creates top-level FormGroup</td>
+      </tr>
+      <tr>
+        <td><code>NgModelGroup</code></td>
+        <td><code>[ngModelGroup]</code></td>
+        <td>Creates nested FormGroup</td>
+      </tr>
+      <tr>
+        <td><code>DefaultValueAccessor</code></td>
+        <td><code>input</code>, <code>textarea</code></td>
+        <td>Value accessor for text inputs</td>
+      </tr>
+      <tr>
+        <td><code>CheckboxControlValueAccessor</code></td>
+        <td><code>input[type=checkbox]</code></td>
+        <td>Value accessor for checkboxes</td>
+      </tr>
+      <tr>
+        <td><code>RadioControlValueAccessor</code></td>
+        <td><code>input[type=radio]</code></td>
+        <td>Value accessor for radios</td>
+      </tr>
+      <tr>
+        <td><code>NumberValueAccessor</code></td>
+        <td><code>input[type=number]</code></td>
+        <td>Value accessor for numbers</td>
+      </tr>
+      <tr>
+        <td><code>RangeValueAccessor</code></td>
+        <td><code>input[type=range]</code></td>
+        <td>Value accessor for range</td>
+      </tr>
+      <tr>
+        <td><code>SelectControlValueAccessor</code></td>
+        <td><code>select</code></td>
+        <td>Value accessor for select</td>
+      </tr>
+      <tr>
+        <td><code>SelectMultipleControlValueAccessor</code></td>
+        <td><code>select[multiple]</code></td>
+        <td>Value accessor for multi-select</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Basic Setup (NgModule)</h3>
+
+  <pre><code class="language-typescript">// app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+
+import { AppComponent } from './app.component';
+import { ContactFormComponent } from './contact-form.component';
+
+@NgModule({{ '{' }}
+  declarations: [
+    AppComponent,
+    ContactFormComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule  // Import FormsModule
+  ],
+  bootstrap: [AppComponent]
+{{ '}' }})
+export class AppModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <h3>Usage Example</h3>
+
+  <pre><code class="language-typescript">// contact-form.component.ts
+@Component({{ '{' }}
+  selector: 'app-contact-form',
+  template: `
+    &lt;form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)"&gt;
+      &lt;input name="name" [(ngModel)]="model.name" required&gt;
+      &lt;input name="email" [(ngModel)]="model.email" required email&gt;
+      &lt;textarea name="message" [(ngModel)]="model.message"&gt;&lt;/textarea&gt;
+      &lt;button type="submit" [disabled]="contactForm.invalid"&gt;Send&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class ContactFormComponent {{ '{' }}
+  model = {{ '{' }}
+    name: '',
+    email: '',
+    message: ''
+  {{ '}' }};
+  
+  onSubmit(form: NgForm) {{ '{' }}
+    if (form.valid) {{ '{' }}
+      console.log('Form Data:', this.model);
+    {{ '}' }}
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="reactiveformsmodule">ReactiveFormsModule</h2>
+
+  <p>The <code>ReactiveFormsModule</code> provides classes and directives for reactive forms.</p>
+
+  <h3>Import</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} ReactiveFormsModule {{ '}' }} from '@angular/forms';</code></pre>
+
+  <h3>Exported Classes</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Class</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>FormControl</code></td>
+        <td>Tracks value and validation of individual control</td>
+      </tr>
+      <tr>
+        <td><code>FormGroup</code></td>
+        <td>Tracks value and validation of group of controls</td>
+      </tr>
+      <tr>
+        <td><code>FormArray</code></td>
+        <td>Tracks value and validation of array of controls</td>
+      </tr>
+      <tr>
+        <td><code>FormBuilder</code></td>
+        <td>Helper service for creating form instances</td>
+      </tr>
+      <tr>
+        <td><code>Validators</code></td>
+        <td>Built-in validator functions</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Exported Directives</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Directive</th>
+        <th>Selector</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>FormControlDirective</code></td>
+        <td><code>[formControl]</code></td>
+        <td>Binds standalone FormControl</td>
+      </tr>
+      <tr>
+        <td><code>FormControlName</code></td>
+        <td><code>[formControlName]</code></td>
+        <td>Binds FormControl by name in group</td>
+      </tr>
+      <tr>
+        <td><code>FormGroupDirective</code></td>
+        <td><code>[formGroup]</code></td>
+        <td>Binds FormGroup to element</td>
+      </tr>
+      <tr>
+        <td><code>FormGroupName</code></td>
+        <td><code>[formGroupName]</code></td>
+        <td>Binds nested FormGroup by name</td>
+      </tr>
+      <tr>
+        <td><code>FormArrayName</code></td>
+        <td><code>[formArrayName]</code></td>
+        <td>Binds FormArray by name</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Basic Setup (NgModule)</h3>
+
+  <pre><code class="language-typescript">// app.module.ts
+import {{ '{' }} NgModule {{ '}' }} from '@angular/core';
+import {{ '{' }} BrowserModule {{ '}' }} from '@angular/platform-browser';
+import {{ '{' }} ReactiveFormsModule {{ '}' }} from '@angular/forms';
+
+import {{ '{' }} AppComponent {{ '}' }} from './app.component';
+import {{ '{' }} RegistrationFormComponent {{ '}' }} from './registration-form.component';
+
+@NgModule({{ '{' }}
+  declarations: [
+    AppComponent,
+    RegistrationFormComponent
+  ],
+  imports: [
+    BrowserModule,
+    ReactiveFormsModule  // Import ReactiveFormsModule
+  ],
+  bootstrap: [AppComponent]
+{{ '}' }})
+export class AppModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <h3>Usage Example</h3>
+
+  <pre><code class="language-typescript">// registration-form.component.ts
+import {{ '{' }} Component {{ '}' }} from '@angular/core';
+import {{ '{' }} FormBuilder, FormGroup, Validators {{ '}' }} from '@angular/forms';
+
+@Component({{ '{' }}
+  selector: 'app-registration-form',
+  template: `
+    &lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+      &lt;input formControlName="username"&gt;
+      &lt;input formControlName="email" type="email"&gt;
+      &lt;input formControlName="password" type="password"&gt;
+      &lt;button type="submit" [disabled]="form.invalid"&gt;Register&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class RegistrationFormComponent {{ '{' }}
+  form: FormGroup;
+  
+  constructor(private fb: FormBuilder) {{ '{' }}
+    this.form = this.fb.group({{ '{' }}
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    {{ '}' }});
+  {{ '}' }}
+  
+  onSubmit() {{ '{' }}
+    if (this.form.valid) {{ '{' }}
+      console.log('Form Data:', this.form.value);
+    {{ '}' }}
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="module-configuration">Module Configuration</h2>
+
+  <h3>Using Both Modules</h3>
+
+  <p>You can use both modules in the same application for different forms:</p>
+
+  <pre><code class="language-typescript">@NgModule({{ '{' }}
+  imports: [
+    FormsModule,         // For template-driven forms
+    ReactiveFormsModule  // For reactive forms
+  ]
+{{ '}' }})
+export class AppModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <h3>Feature Module Import</h3>
+
+  <p>Each feature module that uses forms needs to import the appropriate module:</p>
+
+  <pre><code class="language-typescript">// user.module.ts
+@NgModule({{ '{' }}
+  imports: [
+    CommonModule,
+    ReactiveFormsModule  // Required in feature modules too
+  ],
+  declarations: [
+    UserProfileComponent,
+    UserSettingsComponent
+  ]
+{{ '}' }})
+export class UserModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <h3>Shared Module Pattern</h3>
+
+  <p>For large applications, create a shared forms module:</p>
+
+  <pre><code class="language-typescript">// shared/forms-shared.module.ts
+import {{ '{' }} NgModule {{ '}' }} from '@angular/core';
+import {{ '{' }} FormsModule, ReactiveFormsModule {{ '}' }} from '@angular/forms';
+
+// Custom form components
+import {{ '{' }} ValidationMessageComponent {{ '}' }} from './validation-message.component';
+import {{ '{' }} FormFieldComponent {{ '}' }} from './form-field.component';
+
+@NgModule({{ '{' }}
+  imports: [
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  declarations: [
+    ValidationMessageComponent,
+    FormFieldComponent
+  ],
+  exports: [
+    // Re-export Angular modules
+    FormsModule,
+    ReactiveFormsModule,
+    // Export custom components
+    ValidationMessageComponent,
+    FormFieldComponent
+  ]
+{{ '}' }})
+export class FormsSharedModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <pre><code class="language-typescript">// feature.module.ts
+@NgModule({{ '{' }}
+  imports: [
+    CommonModule,
+    FormsSharedModule  // Gets both modules + custom components
+  ]
+{{ '}' }})
+export class FeatureModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="standalone-components">Standalone Components</h2>
+
+  <p>Angular 14+ supports standalone components that don't require NgModules.</p>
+
+  <h3>Standalone with ReactiveFormsModule</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} Component {{ '}' }} from '@angular/core';
+import {{ '{' }} ReactiveFormsModule, FormBuilder, Validators {{ '}' }} from '@angular/forms';
+import {{ '{' }} CommonModule {{ '}' }} from '@angular/common';
+
+@Component({{ '{' }}
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule  // Import directly in component
+  ],
+  template: `
+    &lt;form [formGroup]="form" (ngSubmit)="login()"&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      &lt;input formControlName="password" type="password" placeholder="Password"&gt;
+      &lt;button type="submit"&gt;Login&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class LoginComponent {{ '{' }}
+  form = this.fb.group({{ '{' }}
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  {{ '}' }});
+  
+  constructor(private fb: FormBuilder) {{ '{' }}}
+  
+  login() {{ '{' }}
+    if (this.form.valid) {{ '{' }}
+      console.log(this.form.value);
+    {{ '}' }}
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <h3>Standalone with FormsModule</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} Component {{ '}' }} from '@angular/core';
+import {{ '{' }} FormsModule {{ '}' }} from '@angular/forms';
+import {{ '{' }} CommonModule {{ '}' }} from '@angular/common';
+
+@Component({{ '{' }}
+  selector: 'app-search',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule  // Import directly in component
+  ],
+  template: `
+    &lt;input [(ngModel)]="searchTerm" placeholder="Search..."&gt;
+    &lt;button (click)="search()"&gt;Search&lt;/button&gt;
+  `
+{{ '}' }})
+export class SearchComponent {{ '{' }}
+  searchTerm = '';
+  
+  search() {{ '{' }}
+    console.log('Searching for:', this.searchTerm);
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <h3>Modern Angular (v19+) with inject()</h3>
+
+  <pre><code class="language-typescript">import {{ '{' }} Component, inject {{ '}' }} from '@angular/core';
+import {{ '{' }} ReactiveFormsModule, FormBuilder, Validators {{ '}' }} from '@angular/forms';
+
+@Component({{ '{' }}
+  selector: 'app-modern-form',
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  template: `
+    &lt;form [formGroup]="form" (ngSubmit)="submit()"&gt;
+      &lt;input formControlName="name"&gt;
+      &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;/form&gt;
+  `
+{{ '}' }})
+export class ModernFormComponent {{ '{' }}
+  private fb = inject(FormBuilder);  // inject() instead of constructor
+  
+  form = this.fb.group({{ '{' }}
+    name: ['', Validators.required]
+  {{ '}' }});
+  
+  submit() {{ '{' }}
+    console.log(this.form.value);
+  {{ '}' }}
+{{ '}' }}</code></pre>
+
+  <hr>
+
+  <h2 id="feature-module-patterns">Feature Module Patterns</h2>
+
+  <h3>Lazy-Loaded Forms Module</h3>
+
+  <pre><code class="language-typescript">// forms-feature.module.ts
+@NgModule({{ '{' }}
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsFeatureRoutingModule
+  ],
+  declarations: [
+    CreateFormComponent,
+    EditFormComponent,
+    FormListComponent
+  ]
+{{ '}' }})
+export class FormsFeatureModule {{ '{' }} {{ '}' }}
+
+// app-routing.module.ts
+const routes: Routes = [
+  {{ '{' }}
+    path: 'forms',
+    loadChildren: () => import('./forms-feature/forms-feature.module')
+      .then(m => m.FormsFeatureModule)
+  {{ '}' }}
+];</code></pre>
+
+  <h3>Forms Service Module</h3>
+
+  <p>Provide form-related services at module level:</p>
+
+  <pre><code class="language-typescript">// forms-core.module.ts
+import {{ '{' }} NgModule, ModuleWithProviders {{ '}' }} from '@angular/core';
+import {{ '{' }} ReactiveFormsModule {{ '}' }} from '@angular/forms';
+
+import {{ '{' }} FormValidationService {{ '}' }} from './form-validation.service';
+import {{ '{' }} FormPersistenceService {{ '}' }} from './form-persistence.service';
+
+@NgModule({{ '{' }}
+  imports: [ReactiveFormsModule],
+  exports: [ReactiveFormsModule]
+{{ '}' }})
+export class FormsCoreModule {{ '{' }}
+  static forRoot(): ModuleWithProviders&lt;FormsCoreModule&gt; {{ '{' }}
+    return {{ '{' }}
+      ngModule: FormsCoreModule,
+      providers: [
+        FormValidationService,
+        FormPersistenceService
+      ]
+    {{ '}' }};
+  {{ '}' }}
+{{ '}' }}
+
+// app.module.ts
+@NgModule({{ '{' }}
+  imports: [
+    FormsCoreModule.forRoot()  // Provides services at root
+  ]
+{{ '}' }})
+export class AppModule {{ '{' }} {{ '}' }}</code></pre>
+
+  <h3>Testing Configuration</h3>
+
+  <pre><code class="language-typescript">// form.component.spec.ts
+import {{ '{' }} ComponentFixture, TestBed {{ '}' }} from '@angular/core/testing';
+import {{ '{' }} ReactiveFormsModule {{ '}' }} from '@angular/forms';
+import {{ '{' }} FormComponent {{ '}' }} from './form.component';
+
+describe('FormComponent', () => {{ '{' }}
+  let component: FormComponent;
+  let fixture: ComponentFixture&lt;FormComponent&gt;;
+  
+  beforeEach(async () => {{ '{' }}
+    await TestBed.configureTestingModule({{ '{' }}
+      imports: [ReactiveFormsModule],  // Import for testing
+      declarations: [FormComponent]
+    {{ '}' }}).compileComponents();
+    
+    fixture = TestBed.createComponent(FormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  {{ '}' }});
+  
+  it('should create', () => {{ '{' }}
+    expect(component).toBeTruthy();
+  {{ '}' }});
+  
+  it('should validate required fields', () => {{ '{' }}
+    const emailControl = component.form.get('email');
+    emailControl?.setValue('');
+    expect(emailControl?.hasError('required')).toBeTrue();
+  {{ '}' }});
+{{ '}' }});</code></pre>
+
+  <hr>
+
+  <div align="center">
+    <p>
+      <a routerLink="/documentation/reactive-programming">← Reactive Programming</a> | 
+      <a routerLink="/documentation/index">Index</a> | 
+      <a routerLink="/documentation/patterns">Next: Patterns →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <p><em>Angular 20 Forms Tutorial - API Reference Documentation</em></p>
+
+  <div class="navigation-links">
+    <a routerLink="/documentation/reactive-programming" class="nav-link previous">
+      <span class="nav-arrow">←</span>
+      <span class="nav-label">Previous: Reactive Programming</span>
+    </a>
+    <a routerLink="/documentation/patterns" class="nav-link next">
+      <span class="nav-label">Next: Patterns</span>
+      <span class="nav-arrow">→</span>
+    </a>
+  </div>
+</div>

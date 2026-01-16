@@ -1,0 +1,109 @@
+<!-- Header du livre -->
+<header class="book-header">
+  <button class="menu-toggle" >
+    <svg class="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </button>
+  <div class="book-title">
+    <div>
+      <h1>{{ bookTitle }}</h1>
+    </div>
+  </div>
+  <div class="header-actions">
+    <a routerLink="/" class="back-to-app">← Retour à l'Application</a>
+  </div>
+</header>
+
+<!-- Barre de progression -->
+<div class="progress-bar">
+  <div class="progress-fill" [style.width.%]="progressPercent"></div>
+</div>
+
+<div class="book-container" [class.sidebar-closed]="!sidebarOpen">
+  <!-- Sidebar - Table des Matières -->
+  <aside class="book-sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <h2>Chapitres</h2>
+    </div>
+    
+    <nav class="chapter-list">
+      @for (chapter of chapters; track chapter.id; let i = $index) {
+        <button 
+          class="chapter-item"
+          [class.active]="chapter.id === currentChapter.id"
+          [class.completed]="i < currentChapterIndex"
+          (click)="navigateToChapter(chapter)"
+        >
+          <span class="chapter-number">{{ i === 0 ? '' : 'Chapitre ' + i }}</span>
+          <span class="chapter-title">{{ chapter.title }}</span>
+          @if (i < currentChapterIndex) {
+            <span class="check-mark">✓</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <p class="reading-progress">
+        Progression: {{ currentChapterIndex + 1 }} / {{ chapters.length }}
+      </p>
+    </div>
+  </aside>
+
+  <!-- Contenu principal du livre -->
+  <main class="book-content">
+    <article class="chapter">
+      <!-- En-tête du chapitre -->
+      <div class="chapter-header">
+        <h1 class="chapter-main-title">{{ currentChapter.title }}</h1>
+      </div>
+
+      <!-- Contenu du chapitre -->
+      <div class="chapter-content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Navigation entre chapitres -->
+      <nav class="chapter-navigation">
+        <button 
+          class="nav-button prev"
+          [disabled]="!hasPrevious"
+          (click)="previousChapter()"
+        >
+          <span class="nav-arrow">←</span>
+          <span class="nav-text">
+            <small>Chapitre Précédent</small>
+            @if (hasPrevious) {
+              <strong>{{ chapters[currentChapterIndex - 1].title }}</strong>
+            }
+          </span>
+        </button>
+
+        <div class="page-indicator">
+          Page {{ currentChapterIndex + 1 }} sur {{ chapters.length }}
+        </div>
+
+        <button 
+          class="nav-button next"
+          [disabled]="!hasNext"
+          (click)="nextChapter()"
+        >
+          <span class="nav-text">
+            <small>Chapitre Suivant</small>
+            @if (hasNext) {
+              <strong>{{ chapters[currentChapterIndex + 1].title }}</strong>
+            }
+          </span>
+          <span class="nav-arrow">→</span>
+        </button>
+      </nav>
+    </article>
+
+    <!-- Footer du livre -->
+    <footer class="book-footer">
+      
+    </footer>
+  </main>
+</div>

@@ -1,0 +1,398 @@
+<div class="container">
+  <h2>Formulaires Pilotés par Modèle - Inscription</h2>
+
+  <p class="description">
+    Cet exemple démontre les Formulaires Pilotés par Modèle (approche template-centric).
+    La structure du formulaire est définie en HTML avec les directives ngForm et ngModel.
+    La validation est spécifiée comme attributs HTML.
+  </p>
+
+  <!-- Message d'erreur global -->
+  @if (submitError) {
+    <div class="alert alert-error">
+      {{ submitError }}
+    </div>
+  }
+
+  <!-- Formulaire Principal -->
+  <!-- #registrationForm="ngForm" crée une variable de référence de template -->
+  <form
+    #registrationForm="ngForm"
+    (ngSubmit)="onSubmit(registrationForm)"
+    class="form"
+  >
+    
+    <!-- Section: Informations Personnelles -->
+    <fieldset class="form-section">
+      <legend>👤 Informations Personnelles</legend>
+
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="firstName">Prénom:</label>
+        <input
+          id="firstName"
+          type="text"
+          name="firstName"
+          [(ngModel)]="formData.personalInfo.firstName"
+          required
+          minlength="2"
+          placeholder="Entrez votre prénom"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('firstName')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('firstName')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('firstName', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('firstName')?.hasError('minlength')) {
+          <div class="error-message">
+            {{ getErrorMessage('firstName', 'minlength') }}
+          </div>
+        }
+      </div>
+
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="lastName">Nom:</label>
+        <input
+          id="lastName"
+          type="text"
+          name="lastName"
+          [(ngModel)]="formData.personalInfo.lastName"
+          required
+          minlength="2"
+          placeholder="Entrez votre nom"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('lastName')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('lastName')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('lastName', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('lastName')?.hasError('minlength')) {
+          <div class="error-message">
+            {{ getErrorMessage('lastName', 'minlength') }}
+          </div>
+        }
+      </div>
+
+      <!-- Date de Naissance -->
+      <div class="form-group">
+        <label for="birthDate">Date de Naissance:</label>
+        <input
+          id="birthDate"
+          type="date"
+          name="birthDate"
+          [(ngModel)]="formData.personalInfo.birthDate"
+          required
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('birthDate')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('birthDate')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('birthDate', 'required') }}
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <!-- Section: Informations de Contact -->
+    <fieldset class="form-section">
+      <legend>📧 Informations de Contact</legend>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          [(ngModel)]="formData.contactInfo.email"
+          required
+          email
+          placeholder="Entrez votre email"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('email')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('email')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('email', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('email')?.hasError('email')) {
+          <div class="error-message">
+            {{ getErrorMessage('email', 'email') }}
+          </div>
+        }
+      </div>
+
+      <!-- Téléphone -->
+      <div class="form-group">
+        <label for="phone">Téléphone:</label>
+        <input
+          id="phone"
+          type="tel"
+          name="phone"
+          [(ngModel)]="formData.contactInfo.phone"
+          required
+          pattern="^\+?[0-9\s\-\(\)]+$"
+          placeholder="+33 6 12 34 56 78"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('phone')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('phone')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('phone', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('phone')?.hasError('pattern')) {
+          <div class="error-message">
+            {{ getErrorMessage('phone', 'pattern') }}
+          </div>
+        }
+      </div>
+
+      <!-- Site Web -->
+      <div class="form-group">
+        <label for="website">Site Web (optionnel):</label>
+        <input
+          id="website"
+          type="url"
+          name="website"
+          [(ngModel)]="formData.contactInfo.website"
+          pattern="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$"
+          placeholder="https://example.com"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('website')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('website')?.hasError('pattern')) {
+          <div class="error-message">
+            {{ getErrorMessage('website', 'pattern') }}
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <!-- Section: Mots de Passe -->
+    <fieldset class="form-section">
+      <legend>🔐 Mots de Passe</legend>
+
+      <!-- Mot de Passe -->
+      <div class="form-group">
+        <label for="password">Mot de Passe:</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="formData.passwords.password"
+          required
+          minlength="8"
+          placeholder="Minimum 8 caractères"
+          class="form-control"
+          [class.is-invalid]="submitted && registrationForm.form.get('password')?.invalid"
+        />
+        @if (submitted && registrationForm.form.get('password')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('password', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('password')?.hasError('minlength')) {
+          <div class="error-message">
+            {{ getErrorMessage('password', 'minlength') }}
+          </div>
+        }
+      </div>
+
+      <!-- Confirmer le Mot de Passe -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le Mot de Passe:</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          [(ngModel)]="formData.passwords.confirmPassword"
+          required
+          minlength="8"
+          placeholder="Confirmez votre mot de passe"
+          class="form-control"
+          [class.is-invalid]="submitted && (registrationForm.form.get('confirmPassword')?.invalid || !passwordsMatch())"
+        />
+        @if (submitted && registrationForm.form.get('confirmPassword')?.hasError('required')) {
+          <div class="error-message">
+            {{ getErrorMessage('confirmPassword', 'required') }}
+          </div>
+        }
+        @if (submitted && registrationForm.form.get('confirmPassword')?.hasError('minlength')) {
+          <div class="error-message">
+            {{ getErrorMessage('confirmPassword', 'minlength') }}
+          </div>
+        }
+        @if (submitted && !passwordsMatch()) {
+          <div class="error-message group-error">
+            ⚠️ Les mots de passe ne correspondent pas
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <!-- Acceptation des Conditions -->
+    <div class="form-group checkbox">
+      <input
+        id="acceptTerms"
+        type="checkbox"
+        name="acceptTerms"
+        [(ngModel)]="formData.acceptTerms"
+        required
+      />
+      <label for="acceptTerms">J'accepte les conditions d'utilisation</label>
+      @if (submitted && !formData.acceptTerms) {
+        <div class="error-message">
+          {{ getErrorMessage('acceptTerms', 'required') }}
+        </div>
+      }
+    </div>
+
+    <!-- Boutons d'Action -->
+    <div class="button-group">
+      <button
+        type="submit"
+        [disabled]="registrationForm.invalid && submitted"
+        class="btn btn-primary"
+      >
+        Soumettre l'Inscription
+      </button>
+
+      <button
+        type="button"
+        (click)="resetForm(registrationForm)"
+        class="btn btn-secondary"
+      >
+        Réinitialiser
+      </button>
+
+      <button
+        type="button"
+        (click)="prefillForm()"
+        class="btn btn-info"
+      >
+        Remplir Demo
+      </button>
+    </div>
+  </form>
+
+  <!-- Affichage de l'État du Formulaire -->
+  <div class="form-state">
+    <h3>📊 État du Formulaire (Suivi Template-Driven)</h3>
+    <div class="state-grid">
+      <div class="state-item" [class.valid]="registrationForm.valid">
+        <strong>Formulaire Valide:</strong> {{ registrationForm.valid }}
+      </div>
+      <div class="state-item" [class.invalid]="registrationForm.invalid">
+        <strong>Formulaire Invalide:</strong> {{ registrationForm.invalid }}
+      </div>
+      <div class="state-item" [class.dirty]="registrationForm.dirty">
+        <strong>Formulaire Modifié:</strong> {{ registrationForm.dirty }}
+      </div>
+      <div class="state-item" [class.pristine]="registrationForm.pristine">
+        <strong>Formulaire Vierge:</strong> {{ registrationForm.pristine }}
+      </div>
+      <div class="state-item" [class.touched]="registrationForm.touched">
+        <strong>Formulaire Touché:</strong> {{ registrationForm.touched }}
+      </div>
+      <div class="state-item" [class.untouched]="registrationForm.untouched">
+        <strong>Formulaire Non Touché:</strong> {{ registrationForm.untouched }}
+      </div>
+      <div class="state-item">
+        <strong>État du Formulaire:</strong> {{ registrationForm.status }}
+      </div>
+      <div class="state-item">
+        <strong>Mots de Passe Correspondants:</strong> {{ passwordsMatch() ? '✓' : '✗' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Affichage de la Valeur du Formulaire -->
+  <div class="form-value">
+    <h3>📝 Valeur Actuelle du Formulaire (Mise à jour en Temps Réel)</h3>
+    <pre>{{ formData | json }}</pre>
+  </div>
+
+  <!-- Affichage des Données Soumises -->
+  @if (submittedData) {
+    <div class="submitted-data">
+      <h3>✅ Formulaire Soumis avec Succès!</h3>
+      <p>Les données suivantes ont été soumises:</p>
+      <pre>{{ submittedData | json }}</pre>
+    </div>
+  }
+
+  <!-- Concepts Clés -->
+  <div class="concepts">
+    <h3>🎓 Concepts Clés Démontrés:</h3>
+    <ul>
+      <li><strong>ngForm:</strong> Directive pour créer un formulaire piloté par modèle</li>
+      <li><strong>ngModel:</strong> Directive pour la liaison bilatérale [(ngModel)]</li>
+      <li><strong>Validateurs HTML:</strong> required, email, minlength, pattern comme attributs</li>
+      <li><strong>État du Formulaire:</strong> valid, dirty, touched, pristine suivi automatiquement</li>
+      <li><strong>Groupes Imbriqués:</strong> Grouper les contrôles connexes avec ngModelGroup</li>
+      <li><strong>Gestion des Erreurs:</strong> Accès aux erreurs via form.get('fieldName')</li>
+      <li><strong>Variable de Référence:</strong> #registrationForm="ngForm" pour accéder à NgForm</li>
+      <li><strong>Liaison Bilatérale:</strong> Les changements de template mettent à jour le modèle et vice versa</li>
+      <li><strong>Soumission:</strong> Accès aux données via le modèle formData</li>
+    </ul>
+  </div>
+
+  <!-- Comparaison: Réactif vs Template-Driven -->
+  <div class="comparison">
+    <h3>⚖️ Comparaison: Formulaires Réactifs vs Pilotés par Modèle</h3>
+    <div class="comparison-grid">
+      <div class="comparison-card">
+        <h4>Formulaires Réactifs</h4>
+        <ul>
+          <li>✓ Définis en TypeScript</li>
+          <li>✓ Plus de contrôle</li>
+          <li>✓ Plus testables</li>
+          <li>✓ FormBuilder, FormGroup, FormArray</li>
+          <li>✓ Meilleur pour les formulaires complexes</li>
+          <li>✗ Plus de boilerplate initial</li>
+        </ul>
+      </div>
+      <div class="comparison-card">
+        <h4>Formulaires Pilotés par Modèle</h4>
+        <ul>
+          <li>✓ Définis en HTML</li>
+          <li>✓ Syntaxe simple</li>
+          <li>✓ Prototypage rapide</li>
+          <li>✓ ngForm, ngModel, validateurs HTML</li>
+          <li>✓ Meilleur pour les formulaires simples</li>
+          <li>✗ Moins de contrôle programmatique</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avantages des Formulaires Pilotés par Modèle -->
+  <div class="advantages">
+    <h3>💡 Avantages des Formulaires Pilotés par Modèle:</h3>
+    <div class="advantage-grid">
+      <div class="advantage-card">
+        <h4>🎯 Simplicité</h4>
+        <p>Syntaxe directe et intuitive, peu de boilerplate</p>
+      </div>
+      <div class="advantage-card">
+        <h4>⚡ Prototypage Rapide</h4>
+        <p>Mettre en place rapidement un formulaire simple</p>
+      </div>
+      <div class="advantage-card">
+        <h4>🔄 Liaison Bilatérale</h4>
+        <p>Synchronisation automatique entre template et modèle</p>
+      </div>
+      <div class="advantage-card">
+        <h4>📱 HTML Familier</h4>
+        <p>Utilise les attributs HTML natifs pour la validation</p>
+      </div>
+    </div>
+  </div>
+</div>

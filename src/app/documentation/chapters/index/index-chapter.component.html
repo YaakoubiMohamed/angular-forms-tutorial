@@ -1,0 +1,417 @@
+<div class="documentation-content" (click)="onAnchorClick($event)">
+  <h1>Référence API Angular Forms</h1>
+
+  <div class="header-badges">
+    <span class="badge angular">Angular 20</span>
+    <span class="badge typescript">TypeScript 5.x</span>
+    <span class="badge rxjs">RxJS 7.x</span>
+  </div>
+
+  <p class="subtitle">Documentation API Complète pour Angular 20 Forms</p>
+  <p class="subtitle-small">Partie 1.1 - Introduction aux Formulaires Angular</p>
+
+  <hr>
+
+  <h2 id="aperçu">Aperçu</h2>
+  <p>Cette documentation fournit des références API complètes pour tous les concepts, classes, directives et patterns des formulaires Angular. Chaque entrée comprend des explications détaillées, des signatures de types, des exemples d'utilisation et des bonnes pratiques.</p>
+
+  <hr>
+
+  <h2>Navigation Rapide</h2>
+  <table class="navigation-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Description</th>
+        <th>Sujets Clés</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a routerLink="/documentation/core-concepts">Concepts Fondamentaux</a></td>
+        <td>Approches fondamentales des formulaires</td>
+        <td>Reactive Forms, Template-Driven Forms</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/form-classes">Classes de Formulaires</a></td>
+        <td>Blocs de construction principaux</td>
+        <td>FormControl, FormGroup, FormArray, FormBuilder</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/directives">Directives</a></td>
+        <td>Intégration dans les templates</td>
+        <td>formGroup, formControlName, ngModel, ngForm</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties">État et Propriétés</a></td>
+        <td>Gestion de l'état des contrôles</td>
+        <td>value, valid, dirty, touched, errors</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/validation">Validation</a></td>
+        <td>Validation des entrées</td>
+        <td>Validators, Validateurs personnalisés, Async Validators</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/reactive-programming">Programmation Réactive</a></td>
+        <td>Intégration RxJS</td>
+        <td>valueChanges, statusChanges, Observables</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/modules">Modules</a></td>
+        <td>Configuration des modules Angular</td>
+        <td>ReactiveFormsModule, FormsModule</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/patterns">Patterns</a></td>
+        <td>Patterns d'architecture</td>
+        <td>Two-Way Binding, Immutabilité, OnPush</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Référence Rapide API</h2>
+
+  <h3>Classes</h3>
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>Classe</th>
+        <th>Module</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a routerLink="/documentation/form-classes" fragment="formcontrol"><code>FormControl</code></a></td>
+        <td><code>@angular/forms</code></td>
+        <td>Suit la valeur et la validation d'un contrôle individuel</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/form-classes" fragment="formgroup"><code>FormGroup</code></a></td>
+        <td><code>@angular/forms</code></td>
+        <td>Suit la valeur et la validité d'un groupe de contrôles</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/form-classes" fragment="formarray"><code>FormArray</code></a></td>
+        <td><code>@angular/forms</code></td>
+        <td>Suit la valeur et la validité d'un tableau de contrôles</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/form-classes" fragment="formbuilder"><code>FormBuilder</code></a></td>
+        <td><code>@angular/forms</code></td>
+        <td>Service pour créer des instances de contrôles</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/validation" fragment="validators-class"><code>Validators</code></a></td>
+        <td><code>@angular/forms</code></td>
+        <td>Fournit des fonctions de validation intégrées</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Directives</h3>
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>Directive</th>
+        <th>Sélecteur</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a routerLink="/documentation/directives" fragment="formgroup-directive"><code>FormGroupDirective</code></a></td>
+        <td><code>[formGroup]</code></td>
+        <td>Lie un FormGroup à un élément DOM</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/directives" fragment="formcontrolname"><code>FormControlName</code></a></td>
+        <td><code>formControlName</code></td>
+        <td>Synchronise un FormControl avec un input</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/directives" fragment="ngmodel"><code>NgModel</code></a></td>
+        <td><code>[(ngModel)]</code></td>
+        <td>Directive de liaison bidirectionnelle</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/directives" fragment="ngform"><code>NgForm</code></a></td>
+        <td><code>form:not([ngNoForm])</code></td>
+        <td>Crée un FormGroup de niveau supérieur</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Propriétés</h3>
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>Propriété</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="value"><code>value</code></a></td>
+        <td><code>any</code></td>
+        <td>Valeur actuelle du contrôle</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="valid--invalid"><code>valid</code></a></td>
+        <td><code>boolean</code></td>
+        <td>Le contrôle passe toutes les validations</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="valid--invalid"><code>invalid</code></a></td>
+        <td><code>boolean</code></td>
+        <td>Le contrôle échoue à une validation</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="pristine--dirty"><code>pristine</code></a></td>
+        <td><code>boolean</code></td>
+        <td>L'utilisateur n'a pas modifié la valeur</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="pristine--dirty"><code>dirty</code></a></td>
+        <td><code>boolean</code></td>
+        <td>L'utilisateur a modifié la valeur</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="touched--untouched"><code>touched</code></a></td>
+        <td><code>boolean</code></td>
+        <td>Le contrôle a reçu puis perdu le focus</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="touched--untouched"><code>untouched</code></a></td>
+        <td><code>boolean</code></td>
+        <td>Le contrôle n'a jamais perdu le focus</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="pending"><code>pending</code></a></td>
+        <td><code>boolean</code></td>
+        <td>Validation asynchrone en cours</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="status"><code>status</code></a></td>
+        <td><code>FormControlStatus</code></td>
+        <td>Statut de validation</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/state-properties" fragment="errors"><code>errors</code></a></td>
+        <td><code>ValidationErrors | null</code></td>
+        <td>Erreurs de validation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Observables</h3>
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>Observable</th>
+        <th>Émet</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a routerLink="/documentation/reactive-programming" fragment="valuechanges"><code>valueChanges</code></a></td>
+        <td><code>T</code></td>
+        <td>Émet lors du changement de valeur</td>
+      </tr>
+      <tr>
+        <td><a routerLink="/documentation/reactive-programming" fragment="statuschanges"><code>statusChanges</code></a></td>
+        <td><code>FormControlStatus</code></td>
+        <td>Émet lors du changement de statut</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Définitions de Types</h2>
+  <pre><code class="language-typescript">// Statut du contrôle de formulaire
+type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
+
+// Erreurs de validation
+type ValidationErrors = &lbrace; [key: string]: any &rbrace; | null;
+
+// Signature de fonction de validation
+type ValidatorFn = (control: AbstractControl) => ValidationErrors | null;
+
+// Signature de fonction de validation asynchrone
+type AsyncValidatorFn = (control: AbstractControl) => 
+  Promise&lt;ValidationErrors | null&gt; | Observable&lt;ValidationErrors | null&gt;;</code></pre>
+
+  <hr>
+
+  <h2>Imports de Modules</h2>
+
+  <h3>Configuration Reactive Forms</h3>
+  <pre><code class="language-typescript">import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';
+import &lbrace; 
+  FormControl, 
+  FormGroup, 
+  FormArray, 
+  FormBuilder,
+  Validators 
+&rbrace; from '@angular/forms';
+
+// Dans un NgModule
+&#64;NgModule(&lbrace;
+  imports: [ReactiveFormsModule]
+&rbrace;)
+
+// Dans un Standalone Component
+&#64;Component(&lbrace;
+  standalone: true,
+  imports: [ReactiveFormsModule]
+&rbrace;)</code></pre>
+
+  <h3>Configuration Template-Driven Forms</h3>
+  <pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';
+
+// Dans un NgModule
+&#64;NgModule(&lbrace;
+  imports: [FormsModule]
+&rbrace;)
+
+// Dans un Standalone Component
+&#64;Component(&lbrace;
+  standalone: true,
+  imports: [FormsModule]
+&rbrace;)</code></pre>
+
+  <hr>
+
+  <h2>Matrice de Décision</h2>
+  <h3>Choisir entre les approches de formulaires</h3>
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Critère</th>
+        <th>Reactive Forms</th>
+        <th>Template-Driven</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Complexité du formulaire</td>
+        <td class="text-center">Complexe</td>
+        <td class="text-center">Simple</td>
+      </tr>
+      <tr>
+        <td>Champs dynamiques</td>
+        <td class="text-center">✅ Excellent</td>
+        <td class="text-center">⚠️ Limité</td>
+      </tr>
+      <tr>
+        <td>Tests unitaires</td>
+        <td class="text-center">✅ Facile</td>
+        <td class="text-center">⚠️ Nécessite le DOM</td>
+      </tr>
+      <tr>
+        <td>Validation croisée</td>
+        <td class="text-center">✅ Native</td>
+        <td class="text-center">⚠️ Complexe</td>
+      </tr>
+      <tr>
+        <td>Validation asynchrone</td>
+        <td class="text-center">✅ Native</td>
+        <td class="text-center">⚠️ Limitée</td>
+      </tr>
+      <tr>
+        <td>Performance (OnPush)</td>
+        <td class="text-center">✅ Optimisée</td>
+        <td class="text-center">⚠️ Standard</td>
+      </tr>
+      <tr>
+        <td>Courbe d'apprentissage</td>
+        <td class="text-center">Plus raide</td>
+        <td class="text-center">Plus facile</td>
+      </tr>
+      <tr>
+        <td>Code boilerplate</td>
+        <td class="text-center">Plus</td>
+        <td class="text-center">Moins</td>
+      </tr>
+      <tr>
+        <td>Typage fort</td>
+        <td class="text-center">✅ Fort</td>
+        <td class="text-center">⚠️ Faible</td>
+      </tr>
+      <tr>
+        <td>Réutilisabilité</td>
+        <td class="text-center">✅ Haute</td>
+        <td class="text-center">⚠️ Basse</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Compatibilité des Versions</h2>
+  <table class="version-table">
+    <thead>
+      <tr>
+        <th>Fonctionnalité</th>
+        <th>Version Angular</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Reactive Forms</td>
+        <td>2+</td>
+        <td>Fonctionnalité de base</td>
+      </tr>
+      <tr>
+        <td>Template-Driven Forms</td>
+        <td>2+</td>
+        <td>Fonctionnalité de base</td>
+      </tr>
+      <tr>
+        <td><code>FormBuilder</code></td>
+        <td>2+</td>
+        <td>Fonctionnalité de base</td>
+      </tr>
+      <tr>
+        <td>Typed Forms</td>
+        <td>14+</td>
+        <td>Typage fort pour les formulaires</td>
+      </tr>
+      <tr>
+        <td><code>NonNullableFormBuilder</code></td>
+        <td>14+</td>
+        <td>Comportement reset non-null</td>
+      </tr>
+      <tr>
+        <td>Standalone Components</td>
+        <td>14+</td>
+        <td>Imports directs de modules</td>
+      </tr>
+      <tr>
+        <td>Fonction <code>inject()</code></td>
+        <td>14+</td>
+        <td>Alternative à l'injection constructeur</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="footer-navigation">
+    <a routerLink="/documentation/core-concepts" class="next-link">Suivant : Concepts Fondamentaux →</a>
+  </div>
+
+</div>
+
+
+
+
+
+

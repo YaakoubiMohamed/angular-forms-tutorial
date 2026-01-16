@@ -1,0 +1,159 @@
+<div class="container">
+  <h2>📋 Liste de Tâches Dynamique avec FormArray</h2>
+
+  <p class="description">
+    Cet exemple démontre FormArray pour gérer des champs dynamiques: ajouter/supprimer des tâches,
+    filtrer, trier, et marquer comme complétées. Gestion complète des listes dynamiques.
+  </p>
+
+  <form [formGroup]="todoForm" class="form">
+    <!-- Contrôles -->
+    <div class="controls">
+      <div class="control-group">
+        <button type="button" (click)="addTodo()" class="btn btn-success">
+          ➕ Ajouter une Tâche
+        </button>
+        <button type="button" (click)="completeAll()" class="btn btn-info">
+          ✓ Tout Marquer Complété
+        </button>
+        <button type="button" (click)="exportData()" class="btn btn-secondary">
+          💾 Exporter
+        </button>
+      </div>
+
+      <!-- Filtres -->
+      <div class="filter-group">
+        <label>Filtrer:</label>
+        <select [(ngModel)]="filterType" [ngModelOptions]="{standalone: true}" class="form-select">
+          <option value="all">Tout</option>
+          <option value="pending">En Attente</option>
+          <option value="completed">Complétées</option>
+          <option value="urgent">Urgentes</option>
+        </select>
+
+        <label>Trier par:</label>
+        <select [(ngModel)]="sortBy" [ngModelOptions]="{standalone: true}" class="form-select">
+          <option value="date">Date</option>
+          <option value="priority">Priorité</option>
+        </select>
+
+        <button type="button" (click)="resetFilters()" class="btn btn-outline">
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats">
+      <div class="stat-card">
+        <span class="stat-number">{{ getStats().total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ getStats().completed }}</span>
+        <span class="stat-label">Complétées</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ getStats().pending }}</span>
+        <span class="stat-label">En Attente</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ getStats().urgent }}</span>
+        <span class="stat-label">Urgentes</span>
+      </div>
+    </div>
+
+    <!-- FormArray de Tâches -->
+    <div class="todos-list">
+      @for (todoControl of getFilteredTodos(); let i = $index; track i) {
+        <div [formGroup]="todoControl" class="todo-item" [class.completed]="todoControl.get('completed')?.value">
+          <!-- Checkbox -->
+          <input
+            type="checkbox"
+            formControlName="completed"
+            class="todo-checkbox"
+          />
+
+          <!-- Titre -->
+          <div class="todo-content">
+            <input
+              type="text"
+              formControlName="title"
+              class="todo-title"
+              [class.is-invalid]="todoControl.get('title')?.invalid && todoControl.get('title')?.touched"
+            />
+            @if (todoControl.get('title')?.invalid && todoControl.get('title')?.touched) {
+              <div class="error-message">
+                {{ getErrorMessage('title') }}
+              </div>
+            }
+
+            <!-- Description -->
+            <textarea
+              formControlName="description"
+              class="todo-description"
+              placeholder="Ajouter une description (optionnel)"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <!-- Détails -->
+          <div class="todo-details">
+            <!-- Priorité -->
+            <select
+              formControlName="priority"
+              class="priority-select"
+              [style.border-color]="getPriorityColor(todoControl.get('priority')?.value)"
+            >
+              <option value="low">Basse</option>
+              <option value="medium">Moyenne</option>
+              <option value="high">Haute</option>
+            </select>
+
+            <!-- Date -->
+            <input
+              type="date"
+              formControlName="dueDate"
+              class="form-control"
+            />
+
+            <!-- Supprimer -->
+            <button type="button" (click)="removeTodo(i)" class="btn btn-danger btn-small">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+          <!-- Priorité Badge -->
+          <div
+            class="priority-badge"
+            [style.background-color]="getPriorityColor(todoControl.get('priority')?.value)"
+          >
+            {{ todoControl.get('priority')?.value }}
+          </div>
+      } @empty {
+        <div class="empty-state">
+          <p>📭 Aucune tâche à afficher</p>
+          <button type="button" (click)="addTodo()" class="btn btn-success">
+            ➕ Créer une Tâche
+          </button>
+        </div>
+      }
+    </div>
+  </form>
+
+  <!-- Concepts -->
+  <div class="concepts">
+    <h3>🎓 Concepts Clés (FormArray):</h3>
+    <ul>
+      <li>✓ FormArray pour gérer des listes dynamiques</li>
+      <li>✓ Ajouter/supprimer des contrôles dynamiquement</li>
+      <li>✓ Validation au niveau du champ et du groupe</li>
+      <li>✓ Filtrage et tri des données</li>
+      <li>✓ Calcul des statistiques</li>
+      <li>✓ États visuels (complété, urgent)</li>
+      <li>✓ Gestion des priorités avec couleurs</li>
+      <li>✓ Export des données (JSON)</li>
+    </ul>
+  </div>
+</div>

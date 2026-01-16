@@ -1,0 +1,263 @@
+<div class="container">
+  <h2>Bases de FormControl - Contrôles de Formulaires Individuels</h2>
+
+  <p class="description">
+    Cet exemple démontre l'utilisation de FormControl individuel.
+    Chaque champ est un FormControl séparé avec ses propres validateurs et son propre état.
+  </p>
+
+  <div class="demo-grid">
+    <!-- Email FormControl -->
+    <div class="control-demo">
+      <h3>Contrôle d'E-mail</h3>
+      <div class="control-section">
+        <label>E-mail:</label>
+        <input
+          type="email"
+          [formControl]="email"
+          placeholder="Entrez votre e-mail"
+          class="form-control"
+        />
+
+        @if (email.touched && email.invalid) {
+          <div class="error-message">
+            @if (email.hasError('required')) {
+              L'e-mail est requis
+            } @else if (email.hasError('email')) {
+              Veuillez entrer un e-mail valide
+            }
+          </div>
+        }
+
+        <div class="control-actions">
+          <button (click)="setEmailValue()" class="btn btn-sm">Définir la Valeur</button>
+          <button (click)="resetEmail()" class="btn btn-sm">Réinitialiser</button>
+          <button (click)="markEmailTouched()" class="btn btn-sm">Marquer Consulté</button>
+          <button (click)="markEmailDirty()" class="btn btn-sm">Marquer Modifié</button>
+          <button (click)="toggleEmailDisabled()" class="btn btn-sm">
+            {{ email.disabled ? 'Activer' : 'Désactiver' }}
+          </button>
+        </div>
+
+        <div class="control-state">
+          <div class="state-row">
+            <span>Valeur:</span>
+            <strong>{{ email.value || '(vide)' }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Valide:</span>
+            <strong [class.positive]="email.valid">{{ email.valid }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Non Valide:</span>
+            <strong [class.negative]="email.invalid">{{ email.invalid }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Pristine:</span>
+            <strong>{{ email.pristine }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Modifié:</span>
+            <strong>{{ email.dirty }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Consulté:</span>
+            <strong>{{ email.touched }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Non Consulté:</span>
+            <strong>{{ email.untouched }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Désactivé:</span>
+            <strong>{{ email.disabled }}</strong>
+          </div>
+          <div class="state-row">
+            <span>État:</span>
+            <strong [class.positive]="email.status === 'VALID'" [class.negative]="email.status === 'INVALID'">
+              {{ email.status }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="errors-display">
+          <strong>Erreurs:</strong>
+          @if (email.errors) {
+            <pre>{{ email.errors | json }}</pre>
+          } @else {
+            <p>(Pas d'erreurs)</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Age FormControl -->
+    <div class="control-demo">
+      <h3>Âge Contrôle (avec validateurs min/max)</h3>
+      <div class="control-section">
+        <label>Âge:</label>
+        <input
+          type="number"
+          [formControl]="age"
+          placeholder="Entrez votre âge"
+          class="form-control"
+        />
+
+        @if (age.invalid && age.touched) {
+          <div class="error-message">
+            {{ getAgeError() }}
+          </div>
+        }
+
+        <div class="control-actions">
+          <button (click)="incrementAge()" class="btn btn-sm">+</button>
+          <button (click)="decrementAge()" class="btn btn-sm">-</button>
+        </div>
+
+        <div class="control-state">
+          <div class="state-row">
+            <span>Valeur:</span>
+            <strong>{{ age.value }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Valide:</span>
+            <strong [class.positive]="age.valid">{{ age.valid }}</strong>
+          </div>
+          <div class="state-row">
+            <span>État:</span>
+            <strong [class.positive]="age.status === 'VALID'" [class.negative]="age.status === 'INVALID'">
+              {{ age.status }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="errors-display">
+          <strong>Erreurs:</strong>
+          @if (age.errors) {
+            <pre>{{ age.errors | json }}</pre>
+          } @else {
+            <p>(Pas d'erreurs)</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Website FormControl -->
+    <div class="control-demo">
+      <h3>Contrôle du Site Web (Validateur de Motif)</h3>
+      <div class="control-section">
+        <label>Site Web:</label>
+        <input
+          type="text"
+          [formControl]="website"
+          placeholder="https://example.com"
+          class="form-control"
+        />
+
+        @if (website.invalid && website.touched) {
+          <div class="error-message">
+            {{ getWebsiteError() }}
+          </div>
+        }
+
+        <div class="control-state">
+          <div class="state-row">
+            <span>Valeur:</span>
+            <strong>{{ website.value || '(vide)' }}</strong>
+          </div>
+          <div class="state-row">
+            <span>Valide:</span>
+            <strong [class.positive]="website.valid">{{ website.valid }}</strong>
+          </div>
+        </div>
+
+        <div class="errors-display">
+          <strong>Erreurs:</strong>
+          @if (website.errors) {
+            <pre>{{ website.errors | json }}</pre>
+          } @else {
+            <p>(Pas d'erreurs)</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscribe Checkbox -->
+    <div class="control-demo">
+      <h3>Contrôle d'Abonnement (Booléen)</h3>
+      <div class="control-section">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [formControl]="subscribe"
+          />
+          S'abonner à la lettre d'information
+        </label>
+
+        <div class="control-state">
+          <div class="state-row">
+            <span>Valeur:</span>
+            <strong>{{ subscribe.value }}</strong>
+          </div>
+          <div class="state-row">
+            <span>État:</span>
+            <strong>{{ subscribe.status }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Observable Streams Section -->
+  <div class="observables-section">
+    <h3>Flux Observables de FormControl</h3>
+
+    <div class="logs-grid">
+      <!-- Value Changes Log -->
+      <div class="log-section">
+        <h4>Changements de Valeur (email.valueChanges)</h4>
+        @if (valueChangeLog.length > 0) {
+          <ul class="log-list">
+            @for (log of valueChangeLog; track $index) {
+              <li>{{ log }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-log">Modifiez le champ d'e-mail pour voir les changements...</p>
+        }
+      </div>
+
+      <!-- Status Changes Log -->
+      <div class="log-section">
+        <h4>Changements d'État (age.statusChanges)</h4>
+        @if (statusChangeLog.length > 0) {
+          <ul class="log-list">
+            @for (log of statusChangeLog; track $index) {
+              <li>{{ log }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-log">Modifiez le champ d'âge pour voir les changements...</p>
+        }
+      </div>
+    </div>
+
+    <button (click)="clearLogs()" class="btn btn-secondary">Effacer les Journaux</button>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="concepts">
+    <h3>Concepts Clés:</h3>
+    <ul>
+      <li><strong>FormControl:</strong> L'unité de base d'un formulaire - représente un champ de saisie unique</li>
+      <li><strong>Création:</strong> new FormControl(valeurInitiale, validateurs)</li>
+      <li><strong>Propriétés de Valeur:</strong> valeur, valide, non valide, pristine, modifié, consulté, désactivé</li>
+      <li><strong>Validateurs:</strong> requis, e-mail, min, max, motif, et plus</li>
+      <li><strong>Méthodes:</strong> setValue(), patchValue(), reset(), enable(), disable(), markAsTouched()</li>
+      <li><strong>Observables:</strong> valueChanges$ et statusChanges$ pour les mises à jour réactives</li>
+      <li><strong>Erreurs:</strong> Accéder via control.errors ou control.hasError('type')</li>
+      <li><strong>Gestion d'État:</strong> Tout l'état est suivi et mis à jour automatiquement</li>
+      <li><strong>Élément de Construction:</strong> FormControl est utilisé à l'intérieur de FormGroup et FormArray</li>
+    </ul>
+  </div>
+</div>

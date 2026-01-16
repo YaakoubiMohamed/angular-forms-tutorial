@@ -1,0 +1,613 @@
+<div class="chapter-content" (click)="onAnchorClick($event)">
+  <h1>Validation</h1>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p><strong>Angular Forms - Guide de Validation Complet</strong></p>
+    <p>
+      <a routerLink="/documentation/state-properties">← Propriétés d'État</a> | 
+      <a routerLink="/documentation">Index</a> | 
+      <a routerLink="/documentation/reactive-programming">Suivant : Programmation Réactive →</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+
+  <ul>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#validators-integres">Validators Intégrés</a></li>
+    <li><a href="#validateurs-personnalises">Validateurs Personnalisés</a></li>
+    <li><a href="#validateurs-asynchrones">Validateurs Asynchrones</a></li>
+    <li><a href="#validation-cross-field">Validation Cross-Field</a></li>
+    <li><a href="#messages-derreur">Messages d'Erreur</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="apercu">Aperçu</h2>
+
+  <p>La validation garantit que les données saisies par l'utilisateur respectent les règles métier avant traitement.</p>
+
+  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    TYPES DE VALIDATION                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────┐    ┌─────────────────────┐
+│    SYNCHRONE        │    │    ASYNCHRONE       │
+├─────────────────────┤    ├─────────────────────┤
+│                     │    │                     │
+│ • Exécution         │    │ • Retourne          │
+│   immédiate         │    │   Observable/Promise│
+│                     │    │                     │
+│ • Validators        │    │ • Appels HTTP       │
+│   intégrés          │    │                     │
+│                     │    │ • Vérification      │
+│ • Validateurs       │    │   base de données   │
+│   personnalisés     │    │                     │
+│                     │    │                     │
+└─────────────────────┘    └─────────────────────┘</code></pre></div>
+
+  <h3>Import</h3>
+
+  <pre><code class="language-typescript">import { Validators, ValidatorFn, AsyncValidatorFn } from '@angular/forms';</code></pre>
+
+  <hr>
+
+  <h2 id="validators-integres">Validators Intégrés</h2>
+
+  <p>Angular fournit des validateurs prêts à l'emploi dans la classe <code>Validators</code>.</p>
+
+  <h3>Tableau de Référence</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Validator</th>
+        <th>Usage</th>
+        <th>Erreur Retournée</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Validators.required</code></td>
+        <td>Champ obligatoire</td>
+        <td><code>{ required: true }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.requiredTrue</code></td>
+        <td>Doit être <code>true</code></td>
+        <td><code>{ required: true }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.min(n)</code></td>
+        <td>Valeur minimum</td>
+        <td><code>{ min: { min: n, actual: x } }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.max(n)</code></td>
+        <td>Valeur maximum</td>
+        <td><code>{ max: { max: n, actual: x } }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.minLength(n)</code></td>
+        <td>Longueur minimum</td>
+        <td><code>{ minlength: { requiredLength: n, actualLength: x } }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.maxLength(n)</code></td>
+        <td>Longueur maximum</td>
+        <td><code>{ maxlength: { requiredLength: n, actualLength: x } }</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.email</code></td>
+        <td>Format email</td>
+        <td><code>&lbrace; email: true &rbrace;</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.pattern(regex)</code></td>
+        <td>Expression régulière</td>
+        <td><code>&lbrace; pattern: &lbrace; requiredPattern: '...', actualValue: '...' &rbrace; &rbrace;</code></td>
+      </tr>
+      <tr>
+        <td><code>Validators.nullValidator</code></td>
+        <td>Toujours valide</td>
+        <td><code>null</code></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>Exemples d'Utilisation</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormControl, FormGroup, Validators &rbrace; from '@angular/forms';
+
+const form = new FormGroup(&lbrace;
+  // Champ obligatoire
+  username: new FormControl('', Validators.required),
+  
+  // Email valide
+  email: new FormControl('', [Validators.required, Validators.email]),
+  
+  // Mot de passe avec plusieurs règles
+  password: new FormControl('', [
+    Validators.required,
+    Validators.minLength(8),
+    Validators.maxLength(50),
+    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+  ]),
+  
+  // Âge entre 18 et 120
+  age: new FormControl(null, [
+    Validators.required,
+    Validators.min(18),
+    Validators.max(120)
+  ]),
+  
+  // Case à cocher obligatoire
+  acceptTerms: new FormControl(false, Validators.requiredTrue)
+&rbrace;);</code></pre></div>
+
+  <h3>Composition de Validateurs</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// Combiner plusieurs validateurs
+const control = new FormControl('', Validators.compose([
+  Validators.required,
+  Validators.minLength(3)
+]));
+
+// Équivalent à
+const control2 = new FormControl('', [
+  Validators.required,
+  Validators.minLength(3)
+]);</code></pre></div>
+
+  <hr>
+
+  <h2 id="validateurs-personnalises">Validateurs Personnalisés</h2>
+
+  <h3>Créer un Validateur Simple</h3>
+
+  <p>Un validateur est une fonction qui retourne <code>null</code> si valide, ou un objet d'erreur si invalide.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; AbstractControl, ValidationErrors, ValidatorFn &rbrace; from '@angular/forms';
+
+// Fonction validateur simple
+function forbiddenNameValidator(forbiddenName: string): ValidatorFn &lbrace;
+  return (control: AbstractControl): ValidationErrors | null => &lbrace;
+    const forbidden = control.value === forbiddenName;
+    return forbidden ? &lbrace; forbiddenName: &lbrace; value: control.value &rbrace; &rbrace; : null;
+  &rbrace;;
+&rbrace;
+
+// Utilisation
+const nameControl = new FormControl('', [
+  Validators.required,
+  forbiddenNameValidator('admin')
+]);</code></pre></div>
+
+  <h3>Validateur avec Regex</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function patternValidator(pattern: RegExp, errorKey: string): ValidatorFn &lbrace;
+  return (control: AbstractControl): ValidationErrors | null => &lbrace;
+    if (!control.value) return null; // Ne pas valider si vide
+    const valid = pattern.test(control.value);
+    return valid ? null : &lbrace; [errorKey]: true &rbrace;;
+  &rbrace;;
+&rbrace;
+
+// Validateurs spécifiques
+const hasUppercase = patternValidator(/[A-Z]/, 'noUppercase');
+const hasLowercase = patternValidator(/[a-z]/, 'noLowercase');
+const hasDigit = patternValidator(/\d/, 'noDigit');
+const hasSpecialChar = patternValidator(/[!@#$%^&*]/, 'noSpecialChar');
+
+// Mot de passe fort
+const password = new FormControl('', [
+  Validators.required,
+  Validators.minLength(8),
+  hasUppercase,
+  hasLowercase,
+  hasDigit,
+  hasSpecialChar
+]);</code></pre></div>
+
+  <h3>Validateur avec Paramètres</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function rangeValidator(min: number, max: number): ValidatorFn &lbrace;
+  return (control: AbstractControl): ValidationErrors | null => &lbrace;
+    const value = control.value;
+    if (value === null || value === undefined) return null;
+    
+    if (value < min || value > max) &lbrace;
+      return &lbrace; 
+        range: &lbrace; 
+          min, 
+          max, 
+          actual: value 
+        &rbrace; 
+      &rbrace;;
+    &rbrace;
+    return null;
+  &rbrace;;
+&rbrace;
+
+// Utilisation
+const price = new FormControl(0, rangeValidator(0.01, 9999.99));</code></pre></div>
+
+  <h3>Validateur pour Dates</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function futureDateValidator(): ValidatorFn &lbrace;
+  return (control: AbstractControl): ValidationErrors | null => &lbrace;
+    if (!control.value) return null;
+    
+    const inputDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return inputDate > today ? null : &lbrace; pastDate: true &rbrace;;
+  &rbrace;;
+&rbrace;
+
+function minAgeValidator(minAge: number): ValidatorFn &lbrace;
+  return (control: AbstractControl): ValidationErrors | null => &lbrace;
+    if (!control.value) return null;
+    
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) &lbrace;
+      age--;
+    &rbrace;
+    
+    return age >= minAge ? null : &lbrace; minAge: &lbrace; required: minAge, actual: age &rbrace; &rbrace;;
+  &rbrace;;
+&rbrace;
+
+// Utilisation
+const birthDate = new FormControl('', [
+  Validators.required,
+  minAgeValidator(18)
+]);</code></pre></div>
+
+  <hr>
+
+  <h2 id="validateurs-asynchrones">Validateurs Asynchrones</h2>
+
+  <p>Les validateurs asynchrones sont utilisés pour des vérifications côté serveur.</p>
+
+  <h3>Structure de Base</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; AbstractControl, AsyncValidatorFn, ValidationErrors &rbrace; from '@angular/forms';
+import &lbrace; Observable, of &rbrace; from 'rxjs';
+import &lbrace; map, catchError, debounceTime, switchMap, first &rbrace; from 'rxjs/operators';
+
+function asyncValidator(): AsyncValidatorFn &lbrace;
+  return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => &lbrace;
+    return someAsyncCheck(control.value).pipe(
+      map(isValid => isValid ? null : &lbrace; asyncError: true &rbrace;),
+      catchError(() => of(null))
+    );
+  &rbrace;;
+&rbrace;</code></pre></div>
+
+  <h3>Vérification de Disponibilité</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Injectable(&lbrace; providedIn: 'root' &rbrace;)
+export class UsernameValidator &lbrace;
+  constructor(private http: HttpClient) &lbrace;
+  
+  checkUsernameAvailable(): AsyncValidatorFn &lbrace;
+    return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => &lbrace;
+      if (!control.value) &lbrace;
+        return of(null);
+      &rbrace;
+      
+      return control.valueChanges.pipe(
+        debounceTime(400),
+        switchMap(value => 
+          this.http.get&lt;boolean&gt;(`/api/users/check/$&lbrace;value&rbrace;`)
+        ),
+        map(available => available ? null : &lbrace; usernameTaken: true &rbrace;),
+        catchError(() => of(null)),
+        first()
+      );
+    &rbrace;;
+  &rbrace;
+&rbrace;
+
+// Utilisation
+@Component(&lbrace;...&rbrace;)
+export class RegisterComponent &lbrace;
+  private usernameValidator = inject(UsernameValidator);
+  
+  form = new FormGroup(&lbrace;
+    username: new FormControl('', 
+      [Validators.required, Validators.minLength(3)],
+      [this.usernameValidator.checkUsernameAvailable()]
+    )
+  &rbrace;);
+&rbrace;</code></pre></div>
+
+  <h3>Vérification d'Email Unique</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function uniqueEmailValidator(userService: UserService): AsyncValidatorFn &lbrace;
+  return (control: AbstractControl): Observable&lt;ValidationErrors | null&gt; => &lbrace;
+    return timer(500).pipe(
+      switchMap(() => userService.checkEmail(control.value)),
+      map(exists => exists ? &lbrace; emailExists: true &rbrace; : null),
+      catchError(() => of(null))
+    );
+  &rbrace;;
+&rbrace;</code></pre></div>
+
+  <h3>Indicateur de Chargement</h3>
+
+  <pre><code class="language-html">&lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+
+@if (form.get('username')?.pending) {
+  &lt;span&gt;Vérification en cours...&lt;/span&gt;
+}
+
+@if (form.get('username')?.hasError('usernameTaken')) {
+  &lt;span&gt;Ce nom d'utilisateur est déjà pris&lt;/span&gt;
+}</code></pre>
+
+  <hr>
+
+  <h2 id="validation-cross-field">Validation Cross-Field</h2>
+
+  <p>La validation cross-field valide plusieurs champs en relation les uns avec les autres.</p>
+
+  <h3>Confirmation de Mot de Passe</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => &lbrace;
+  const password = group.get('password')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  
+  return password === confirm ? null : &lbrace; passwordMismatch: true &rbrace;;
+&rbrace;;
+
+// Utilisation sur le FormGroup
+const form = new FormGroup(&lbrace;
+  password: new FormControl('', [
+    Validators.required,
+    Validators.minLength(8)
+  ]),
+  confirmPassword: new FormControl('', Validators.required)
+&rbrace;, &lbrace; validators: passwordMatchValidator &rbrace;);</code></pre></div>
+
+  <h3>Validation de Plage de Dates</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function dateRangeValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => &lbrace;
+  const start = group.get('startDate')?.value;
+  const end = group.get('endDate')?.value;
+  
+  if (!start || !end) return null;
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  
+  return startDate <= endDate ? null : &lbrace; dateRange: true &rbrace;;
+&rbrace;;
+
+const form = new FormGroup(&lbrace;
+  startDate: new FormControl('', Validators.required),
+  endDate: new FormControl('', Validators.required)
+&rbrace;, &lbrace; validators: dateRangeValidator &rbrace;);</code></pre></div>
+
+  <h3>Au Moins Un Champ Rempli</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">function atLeastOneRequired(...fields: string[]): ValidatorFn &lbrace;
+  return (group: AbstractControl): ValidationErrors | null => &lbrace;
+    const hasValue = fields.some(field => &lbrace;
+      const control = group.get(field);
+      return control && control.value && control.value.trim() !== '';
+    &rbrace;);
+    
+    return hasValue ? null : &lbrace; atLeastOneRequired: fields &rbrace;;
+  &rbrace;;
+&rbrace;
+
+const contactForm = new FormGroup(&lbrace;
+  email: new FormControl(''),
+  phone: new FormControl(''),
+  address: new FormControl('')
+&rbrace;, &lbrace; validators: atLeastOneRequired('email', 'phone') &rbrace;);</code></pre></div>
+
+  <h3>Afficher les Erreurs Cross-Field</h3>
+
+  <pre><code class="language-html">&lt;form [formGroup]="form"&gt;
+  &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
+  &lt;input formControlName="confirmPassword" type="password" placeholder="Confirmer"&gt;
+  
+  &lt;!-- Erreur au niveau du groupe --&gt;
+  @if (form.hasError('passwordMismatch')) {
+    &lt;div class="error"&gt;
+      Les mots de passe ne correspondent pas
+    &lt;/div&gt;
+  }
+&lt;/form&gt;</code></pre>
+
+  <hr>
+
+  <h2 id="messages-derreur">Messages d'Erreur</h2>
+
+  <h3>Composant de Message d'Erreur Réutilisable</h3>
+
+  <pre><code class="language-typescript">@Component({
+  selector: 'app-form-error',
+  standalone: true,
+  template: `
+    @if (control && control.invalid && control.touched) {
+      &lt;div class="error-message"&gt;
+        @for (error of errorMessages; track error.key) {
+          @if (control.hasError(error.key)) {
+            &lt;p&gt;{{ error.message }}&lt;/p&gt;
+          }
+        }
+      &lt;/div&gt;
+    }
+  `,
+  styles: [`
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    &rbrace;
+  `]
+&rbrace;)
+export class FormErrorComponent &lbrace;
+  @Input() control: AbstractControl | null = null;
+  @Input() errorMessages: &lbrace; key: string; message: string &rbrace;[] = [];
+&rbrace;</code></pre></div>
+
+  <h3>Utilisation</h3>
+
+  <div ngNonBindable><pre><code class="language-html">&lt;input formControlName="email" placeholder="Email"&gt;
+&lt;app-form-error 
+  [control]="form.get('email')"
+  [errorMessages]="[
+    &lbrace; key: 'required', message: 'L\'email est obligatoire' &rbrace;,
+    &lbrace; key: 'email', message: 'Format d\'email invalide' &rbrace;,
+    &lbrace; key: 'emailExists', message: 'Cet email est déjà utilisé' &rbrace;
+  ]"&gt;
+&lt;/app-form-error&gt;</code></pre></div>
+
+  <h3>Service de Messages Centralisé</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Injectable(&lbrace; providedIn: 'root' &rbrace;)
+export class ValidationMessageService &lbrace;
+  private messages: Record&lt;string, string | ((params: any) => string)&gt; = &lbrace;
+    required: 'Ce champ est obligatoire',
+    email: 'Veuillez entrer un email valide',
+    minlength: (params) => `Minimum $&lbrace;params.requiredLength&rbrace; caractères`,
+    maxlength: (params) => `Maximum $&lbrace;params.requiredLength&rbrace; caractères`,
+    min: (params) => `La valeur minimum est $&lbrace;params.min&rbrace;`,
+    max: (params) => `La valeur maximum est $&lbrace;params.max&rbrace;`,
+    pattern: 'Format invalide',
+    passwordMismatch: 'Les mots de passe ne correspondent pas',
+    usernameTaken: 'Ce nom d\'utilisateur est déjà pris',
+    emailExists: 'Cet email est déjà utilisé'
+  &rbrace;;
+  
+  getErrorMessage(control: AbstractControl): string &lbrace;
+    if (!control.errors) return '';
+    
+    const errorKey = Object.keys(control.errors)[0];
+    const errorValue = control.errors[errorKey];
+    const message = this.messages[errorKey];
+    
+    if (typeof message === 'function') &lbrace;
+      return message(errorValue);
+    &rbrace;
+    
+    return message || 'Erreur de validation';
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Directive de Validation</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">@Directive(&lbrace;
+  selector: '[appShowErrors]',
+  standalone: true
+&rbrace;)
+export class ShowErrorsDirective implements OnInit, OnDestroy &lbrace;
+  @Input('appShowErrors') controlName!: string;
+  
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private controlContainer: ControlContainer,
+    private validationService: ValidationMessageService
+  ) &lbrace;
+  
+  ngOnInit() &lbrace;
+    const control = this.controlContainer.control?.get(this.controlName);
+    if (!control) return;
+    
+    merge(control.statusChanges, control.valueChanges)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateErrorMessage(control));
+  &rbrace;
+  
+  private updateErrorMessage(control: AbstractControl) &lbrace;
+    // Supprimer l'ancien message
+    const existing = this.el.nativeElement.parentNode.querySelector('.error-message');
+    if (existing) existing.remove();
+    
+    // Ajouter le nouveau message si erreur
+    if (control.invalid && control.touched) &lbrace;
+      const message = this.validationService.getErrorMessage(control);
+      const errorEl = this.renderer.createElement('span');
+      this.renderer.addClass(errorEl, 'error-message');
+      this.renderer.appendChild(errorEl, this.renderer.createText(message));
+      this.renderer.appendChild(this.el.nativeElement.parentNode, errorEl);
+    &rbrace;
+  &rbrace;
+  
+  ngOnDestroy() &lbrace;
+    this.destroy$.next();
+    this.destroy$.complete();
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
+
+  <h3>1. Ordre des Validateurs</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// Mettre les validateurs les plus importants en premier
+const password = new FormControl('', [
+  Validators.required,          // D'abord vérifier si rempli
+  Validators.minLength(8),      // Puis la longueur
+  Validators.pattern(/[A-Z]/),  // Enfin le pattern
+]);</code></pre></div>
+
+  <h3>2. Éviter la Sur-validation</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// ❌ Trop de validateurs
+const email = new FormControl('', [
+  Validators.required,
+  Validators.email,
+  Validators.minLength(5),  // Inutile avec email
+  Validators.maxLength(100), // Raisonnable
+  Validators.pattern(/.*@.*\..*/), // Redondant avec email
+]);
+
+// ✅ Juste ce qu'il faut
+const email = new FormControl('', [
+  Validators.required,
+  Validators.email,
+  Validators.maxLength(100)
+]);</code></pre></div>
+
+  <h3>3. Debounce pour les Validateurs Async</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">// Toujours utiliser debounceTime pour éviter trop d'appels API
+return control.valueChanges.pipe(
+  debounceTime(400),  // Attendre 400ms après la dernière frappe
+  distinctUntilChanged(),
+  switchMap(value => this.checkAvailability(value))
+);</code></pre></div>
+
+  <hr>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p>
+      <a routerLink="/documentation/state-properties">← Propriétés d'État</a> | 
+      <a routerLink="/documentation">Index</a> | 
+      <a routerLink="/documentation/reactive-programming">Suivant : Programmation Réactive →</a>
+    </p>
+  </div>
+
+
+</div>
+
+
+
+

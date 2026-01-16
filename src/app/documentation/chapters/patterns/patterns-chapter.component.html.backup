@@ -1,0 +1,1197 @@
+<div class="chapter-content">
+  <h1>Angular Forms Patterns</h1>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p><strong>Angular Forms - Design Patterns &amp; Best Practices</strong></p>
+    <p>
+      <a routerLink="/documentation/modules">← Modules</a> | 
+      <a routerLink="/documentation">Index</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-of-contents">Table of Contents</h2>
+
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#two-way-binding-pattern">Two-Way Binding Pattern</a></li>
+    <li><a href="#model-driven-pattern">Model-Driven Pattern</a></li>
+    <li><a href="#immutability-pattern">Immutability Pattern</a></li>
+    <li><a href="#dynamic-forms-pattern">Dynamic Forms Pattern</a></li>
+    <li><a href="#multi-step-forms-pattern">Multi-Step Forms Pattern</a></li>
+    <li><a href="#form-factory-pattern">Form Factory Pattern</a></li>
+    <li><a href="#onpush-optimization">OnPush Optimization</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="overview">Overview</h2>
+
+  <p>Understanding form patterns helps you choose the right approach for your application's complexity and requirements.</p>
+
+  <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                   FORM PATTERNS SPECTRUM                         │
+└─────────────────────────────────────────────────────────────────┘
+
+  Simple ◄───────────────────────────────────────────────► Complex
+     │                                                         │
+     │  Two-Way Binding                                        │
+     │  (ngModel)                                              │
+     │       │                                                 │
+     │       └─────► Model-Driven                              │
+     │               (Reactive Forms)                          │
+     │                    │                                    │
+     │                    └─────► Dynamic Forms                │
+     │                            (Config-Based)               │
+     │                                 │                       │
+     │                                 └─────► Form Factory    │
+     │                                        (Reusable)       │
+     └─────────────────────────────────────────────────────────┘</code></pre>
+
+  <h3>Pattern Selection Guide</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Pattern</th>
+        <th>Best For</th>
+        <th>Complexity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Two-Way Binding</td>
+        <td>Simple forms, prototypes</td>
+        <td>Low</td>
+      </tr>
+      <tr>
+        <td>Model-Driven</td>
+        <td>Standard business forms</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Immutability</td>
+        <td>State management integration</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Dynamic Forms</td>
+        <td>Configurable/runtime forms</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Multi-Step</td>
+        <td>Wizards, long forms</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Form Factory</td>
+        <td>Reusable form logic</td>
+        <td>High</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2 id="two-way-binding-pattern">Two-Way Binding Pattern</h2>
+
+  <p>The simplest approach using <code>ngModel</code> for direct model synchronization.</p>
+
+  <h3>Concept</h3>
+
+  <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                 TWO-WAY BINDING FLOW                          │
+└──────────────────────────────────────────────────────────────┘
+
+         Component                      Template
+      ┌─────────────┐                ┌─────────────┐
+      │   model =   │ ────────────►  │   &lt;input    │
+      │   &#123; name:   │   Property     │   [(ngModel)]│
+      │   'John' &#125;  │   Binding      │   ="model.  │
+      │             │                │     name"&gt;  │
+      │             │ ◄────────────  │             │
+      │             │   Event        │             │
+      │             │   Binding      │             │
+      └─────────────┘                └─────────────┘
+                      │          │
+                      │ [(ngModel)] = [ngModel] + (ngModelChange)
+                      │
+                      ▼
+            ┌─────────────────┐
+            │  Model always   │
+            │  equals view    │
+            └─────────────────┘</code></pre>
+
+  <h3>Implementation</h3>
+
+  <pre><code class="language-typescript">import &#123; Component &#125; from '&#64;angular/core';
+import &#123; FormsModule &#125; from '&#64;angular/forms';
+
+interface UserModel &#123;
+  firstName: string;
+  lastName: string;
+  email: string;
+  newsletter: boolean;
+&#125;
+
+&#64;Component(&#123;
+  selector: 'app-simple-form',
+  standalone: true,
+  imports: [FormsModule],
+  template: &#96;
+    &lt;form #userForm="ngForm" (ngSubmit)="onSubmit()"&gt;
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;First Name&lt;/label&gt;
+        &lt;input 
+          name="firstName" 
+          [(ngModel)]="user.firstName" 
+          required
+          #firstName="ngModel"
+        &gt;
+        &lt;span *ngIf="firstName.invalid &amp;&amp; firstName.touched" class="error"&gt;
+          First name is required
+        &lt;/span&gt;
+      &lt;/div&gt;
+      
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;Last Name&lt;/label&gt;
+        &lt;input 
+          name="lastName" 
+          [(ngModel)]="user.lastName" 
+          required
+        &gt;
+      &lt;/div&gt;
+      
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input 
+          name="email" 
+          [(ngModel)]="user.email" 
+          required 
+          email
+          type="email"
+        &gt;
+      &lt;/div&gt;
+      
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;
+          &lt;input 
+            type="checkbox" 
+            name="newsletter" 
+            [(ngModel)]="user.newsletter"
+          &gt;
+          Subscribe to newsletter
+        &lt;/label&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="submit" [disabled]="userForm.invalid"&gt;
+        Submit
+      &lt;/button&gt;
+      
+      &lt;!-- Debug: Live model view --&gt;
+      &lt;pre&gt;&#123;&#123; user | json &#125;&#125;&lt;/pre&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class SimpleFormComponent &#123;
+  user: UserModel = &#123;
+    firstName: '',
+    lastName: '',
+    email: '',
+    newsletter: false
+  &#125;;
+  
+  onSubmit() &#123;
+    console.log('Submitting:', this.user);
+    // Model is already synchronized
+  &#125;
+&#125;</code></pre>
+
+  <h3>When to Use</h3>
+
+  <p>✅ <strong>Good for:</strong></p>
+  <ul>
+    <li>Simple contact forms</li>
+    <li>Login forms</li>
+    <li>Quick prototypes</li>
+    <li>Forms with few fields</li>
+    <li>When form state complexity is low</li>
+  </ul>
+
+  <p>❌ <strong>Avoid for:</strong></p>
+  <ul>
+    <li>Complex validation logic</li>
+    <li>Dynamic forms</li>
+    <li>Forms needing unit tests</li>
+    <li>State management integration</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="model-driven-pattern">Model-Driven Pattern</h2>
+
+  <p>Reactive forms where the form model is defined in the component class.</p>
+
+  <h3>Concept</h3>
+
+  <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                  MODEL-DRIVEN ARCHITECTURE                    │
+└──────────────────────────────────────────────────────────────┘
+
+     Component Class                     Template
+    ┌─────────────────┐              ┌─────────────────┐
+    │                 │              │                 │
+    │  FormGroup &#123;    │◄────────────►│ [formGroup]     │
+    │    controls: &#123;  │  Directive   │                 │
+    │      email,     │  Binding     │ formControlName │
+    │      password   │              │                 │
+    │    &#125;            │              │                 │
+    │  &#125;              │              │                 │
+    │                 │              │                 │
+    │  • setValue()   │              │ &lt;input&gt;         │
+    │  • patchValue() │              │ &lt;select&gt;        │
+    │  • reset()      │              │ &lt;button&gt;        │
+    │  • valueChanges │              │                 │
+    └─────────────────┘              └─────────────────┘
+           │
+           ▼
+    ┌─────────────────┐
+    │ Single Source   │
+    │ of Truth        │
+    │ (Component)     │
+    └─────────────────┘</code></pre>
+
+  <h3>Implementation</h3>
+
+  <pre><code class="language-typescript">import &#123; Component, inject, OnInit, OnDestroy &#125; from '&#64;angular/core';
+import &#123; CommonModule &#125; from '&#64;angular/common';
+import &#123; 
+  ReactiveFormsModule, 
+  FormBuilder, 
+  Validators,
+  AbstractControl
+&#125; from '&#64;angular/forms';
+import &#123; Subject, takeUntil &#125; from 'rxjs';
+
+&#64;Component(&#123;
+  selector: 'app-registration',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: &#96;
+    &lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;Username&lt;/label&gt;
+        &lt;input formControlName="username"&gt;
+        &lt;div *ngIf="username.invalid &amp;&amp; username.touched" class="errors"&gt;
+          &lt;span *ngIf="username.hasError('required')"&gt;Required&lt;/span&gt;
+          &lt;span *ngIf="username.hasError('minlength')"&gt;
+            Min &#123;&#123; username.getError('minlength').requiredLength &#125;&#125; characters
+          &lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;div class="form-group"&gt;
+        &lt;label&gt;Email&lt;/label&gt;
+        &lt;input formControlName="email" type="email"&gt;
+        &lt;div *ngIf="email.invalid &amp;&amp; email.touched" class="errors"&gt;
+          &lt;span *ngIf="email.hasError('required')"&gt;Required&lt;/span&gt;
+          &lt;span *ngIf="email.hasError('email')"&gt;Invalid email&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;div formGroupName="passwords" class="form-group"&gt;
+        &lt;label&gt;Password&lt;/label&gt;
+        &lt;input formControlName="password" type="password"&gt;
+        
+        &lt;label&gt;Confirm Password&lt;/label&gt;
+        &lt;input formControlName="confirm" type="password"&gt;
+        
+        &lt;div *ngIf="passwords.hasError('mismatch')" class="errors"&gt;
+          Passwords do not match
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="submit" [disabled]="form.invalid"&gt;
+        Register
+      &lt;/button&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class RegistrationComponent implements OnInit, OnDestroy &#123;
+  private fb = inject(FormBuilder);
+  private destroy$ = new Subject&lt;void&gt;();
+  
+  form = this.fb.group(&#123;
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    passwords: this.fb.group(&#123;
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirm: ['', Validators.required]
+    &#125;, &#123; validators: this.passwordMatchValidator &#125;)
+  &#125;);
+  
+  // Getters for easy template access
+  get username() &#123; return this.form.get('username')!; &#125;
+  get email() &#123; return this.form.get('email')!; &#125;
+  get passwords() &#123; return this.form.get('passwords')!; &#125;
+  
+  ngOnInit() &#123;
+    // React to form changes
+    this.form.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value =&gt; &#123;
+      console.log('Form changed:', value);
+    &#125;);
+  &#125;
+  
+  ngOnDestroy() &#123;
+    this.destroy$.next();
+    this.destroy$.complete();
+  &#125;
+  
+  passwordMatchValidator(group: AbstractControl) &#123;
+    const password = group.get('password')?.value;
+    const confirm = group.get('confirm')?.value;
+    return password === confirm ? null : &#123; mismatch: true &#125;;
+  &#125;
+  
+  onSubmit() &#123;
+    if (this.form.valid) &#123;
+      const &#123; username, email, passwords &#125; = this.form.value;
+      console.log('Submitting:', &#123; username, email, password: passwords?.password &#125;);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Benefits</h3>
+
+  <ul>
+    <li><strong>Testability</strong>: Test validation without DOM</li>
+    <li><strong>Predictability</strong>: Form state managed in code</li>
+    <li><strong>Type Safety</strong>: Full TypeScript support (Angular 14+)</li>
+    <li><strong>Complex Validation</strong>: Easy cross-field validators</li>
+    <li><strong>Dynamic Control</strong>: Add/remove controls programmatically</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="immutability-pattern">Immutability Pattern</h2>
+
+  <p>Treating form state as immutable for predictable state management.</p>
+
+  <h3>Concept</h3>
+
+  <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                   IMMUTABILITY PATTERN                        │
+└──────────────────────────────────────────────────────────────┘
+
+  ┌─────────────┐                      ┌─────────────┐
+  │ State V1    │                      │ State V2    │
+  │ &#123; name: 'A' &#125;│ ───── setValue ────►│ &#123; name: 'B' &#125;│
+  └─────────────┘    (new object)      └─────────────┘
+        │                                     │
+        │  Original                           │  New reference
+        │  unchanged                          │  triggers change
+        │                                     │  detection
+        ▼                                     ▼
+  Can compare                           OnPush works
+  references                            efficiently</code></pre>
+
+  <h3>Implementation with Signals (Angular 16+)</h3>
+
+  <pre><code class="language-typescript">import &#123; Component, computed, signal, inject &#125; from '&#64;angular/core';
+import &#123; ReactiveFormsModule, FormBuilder, Validators &#125; from '&#64;angular/forms';
+
+interface UserFormData &#123;
+  name: string;
+  email: string;
+  role: string;
+&#125;
+
+&#64;Component(&#123;
+  selector: 'app-immutable-form',
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  template: &#96;
+    &lt;form [formGroup]="form" (ngSubmit)="save()"&gt;
+      &lt;input formControlName="name" placeholder="Name"&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      &lt;select formControlName="role"&gt;
+        &lt;option value="user"&gt;User&lt;/option&gt;
+        &lt;option value="admin"&gt;Admin&lt;/option&gt;
+      &lt;/select&gt;
+      
+      &lt;div class="actions"&gt;
+        &lt;button type="submit" [disabled]="!hasChanges()"&gt;Save&lt;/button&gt;
+        &lt;button type="button" (click)="revert()"&gt;Revert&lt;/button&gt;
+      &lt;/div&gt;
+      
+      &lt;div class="status"&gt;
+        &lt;p&gt;Original: &#123;&#123; originalData() | json &#125;&#125;&lt;/p&gt;
+        &lt;p&gt;Current: &#123;&#123; currentData() | json &#125;&#125;&lt;/p&gt;
+        &lt;p&gt;Has Changes: &#123;&#123; hasChanges() &#125;&#125;&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class ImmutableFormComponent &#123;
+  private fb = inject(FormBuilder);
+  
+  // Original data (immutable reference)
+  originalData = signal&lt;UserFormData&gt;(&#123;
+    name: 'John Doe',
+    email: 'john&#64;example.com',
+    role: 'user'
+  &#125;);
+  
+  form = this.fb.nonNullable.group(&#123;
+    name: [this.originalData().name, Validators.required],
+    email: [this.originalData().email, [Validators.required, Validators.email]],
+    role: [this.originalData().role]
+  &#125;);
+  
+  // Current form data as signal
+  currentData = signal&lt;UserFormData&gt;(this.form.getRawValue());
+  
+  // Computed signal for change detection
+  hasChanges = computed(() =&gt; &#123;
+    const original = this.originalData();
+    const current = this.currentData();
+    return JSON.stringify(original) !== JSON.stringify(current);
+  &#125;);
+  
+  constructor() &#123;
+    // Update current data signal on form changes
+    this.form.valueChanges.subscribe(value =&gt; &#123;
+      this.currentData.set(value as UserFormData);
+    &#125;);
+  &#125;
+  
+  save() &#123;
+    if (this.form.valid &amp;&amp; this.hasChanges()) &#123;
+      const newData = this.form.getRawValue();
+      
+      // Create new immutable reference
+      this.originalData.set(&#123; ...newData &#125;);
+      
+      console.log('Saved:', newData);
+    &#125;
+  &#125;
+  
+  revert() &#123;
+    // Reset to original immutable state
+    this.form.reset(this.originalData());
+  &#125;
+&#125;</code></pre>
+
+  <h3>NgRx Integration</h3>
+
+  <pre><code class="language-typescript">import &#123; Component, inject &#125; from '&#64;angular/core';
+import &#123; Store &#125; from '&#64;ngrx/store';
+import &#123; FormBuilder, Validators &#125; from '&#64;angular/forms';
+import &#123; selectUserData &#125; from './store/user.selectors';
+import &#123; UserActions &#125; from './store/user.actions';
+
+&#64;Component(&#123;
+  selector: 'app-ngrx-form',
+  template: &#96;
+    &lt;form [formGroup]="form" (ngSubmit)="submit()"&gt;
+      &lt;input formControlName="name"&gt;
+      &lt;input formControlName="email"&gt;
+      &lt;button type="submit"&gt;Update&lt;/button&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class NgrxFormComponent &#123;
+  private store = inject(Store);
+  private fb = inject(FormBuilder);
+  
+  form = this.fb.group(&#123;
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
+  &#125;);
+  
+  constructor() &#123;
+    // Populate form from store (immutable)
+    this.store.select(selectUserData).subscribe(userData =&gt; &#123;
+      if (userData) &#123;
+        this.form.patchValue(userData, &#123; emitEvent: false &#125;);
+      &#125;
+    &#125;);
+  &#125;
+  
+  submit() &#123;
+    if (this.form.valid) &#123;
+      // Dispatch action with new immutable state
+      this.store.dispatch(UserActions.updateUser(&#123; 
+        user: &#123; ...this.form.value &#125; 
+      &#125;));
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <hr>
+
+  <h2 id="dynamic-forms-pattern">Dynamic Forms Pattern</h2>
+
+  <p>Generate forms from configuration at runtime.</p>
+
+  <h3>Configuration Interface</h3>
+
+  <pre><code class="language-typescript">interface FormFieldConfig &#123;
+  key: string;
+  type: 'text' | 'email' | 'number' | 'select' | 'checkbox' | 'textarea';
+  label: string;
+  value?: any;
+  required?: boolean;
+  validators?: ValidatorFn[];
+  options?: &#123; value: any; label: string &#125;[];  // For select
+  placeholder?: string;
+  disabled?: boolean;
+  order?: number;
+&#125;
+
+interface FormConfig &#123;
+  title: string;
+  fields: FormFieldConfig[];
+  submitLabel?: string;
+&#125;</code></pre>
+
+  <h3>Dynamic Form Service</h3>
+
+  <pre><code class="language-typescript">import &#123; Injectable &#125; from '&#64;angular/core';
+import &#123; FormBuilder, FormGroup, Validators, ValidatorFn &#125; from '&#64;angular/forms';
+
+&#64;Injectable(&#123; providedIn: 'root' &#125;)
+export class DynamicFormService &#123;
+  constructor(private fb: FormBuilder) &#123;&#125;
+  
+  createForm(config: FormFieldConfig[]): FormGroup &#123;
+    const group: &#123; [key: string]: any &#125; = &#123;&#125;;
+    
+    config.forEach(field =&gt; &#123;
+      const validators = this.getValidators(field);
+      group[field.key] = [
+        &#123; value: field.value ?? '', disabled: field.disabled ?? false &#125;,
+        validators
+      ];
+    &#125;);
+    
+    return this.fb.group(group);
+  &#125;
+  
+  private getValidators(field: FormFieldConfig): ValidatorFn[] &#123;
+    const validators: ValidatorFn[] = [];
+    
+    if (field.required) &#123;
+      validators.push(Validators.required);
+    &#125;
+    
+    if (field.type === 'email') &#123;
+      validators.push(Validators.email);
+    &#125;
+    
+    if (field.validators) &#123;
+      validators.push(...field.validators);
+    &#125;
+    
+    return validators;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Dynamic Form Component</h3>
+
+  <pre><code class="language-typescript">import &#123; Component, Input, Output, EventEmitter, inject, OnChanges &#125; from '&#64;angular/core';
+import &#123; CommonModule &#125; from '&#64;angular/common';
+import &#123; ReactiveFormsModule, FormGroup &#125; from '&#64;angular/forms';
+import &#123; DynamicFormService &#125; from './dynamic-form.service';
+
+&#64;Component(&#123;
+  selector: 'app-dynamic-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: &#96;
+    &lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+      &lt;h2&gt;&#123;&#123; config.title &#125;&#125;&lt;/h2&gt;
+      
+      &lt;div *ngFor="let field of sortedFields" class="form-field"&gt;
+        &lt;label [for]="field.key"&gt;&#123;&#123; field.label &#125;&#125;&lt;/label&gt;
+        
+        &lt;!-- Text, Email, Number inputs --&gt;
+        &lt;ng-container *ngIf="['text', 'email', 'number'].includes(field.type)"&gt;
+          &lt;input 
+            [id]="field.key"
+            [formControlName]="field.key"
+            [type]="field.type"
+            [placeholder]="field.placeholder || ''"
+          &gt;
+        &lt;/ng-container&gt;
+        
+        &lt;!-- Select dropdown --&gt;
+        &lt;ng-container *ngIf="field.type === 'select'"&gt;
+          &lt;select [id]="field.key" [formControlName]="field.key"&gt;
+            &lt;option value=""&gt;Select...&lt;/option&gt;
+            &lt;option *ngFor="let opt of field.options" [value]="opt.value"&gt;
+              &#123;&#123; opt.label &#125;&#125;
+            &lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/ng-container&gt;
+        
+        &lt;!-- Textarea --&gt;
+        &lt;ng-container *ngIf="field.type === 'textarea'"&gt;
+          &lt;textarea 
+            [id]="field.key" 
+            [formControlName]="field.key"
+            [placeholder]="field.placeholder || ''"
+          &gt;&lt;/textarea&gt;
+        &lt;/ng-container&gt;
+        
+        &lt;!-- Checkbox --&gt;
+        &lt;ng-container *ngIf="field.type === 'checkbox'"&gt;
+          &lt;input 
+            type="checkbox" 
+            [id]="field.key" 
+            [formControlName]="field.key"
+          &gt;
+        &lt;/ng-container&gt;
+        
+        &lt;!-- Validation errors --&gt;
+        &lt;div *ngIf="isInvalid(field.key)" class="error"&gt;
+          &lt;span *ngIf="hasError(field.key, 'required')"&gt;&#123;&#123; field.label &#125;&#125; is required&lt;/span&gt;
+          &lt;span *ngIf="hasError(field.key, 'email')"&gt;Invalid email format&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;button type="submit" [disabled]="form.invalid"&gt;
+        &#123;&#123; config.submitLabel || 'Submit' &#125;&#125;
+      &lt;/button&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class DynamicFormComponent implements OnChanges &#123;
+  &#64;Input() config!: FormConfig;
+  &#64;Output() formSubmit = new EventEmitter&lt;any&gt;();
+  
+  private dynamicFormService = inject(DynamicFormService);
+  
+  form!: FormGroup;
+  
+  get sortedFields(): FormFieldConfig[] &#123;
+    return [...this.config.fields].sort((a, b) =&gt; 
+      (a.order ?? 0) - (b.order ?? 0)
+    );
+  &#125;
+  
+  ngOnChanges() &#123;
+    if (this.config) &#123;
+      this.form = this.dynamicFormService.createForm(this.config.fields);
+    &#125;
+  &#125;
+  
+  isInvalid(key: string): boolean &#123;
+    const control = this.form.get(key);
+    return control ? control.invalid &amp;&amp; control.touched : false;
+  &#125;
+  
+  hasError(key: string, error: string): boolean &#123;
+    return this.form.get(key)?.hasError(error) ?? false;
+  &#125;
+  
+  onSubmit() &#123;
+    if (this.form.valid) &#123;
+      this.formSubmit.emit(this.form.value);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Usage</h3>
+
+  <pre><code class="language-typescript">&#64;Component(&#123;
+  selector: 'app-survey',
+  template: &#96;
+    &lt;app-dynamic-form 
+      [config]="surveyConfig" 
+      (formSubmit)="onSurveySubmit($event)"
+    &gt;&lt;/app-dynamic-form&gt;
+  &#96;
+&#125;)
+export class SurveyComponent &#123;
+  surveyConfig: FormConfig = &#123;
+    title: 'Customer Survey',
+    submitLabel: 'Submit Survey',
+    fields: [
+      &#123; 
+        key: 'name', 
+        type: 'text', 
+        label: 'Full Name', 
+        required: true,
+        order: 1
+      &#125;,
+      &#123; 
+        key: 'email', 
+        type: 'email', 
+        label: 'Email Address', 
+        required: true,
+        order: 2
+      &#125;,
+      &#123; 
+        key: 'satisfaction', 
+        type: 'select', 
+        label: 'Satisfaction Level',
+        options: [
+          &#123; value: 1, label: 'Very Unsatisfied' &#125;,
+          &#123; value: 2, label: 'Unsatisfied' &#125;,
+          &#123; value: 3, label: 'Neutral' &#125;,
+          &#123; value: 4, label: 'Satisfied' &#125;,
+          &#123; value: 5, label: 'Very Satisfied' &#125;
+        ],
+        required: true,
+        order: 3
+      &#125;,
+      &#123; 
+        key: 'comments', 
+        type: 'textarea', 
+        label: 'Additional Comments',
+        placeholder: 'Tell us more...',
+        order: 4
+      &#125;,
+      &#123; 
+        key: 'subscribe', 
+        type: 'checkbox', 
+        label: 'Subscribe to updates',
+        value: false,
+        order: 5
+      &#125;
+    ]
+  &#125;;
+  
+  onSurveySubmit(data: any) &#123;
+    console.log('Survey submitted:', data);
+  &#125;
+&#125;</code></pre>
+
+  <hr>
+
+  <h2 id="multi-step-forms-pattern">Multi-Step Forms Pattern</h2>
+
+  <p>Break complex forms into manageable steps.</p>
+
+  <h3>Step Configuration</h3>
+
+  <pre><code class="language-typescript">interface FormStep &#123;
+  id: string;
+  title: string;
+  fields: FormFieldConfig[];
+  isValid?: () =&gt; boolean;
+&#125;
+
+interface WizardConfig &#123;
+  steps: FormStep[];
+  allowSkip?: boolean;
+  showProgress?: boolean;
+&#125;</code></pre>
+
+  <h3>Multi-Step Form Component</h3>
+
+  <pre><code class="language-typescript">import &#123; Component, inject, Input, Output, EventEmitter &#125; from '&#64;angular/core';
+import &#123; CommonModule &#125; from '&#64;angular/common';
+import &#123; ReactiveFormsModule, FormGroup, FormBuilder, Validators &#125; from '&#64;angular/forms';
+
+&#64;Component(&#123;
+  selector: 'app-multi-step-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: &#96;
+    &lt;!-- Progress indicator --&gt;
+    &lt;div class="progress"&gt;
+      &lt;div 
+        *ngFor="let step of steps; let i = index" 
+        class="step"
+        [class.active]="i === currentStep"
+        [class.completed]="i &lt; currentStep"
+        (click)="goToStep(i)"
+      &gt;
+        &lt;span class="number"&gt;&#123;&#123; i + 1 &#125;&#125;&lt;/span&gt;
+        &lt;span class="title"&gt;&#123;&#123; step.title &#125;&#125;&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Form --&gt;
+    &lt;form [formGroup]="form"&gt;
+      &lt;!-- Step 1: Personal Info --&gt;
+      &lt;div *ngIf="currentStep === 0" class="step-content"&gt;
+        &lt;h3&gt;Personal Information&lt;/h3&gt;
+        &lt;div formGroupName="personal"&gt;
+          &lt;label&gt;First Name&lt;/label&gt;
+          &lt;input formControlName="firstName"&gt;
+          
+          &lt;label&gt;Last Name&lt;/label&gt;
+          &lt;input formControlName="lastName"&gt;
+          
+          &lt;label&gt;Email&lt;/label&gt;
+          &lt;input formControlName="email" type="email"&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;!-- Step 2: Address --&gt;
+      &lt;div *ngIf="currentStep === 1" class="step-content"&gt;
+        &lt;h3&gt;Address&lt;/h3&gt;
+        &lt;div formGroupName="address"&gt;
+          &lt;label&gt;Street&lt;/label&gt;
+          &lt;input formControlName="street"&gt;
+          
+          &lt;label&gt;City&lt;/label&gt;
+          &lt;input formControlName="city"&gt;
+          
+          &lt;label&gt;Zip Code&lt;/label&gt;
+          &lt;input formControlName="zip"&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;!-- Step 3: Review --&gt;
+      &lt;div *ngIf="currentStep === 2" class="step-content"&gt;
+        &lt;h3&gt;Review Your Information&lt;/h3&gt;
+        &lt;pre&gt;&#123;&#123; form.value | json &#125;&#125;&lt;/pre&gt;
+      &lt;/div&gt;
+      
+      &lt;!-- Navigation --&gt;
+      &lt;div class="navigation"&gt;
+        &lt;button 
+          type="button" 
+          (click)="previousStep()" 
+          [disabled]="currentStep === 0"
+        &gt;
+          Previous
+        &lt;/button&gt;
+        
+        &lt;button 
+          *ngIf="currentStep &lt; steps.length - 1"
+          type="button" 
+          (click)="nextStep()" 
+          [disabled]="!isCurrentStepValid()"
+        &gt;
+          Next
+        &lt;/button&gt;
+        
+        &lt;button 
+          *ngIf="currentStep === steps.length - 1"
+          type="button" 
+          (click)="submit()"
+          [disabled]="form.invalid"
+        &gt;
+          Submit
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class MultiStepFormComponent &#123;
+  &#64;Output() formComplete = new EventEmitter&lt;any&gt;();
+  
+  private fb = inject(FormBuilder);
+  
+  currentStep = 0;
+  
+  steps = [
+    &#123; id: 'personal', title: 'Personal Info' &#125;,
+    &#123; id: 'address', title: 'Address' &#125;,
+    &#123; id: 'review', title: 'Review' &#125;
+  ];
+  
+  form = this.fb.group(&#123;
+    personal: this.fb.group(&#123;
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]]
+    &#125;),
+    address: this.fb.group(&#123;
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      zip: ['', [Validators.required, Validators.pattern(/^\d&#123;5&#125;$/)]]
+    &#125;)
+  &#125;);
+  
+  isCurrentStepValid(): boolean &#123;
+    const stepKeys = ['personal', 'address'];
+    const currentKey = stepKeys[this.currentStep];
+    
+    if (!currentKey) return true; // Review step
+    
+    const group = this.form.get(currentKey) as FormGroup;
+    return group?.valid ?? true;
+  &#125;
+  
+  nextStep() &#123;
+    if (this.isCurrentStepValid() &amp;&amp; this.currentStep &lt; this.steps.length - 1) &#123;
+      this.currentStep++;
+    &#125;
+  &#125;
+  
+  previousStep() &#123;
+    if (this.currentStep &gt; 0) &#123;
+      this.currentStep--;
+    &#125;
+  &#125;
+  
+  goToStep(step: number) &#123;
+    // Only allow going to completed or current steps
+    if (step &lt;= this.currentStep) &#123;
+      this.currentStep = step;
+    &#125;
+  &#125;
+  
+  submit() &#123;
+    if (this.form.valid) &#123;
+      this.formComplete.emit(this.form.value);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <hr>
+
+  <h2 id="form-factory-pattern">Form Factory Pattern</h2>
+
+  <p>Encapsulate form creation logic in reusable services.</p>
+
+  <h3>Form Factory Service</h3>
+
+  <pre><code class="language-typescript">import &#123; Injectable, inject &#125; from '&#64;angular/core';
+import &#123; FormBuilder, FormGroup, Validators, AbstractControl &#125; from '&#64;angular/forms';
+
+&#64;Injectable(&#123; providedIn: 'root' &#125;)
+export class FormFactoryService &#123;
+  private fb = inject(FormBuilder);
+  
+  // User registration form
+  createRegistrationForm(data?: Partial&lt;UserRegistration&gt;): FormGroup &#123;
+    return this.fb.group(&#123;
+      username: [data?.username ?? '', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(20)
+      ]],
+      email: [data?.email ?? '', [
+        Validators.required,
+        Validators.email
+      ]],
+      password: [data?.password ?? '', [
+        Validators.required,
+        Validators.minLength(8)
+      ]],
+      confirmPassword: ['', Validators.required],
+      terms: [false, Validators.requiredTrue]
+    &#125;, &#123;
+      validators: this.passwordMatchValidator
+    &#125;);
+  &#125;
+  
+  // Address subform
+  createAddressForm(data?: Partial&lt;Address&gt;): FormGroup &#123;
+    return this.fb.group(&#123;
+      street: [data?.street ?? '', Validators.required],
+      city: [data?.city ?? '', Validators.required],
+      state: [data?.state ?? '', Validators.required],
+      zip: [data?.zip ?? '', [
+        Validators.required,
+        Validators.pattern(/^\d&#123;5&#125;(-\d&#123;4&#125;)?$/)
+      ]],
+      country: [data?.country ?? 'US']
+    &#125;);
+  &#125;
+  
+  // Order form with nested address
+  createOrderForm(data?: Partial&lt;Order&gt;): FormGroup &#123;
+    return this.fb.group(&#123;
+      orderNumber: [data?.orderNumber ?? this.generateOrderNumber()],
+      customer: this.fb.group(&#123;
+        name: [data?.customer?.name ?? '', Validators.required],
+        email: [data?.customer?.email ?? '', [Validators.required, Validators.email]],
+        phone: [data?.customer?.phone ?? '']
+      &#125;),
+      shippingAddress: this.createAddressForm(data?.shippingAddress),
+      billingAddress: this.createAddressForm(data?.billingAddress),
+      sameAsShipping: [true],
+      items: this.fb.array([]),
+      notes: ['']
+    &#125;);
+  &#125;
+  
+  // Validators
+  private passwordMatchValidator(group: AbstractControl) &#123;
+    const password = group.get('password')?.value;
+    const confirm = group.get('confirmPassword')?.value;
+    return password === confirm ? null : &#123; passwordMismatch: true &#125;;
+  &#125;
+  
+  private generateOrderNumber(): string &#123;
+    return &#96;ORD-$&#123;Date.now()&#125;&#96;;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Using the Factory</h3>
+
+  <pre><code class="language-typescript">&#64;Component(&#123;
+  selector: 'app-checkout',
+  template: &#96;
+    &lt;form [formGroup]="orderForm" (ngSubmit)="placeOrder()"&gt;
+      &lt;!-- Customer info --&gt;
+      &lt;section formGroupName="customer"&gt;
+        &lt;h3&gt;Customer Information&lt;/h3&gt;
+        &lt;input formControlName="name" placeholder="Name"&gt;
+        &lt;input formControlName="email" placeholder="Email"&gt;
+        &lt;input formControlName="phone" placeholder="Phone"&gt;
+      &lt;/section&gt;
+      
+      &lt;!-- Shipping address --&gt;
+      &lt;section formGroupName="shippingAddress"&gt;
+        &lt;h3&gt;Shipping Address&lt;/h3&gt;
+        &lt;app-address-fields&gt;&lt;/app-address-fields&gt;
+      &lt;/section&gt;
+      
+      &lt;label&gt;
+        &lt;input type="checkbox" formControlName="sameAsShipping"&gt;
+        Billing same as shipping
+      &lt;/label&gt;
+      
+      &lt;!-- Billing address (if different) --&gt;
+      &lt;section *ngIf="!orderForm.get('sameAsShipping')?.value" formGroupName="billingAddress"&gt;
+        &lt;h3&gt;Billing Address&lt;/h3&gt;
+        &lt;app-address-fields&gt;&lt;/app-address-fields&gt;
+      &lt;/section&gt;
+      
+      &lt;button type="submit" [disabled]="orderForm.invalid"&gt;Place Order&lt;/button&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class CheckoutComponent &#123;
+  private formFactory = inject(FormFactoryService);
+  
+  orderForm = this.formFactory.createOrderForm();
+  
+  placeOrder() &#123;
+    if (this.orderForm.valid) &#123;
+      const order = this.orderForm.value;
+      
+      // Copy shipping to billing if same
+      if (order.sameAsShipping) &#123;
+        order.billingAddress = &#123; ...order.shippingAddress &#125;;
+      &#125;
+      
+      console.log('Placing order:', order);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <hr>
+
+  <h2 id="onpush-optimization">OnPush Optimization</h2>
+
+  <p>Optimize form performance with OnPush change detection.</p>
+
+  <h3>Implementation</h3>
+
+  <pre><code class="language-typescript">import &#123; 
+  Component, 
+  ChangeDetectionStrategy, 
+  inject, 
+  ChangeDetectorRef 
+&#125; from '&#64;angular/core';
+import &#123; ReactiveFormsModule, FormBuilder, Validators &#125; from '&#64;angular/forms';
+import &#123; CommonModule, AsyncPipe &#125; from '&#64;angular/common';
+import &#123; map, startWith &#125; from 'rxjs/operators';
+
+&#64;Component(&#123;
+  selector: 'app-optimized-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, AsyncPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,  // Key optimization
+  template: &#96;
+    &lt;form [formGroup]="form" (ngSubmit)="submit()"&gt;
+      &lt;input formControlName="name"&gt;
+      &lt;input formControlName="email"&gt;
+      
+      &lt;!-- Use async pipe for automatic updates --&gt;
+      &lt;div *ngIf="nameValue$ | async as name"&gt;
+        Preview: &#123;&#123; name &#125;&#125;
+      &lt;/div&gt;
+      
+      &lt;!-- Status using async pipe --&gt;
+      &lt;p&gt;Form Status: &#123;&#123; status$ | async &#125;&#125;&lt;/p&gt;
+      
+      &lt;button 
+        type="submit" 
+        [disabled]="(isInvalid$ | async)"
+      &gt;
+        Submit
+      &lt;/button&gt;
+    &lt;/form&gt;
+  &#96;
+&#125;)
+export class OptimizedFormComponent &#123;
+  private fb = inject(FormBuilder);
+  
+  form = this.fb.group(&#123;
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
+  &#125;);
+  
+  // Observables for async pipe (triggers change detection automatically)
+  nameValue$ = this.form.get('name')!.valueChanges.pipe(
+    startWith(this.form.get('name')!.value)
+  );
+  
+  status$ = this.form.statusChanges.pipe(
+    startWith(this.form.status)
+  );
+  
+  isInvalid$ = this.form.statusChanges.pipe(
+    startWith(this.form.status),
+    map(status =&gt; status === 'INVALID')
+  );
+  
+  submit() &#123;
+    if (this.form.valid) &#123;
+      console.log('Submitting:', this.form.value);
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Best Practices for OnPush</h3>
+
+  <pre><code class="language-typescript">&#64;Component(&#123;
+  changeDetection: ChangeDetectionStrategy.OnPush
+&#125;)
+export class OnPushFormComponent &#123;
+  private cdr = inject(ChangeDetectorRef);
+  
+  // ✓ Use observables with async pipe
+  formValue$ = this.form.valueChanges;
+  
+  // ✓ Or manually trigger change detection when needed
+  updateFormExternally(data: any) &#123;
+    this.form.patchValue(data);
+    this.cdr.markForCheck();  // Trigger change detection
+  &#125;
+  
+  // ✓ Use immutable updates
+  replaceData(newData: FormData) &#123;
+    this.form.reset(newData);
+    this.cdr.markForCheck();
+  &#125;
+&#125;</code></pre>
+
+  <hr>
+
+  <div style="text-align: center; margin: 2rem 0;">
+    <p>
+      <a routerLink="/documentation/modules">← Modules</a> | 
+      <a routerLink="/documentation">Index</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <p><em>Angular 20 Forms Tutorial - API Reference Documentation</em></p>
+</div>

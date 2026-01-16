@@ -1,0 +1,370 @@
+<div class="container">
+  <h2>Formulaires Réactifs - Inscription</h2>
+  
+  <p class="description">
+    Cet exemple démontre les Formulaires Réactifs (approche model-driven).
+    La structure du formulaire est définie en TypeScript avec FormBuilder.
+    Le formulaire inclut des groupes imbriqués et un FormArray pour les emails dynamiques.
+  </p>
+
+  <!-- Message d'erreur global -->
+  @if (submitError) {
+    <div class="alert alert-error">
+      {{ submitError }}
+    </div>
+  }
+
+  <!-- Formulaire Principal -->
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="form">
+    
+    <!-- Section: Informations Personnelles -->
+    <fieldset [formGroup]="personalInfoGroup" class="form-section">
+      <legend>👤 Informations Personnelles</legend>
+
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="firstName">Prénom:</label>
+        <input
+          id="firstName"
+          type="text"
+          formControlName="firstName"
+          placeholder="Entrez votre prénom"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('personalInfo.firstName')?.invalid && registrationForm.get('personalInfo.firstName')?.touched"
+        />
+        @if (registrationForm.get('personalInfo.firstName')?.touched && registrationForm.get('personalInfo.firstName')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('personalInfo.firstName') }}
+          </div>
+        }
+      </div>
+
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="lastName">Nom:</label>
+        <input
+          id="lastName"
+          type="text"
+          formControlName="lastName"
+          placeholder="Entrez votre nom"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('personalInfo.lastName')?.invalid && registrationForm.get('personalInfo.lastName')?.touched"
+        />
+        @if (registrationForm.get('personalInfo.lastName')?.touched && registrationForm.get('personalInfo.lastName')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('personalInfo.lastName') }}
+          </div>
+        }
+      </div>
+
+      <!-- Date de Naissance -->
+      <div class="form-group">
+        <label for="birthDate">Date de Naissance:</label>
+        <input
+          id="birthDate"
+          type="date"
+          formControlName="birthDate"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('personalInfo.birthDate')?.invalid && registrationForm.get('personalInfo.birthDate')?.touched"
+        />
+        @if (registrationForm.get('personalInfo.birthDate')?.touched && registrationForm.get('personalInfo.birthDate')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('personalInfo.birthDate') }}
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <!-- Section: Informations de Contact -->
+    <fieldset [formGroup]="contactInfoGroup" class="form-section">
+      <legend>📧 Informations de Contact</legend>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="Entrez votre email"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('contactInfo.email')?.invalid && registrationForm.get('contactInfo.email')?.touched"
+        />
+        @if (registrationForm.get('contactInfo.email')?.touched && registrationForm.get('contactInfo.email')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('contactInfo.email') }}
+          </div>
+        }
+      </div>
+
+      <!-- Téléphone -->
+      <div class="form-group">
+        <label for="phone">Téléphone:</label>
+        <input
+          id="phone"
+          type="tel"
+          formControlName="phone"
+          placeholder="+33 6 12 34 56 78"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('contactInfo.phone')?.invalid && registrationForm.get('contactInfo.phone')?.touched"
+        />
+        @if (registrationForm.get('contactInfo.phone')?.touched && registrationForm.get('contactInfo.phone')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('contactInfo.phone') }}
+          </div>
+        }
+      </div>
+
+      <!-- Site Web -->
+      <div class="form-group">
+        <label for="website">Site Web (optionnel):</label>
+        <input
+          id="website"
+          type="url"
+          formControlName="website"
+          placeholder="https://example.com"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('contactInfo.website')?.invalid && registrationForm.get('contactInfo.website')?.touched"
+        />
+        @if (registrationForm.get('contactInfo.website')?.touched && registrationForm.get('contactInfo.website')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('contactInfo.website') }}
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <!-- Section: Mots de Passe -->
+    <fieldset [formGroup]="passwordsGroup" class="form-section">
+      <legend>🔐 Mots de Passe</legend>
+
+      <!-- Mot de Passe -->
+      <div class="form-group">
+        <label for="password">Mot de Passe:</label>
+        <input
+          id="password"
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Minimum 8 caractères"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('passwords.password')?.invalid && registrationForm.get('passwords.password')?.touched"
+        />
+        @if (registrationForm.get('passwords.password')?.touched && registrationForm.get('passwords.password')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('passwords.password') }}
+          </div>
+        }
+      </div>
+
+      <!-- Confirmer le Mot de Passe -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le Mot de Passe:</label>
+        <input
+          id="confirmPassword"
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          placeholder="Confirmez votre mot de passe"
+          class="form-control"
+          [class.is-invalid]="registrationForm.get('passwords.confirmPassword')?.invalid && registrationForm.get('passwords.confirmPassword')?.touched"
+        />
+        @if (registrationForm.get('passwords.confirmPassword')?.touched && registrationForm.get('passwords.confirmPassword')?.invalid) {
+          <div class="error-message">
+            {{ getErrorMessage('passwords.confirmPassword') }}
+          </div>
+        }
+      </div>
+
+      <!-- Erreur de Correspondance de Mots de Passe (au niveau du groupe) -->
+      @if (registrationForm.get('passwords')?.hasError('passwordMismatch') && registrationForm.get('passwords')?.touched) {
+        <div class="error-message group-error">
+          ⚠️ {{ getErrorMessage('passwords') }}
+        </div>
+      }
+    </fieldset>
+
+    <!-- Section: Emails Supplémentaires (FormArray) -->
+    <fieldset class="form-section">
+      <legend>📨 Emails Supplémentaires</legend>
+      @for (emailControl of additionalEmailsArray.controls; let i = $index; track i) {
+          <div class="form-group email-array-item">
+            <label [for]="'additionalEmail' + i">Email Supplémentaire {{ i + 1 }}:</label>
+            <div class="email-input-wrapper">
+              <input
+                [id]="'additionalEmail' + i"
+                type="email"
+                [formControl]="getEmailControl(i)"
+                placeholder="Email optionnel"
+                class="form-control"
+                [class.is-invalid]="getEmailControl(i).invalid && getEmailControl(i).touched"
+              />
+              <button
+                type="button"
+                (click)="removeEmail(i)"
+                class="btn btn-danger btn-small"
+              >
+                Supprimer
+              </button>
+            </div>
+            @if (getEmailControl(i).invalid && getEmailControl(i).touched) {
+              <div class="error-message">
+                {{ getErrorMessage('additionalEmails') }}
+              </div>
+            }
+          </div>
+        }
+      <button
+        type="button"
+        (click)="addEmail()"
+        class="btn btn-secondary"
+      >
+        + Ajouter un Email Supplémentaire
+      </button>
+    </fieldset>
+
+    <!-- Acceptation des Conditions -->
+    <div class="form-group checkbox">
+      <input
+        id="acceptTerms"
+        type="checkbox"
+        formControlName="acceptTerms"
+      />
+      <label for="acceptTerms">J'accepte les conditions d'utilisation</label>
+      @if (registrationForm.get('acceptTerms')?.invalid && registrationForm.get('acceptTerms')?.touched) {
+        <div class="error-message">
+          {{ getErrorMessage('acceptTerms') }}
+        </div>
+      }
+    </div>
+
+    <!-- Boutons d'Action -->
+    <div class="button-group">
+      <button
+        type="submit"
+        [disabled]="registrationForm.invalid && submitted"
+        class="btn btn-primary"
+      >
+        Soumettre l'Inscription
+      </button>
+
+      <button
+        type="button"
+        (click)="resetForm()"
+        class="btn btn-secondary"
+      >
+        Réinitialiser
+      </button>
+
+      <button
+        type="button"
+        (click)="prefillForm()"
+        class="btn btn-info"
+      >
+        Remplir Demo
+      </button>
+
+      <button
+        type="button"
+        (click)="togglePasswordField()"
+        class="btn btn-warning"
+      >
+        {{ showPassword ? '🙈 Masquer' : '👁️ Afficher' }} le Mot de Passe
+      </button>
+    </div>
+  </form>
+
+  <!-- Affichage de l'État du Formulaire -->
+  <div class="form-state">
+    <h3>📊 État du Formulaire (Suivi Réactif)</h3>
+    <div class="state-grid">
+      <div class="state-item" [class.valid]="registrationForm.valid">
+        <strong>Formulaire Valide:</strong> {{ registrationForm.valid }}
+      </div>
+      <div class="state-item" [class.invalid]="registrationForm.invalid">
+        <strong>Formulaire Invalide:</strong> {{ registrationForm.invalid }}
+      </div>
+      <div class="state-item" [class.dirty]="registrationForm.dirty">
+        <strong>Formulaire Modifié:</strong> {{ registrationForm.dirty }}
+      </div>
+      <div class="state-item" [class.pristine]="registrationForm.pristine">
+        <strong>Formulaire Vierge:</strong> {{ registrationForm.pristine }}
+      </div>
+      <div class="state-item" [class.touched]="registrationForm.touched">
+        <strong>Formulaire Touché:</strong> {{ registrationForm.touched }}
+      </div>
+      <div class="state-item" [class.untouched]="registrationForm.untouched">
+        <strong>Formulaire Non Touché:</strong> {{ registrationForm.untouched }}
+      </div>
+      <div class="state-item">
+        <strong>État du Formulaire:</strong> {{ registrationForm.status }}
+      </div>
+      <div class="state-item">
+        <strong>Nombre d'Emails:</strong> {{ additionalEmailsArray.length }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Affichage de la Valeur du Formulaire -->
+  <div class="form-value">
+    <h3>📝 Valeur Actuelle du Formulaire (Mise à jour en Temps Réel)</h3>
+    <pre>{{ registrationForm.value | json }}</pre>
+  </div>
+
+  <!-- Affichage des Données Soumises -->
+  @if (submittedData) {
+    <div class="submitted-data">
+      <h3>✅ Formulaire Soumis avec Succès!</h3>
+      <p>Les données suivantes ont été soumises:</p>
+      <pre>{{ submittedData | json }}</pre>
+    </div>
+  }
+
+  <!-- Concepts Clés -->
+  <div class="concepts">
+    <h3>🎓 Concepts Clés Démontrés:</h3>
+    <ul>
+      <li><strong>FormBuilder:</strong> Service pour créer facilement des FormGroups</li>
+      <li><strong>FormGroup:</strong> Groupe plusieurs FormControls ensemble</li>
+      <li><strong>FormControl:</strong> Contrôle de champ individuel (créé implicitement)</li>
+      <li><strong>FormArray:</strong> Tableau de contrôles pour les champs dynamiques</li>
+      <li><strong>Validateurs:</strong> required, email, minLength, pattern appliqués</li>
+      <li><strong>État du Formulaire:</strong> valid, dirty, touched, pristine suivi automatiquement</li>
+      <li><strong>Groupes Imbriqués:</strong> Grouper les contrôles connexes (personalInfo, contactInfo, passwords)</li>
+      <li><strong>Validateurs Personnalisés:</strong> Validateur passwordMismatch au niveau du groupe</li>
+      <li><strong>Contrôle Programmatique:</strong> patchValue(), setValue(), reset(), enable(), disable()</li>
+      <li><strong>Gestion des Erreurs:</strong> Afficher les messages en fonction de la validation</li>
+      <li><strong>Soumission:</strong> Accéder aux données du formulaire via registrationForm.value</li>
+      <li><strong>Champs Dynamiques:</strong> Ajouter/supprimer des emails avec FormArray</li>
+    </ul>
+  </div>
+
+  <!-- Avantages des Formulaires Réactifs -->
+  <div class="advantages">
+    <h3>💡 Avantages des Formulaires Réactifs:</h3>
+    <div class="advantage-grid">
+      <div class="advantage-card">
+        <h4>🎯 Contrôle Total</h4>
+        <p>Définition complète du formulaire en TypeScript avec accès programmatique</p>
+      </div>
+      <div class="advantage-card">
+        <h4>🧪 Testabilité</h4>
+        <p>Facile à tester car la logique est en TypeScript, pas en template</p>
+      </div>
+      <div class="advantage-card">
+        <h4>⚡ Réactivité</h4>
+        <p>Utilise les Observables de RxJS pour une programmation réactive</p>
+      </div>
+      <div class="advantage-card">
+        <h4>🔄 Champs Dynamiques</h4>
+        <p>FormArray permet d'ajouter/supprimer des champs facilement</p>
+      </div>
+      <div class="advantage-card">
+        <h4>📦 Réutilisabilité</h4>
+        <p>Validateurs et logique partagés entre composants</p>
+      </div>
+      <div class="advantage-card">
+        <h4>🎨 Flexibilité</h4>
+        <p>Implémenter des validations cross-field et des logiques complexes</p>
+      </div>
+    </div>
+  </div>
+</div>

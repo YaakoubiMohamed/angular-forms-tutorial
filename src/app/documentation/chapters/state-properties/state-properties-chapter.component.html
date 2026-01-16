@@ -27,7 +27,7 @@
   <h2 id="apercu">Aperçu</h2>
   <p>Chaque contrôle de formulaire (FormControl, FormGroup, FormArray) possède des propriétés qui reflètent son état actuel.</p>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                    PROPRIÉTÉS D'ÉTAT                             │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -49,7 +49,7 @@
   <h3>value</h3>
   <p>Retourne la valeur actuelle du contrôle.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">// FormControl
+  <div ><pre><code class="language-typescript">// FormControl
 const name = new FormControl('Jean');
 console.log(name.value);  // 'Jean'
 
@@ -70,7 +70,7 @@ console.log(phones.value);  // ['0601020304', '0102030405']</code></pre></div>
   <h3>getRawValue()</h3>
   <p>Retourne la valeur incluant les contrôles désactivés (disabled).</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   username: new FormControl('admin'),
   role: new FormControl(&lbrace; value: 'super-admin', disabled: true &rbrace;)
 &rbrace;);
@@ -81,7 +81,7 @@ console.log(form.getRawValue()); // &lbrace; username: 'admin', role: 'super-adm
   <h3>valueChanges</h3>
   <p>Observable qui émet à chaque changement de valeur.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
+  <div ><pre><code class="language-typescript">const email = new FormControl('');
 
 email.valueChanges.subscribe(value => &lbrace;
   console.log('Nouvelle valeur :', value);
@@ -103,7 +103,7 @@ email.valueChanges.pipe(
   <h3>valid / invalid</h3>
   <p>Indique si le contrôle passe toutes les validations.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('', [Validators.required, Validators.email]);
+  <div ><pre><code class="language-typescript">const email = new FormControl('', [Validators.required, Validators.email]);
 
 email.setValue('');
 console.log(email.valid);   // false
@@ -143,7 +143,7 @@ console.log(email.invalid); // false</code></pre></div>
     </tbody>
   </table>
 
-  <div ngNonBindable><pre><code class="language-typescript">const username = new FormControl('', [
+  <div ><pre><code class="language-typescript">const username = new FormControl('', [
   Validators.required
 ], [
   asyncUsernameValidator // Vérifie la disponibilité
@@ -158,7 +158,7 @@ username.statusChanges.subscribe(status => &lbrace;
   <h3>pending</h3>
   <p><code>true</code> quand une validation asynchrone est en cours.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('', [], [asyncEmailValidator]);
+  <div ><pre><code class="language-typescript">const email = new FormControl('', [], [asyncEmailValidator]);
 
 if (email.pending) &lbrace;
   console.log('Validation en cours...');
@@ -167,7 +167,7 @@ if (email.pending) &lbrace;
   <h3>errors</h3>
   <p>Objet contenant les erreurs de validation.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const password = new FormControl('abc', [
+  <div ><pre><code class="language-typescript">const password = new FormControl('abc', [
   Validators.required,
   Validators.minLength(8),
   Validators.pattern(/[A-Z]/)
@@ -188,7 +188,7 @@ if (password.hasError('minlength')) &lbrace;
   <h3>statusChanges</h3>
   <p>Observable qui émet à chaque changement de statut.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;...&rbrace;);
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;...&rbrace;);
 
 form.statusChanges.subscribe(status => &lbrace;
   if (status === 'VALID') &lbrace;
@@ -208,7 +208,7 @@ form.statusChanges.subscribe(status => &lbrace;
     <li><strong>dirty</strong> : <code>true</code> si la valeur a été modifiée</li>
   </ul>
 
-  <div ngNonBindable><pre><code class="language-typescript">const name = new FormControl('Jean');
+  <div ><pre><code class="language-typescript">const name = new FormControl('Jean');
 
 console.log(name.pristine); // true
 console.log(name.dirty);    // false
@@ -224,7 +224,7 @@ console.log(name.dirty);    // true</code></pre></div>
     <li><strong>untouched</strong> : <code>true</code> si le contrôle n'a jamais été touché</li>
   </ul>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
+  <div ><pre><code class="language-typescript">const email = new FormControl('');
 
 console.log(email.touched);   // false
 console.log(email.untouched); // true
@@ -241,7 +241,7 @@ console.log(email.untouched); // false</code></pre></div>
     <li><strong>enabled</strong> : <code>true</code> si le contrôle est activé</li>
   </ul>
 
-  <div ngNonBindable><pre><code class="language-typescript">const field = new FormControl('');
+  <div ><pre><code class="language-typescript">const field = new FormControl('');
 
 console.log(field.enabled);  // true
 console.log(field.disabled); // false
@@ -262,7 +262,7 @@ console.log(field.disabled); // false</code></pre></div>
 
   <h3>Modifier l'État Manuellement</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const control = new FormControl('');
+  <div ><pre><code class="language-typescript">const control = new FormControl('');
 
 // Marquer comme touché
 control.markAsTouched();
@@ -278,7 +278,7 @@ control.markAsTouched(&lbrace; emitEvent: false &rbrace;);   // Ne pas émettre 
 
   <h3>Pour les Groupes</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   name: new FormControl(''),
   email: new FormControl('')
 &rbrace;);
@@ -326,7 +326,7 @@ form.markAllAsTouched();</code></pre></div>
 
   <h3>Exemple de Style</h3>
 
-  <div ngNonBindable><pre><code class="language-css">/* Champ invalide et touché - bordure rouge */
+  <div ><pre><code class="language-css">/* Champ invalide et touché - bordure rouge */
 input.ng-invalid.ng-touched &lbrace;
   border: 2px solid #dc3545;
   background-color: #fff5f5;
@@ -352,7 +352,7 @@ input:disabled &lbrace;
   <h3>Inspecteur d'État</h3>
   <p>Outil pour déboguer l'état des contrôles :</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-state-inspector',
   template: `
     &lt;div class="inspector"&gt;
@@ -388,7 +388,7 @@ export class StateInspectorComponent &lbrace;
 
   <h3>Affichage Conditionnel des Erreurs</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;input 
       [formControl]="email" 
@@ -431,7 +431,7 @@ export class EmailFieldComponent &lbrace;
 
   <h3>Formulaire avec Avertissement de Modifications</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="form"&gt;
       &lt;input formControlName="title" placeholder="Titre"&gt;
@@ -487,7 +487,7 @@ export class EditFormComponent implements CanDeactivate &lbrace;
 
   <h3>Suivi de la Progression de Validation</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="registrationForm"&gt;
       &lt;div class="progress-bar"&gt;

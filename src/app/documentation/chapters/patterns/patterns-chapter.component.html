@@ -30,7 +30,7 @@
 
   <p>Understanding form patterns helps you choose the right approach for your application's complexity and requirements.</p>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                   FORM PATTERNS SPECTRUM                         │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -101,7 +101,7 @@
 
   <h3>Concept</h3>
 
-  <div ngNonBindable><pre><code>┌──────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌──────────────────────────────────────────────────────────────┐
 │                 TWO-WAY BINDING FLOW                          │
 └──────────────────────────────────────────────────────────────┘
 
@@ -126,7 +126,7 @@
 
   <h3>Implementation</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '&#64;angular/core';
 import &lbrace; FormsModule &rbrace; from '&#64;angular/forms';
 
 interface UserModel &lbrace;
@@ -238,7 +238,7 @@ export class SimpleFormComponent &lbrace;
 
   <h3>Concept</h3>
 
-  <div ngNonBindable><pre><code>┌──────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌──────────────────────────────────────────────────────────────┐
 │                  MODEL-DRIVEN ARCHITECTURE                    │
 └──────────────────────────────────────────────────────────────┘
 
@@ -267,7 +267,7 @@ export class SimpleFormComponent &lbrace;
 
   <h3>Implementation</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, inject, OnInit, OnDestroy &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component, inject, OnInit, OnDestroy &rbrace; from '&#64;angular/core';
 import &lbrace; CommonModule &rbrace; from '&#64;angular/common';
 import &lbrace; 
   ReactiveFormsModule, 
@@ -399,7 +399,7 @@ export class RegistrationComponent implements OnInit, OnDestroy &lbrace;
 
   <h3>Concept</h3>
 
-  <div ngNonBindable><pre><code>┌──────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌──────────────────────────────────────────────────────────────┐
 │                   IMMUTABILITY PATTERN                        │
 └──────────────────────────────────────────────────────────────┘
 
@@ -417,7 +417,7 @@ export class RegistrationComponent implements OnInit, OnDestroy &lbrace;
 
   <h3>Implementation with Signals (Angular 16+)</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, computed, signal, inject &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component, computed, signal, inject &rbrace; from '&#64;angular/core';
 import &lbrace; ReactiveFormsModule, FormBuilder, Validators &rbrace; from '&#64;angular/forms';
 
 interface UserFormData &lbrace;
@@ -504,7 +504,7 @@ export class ImmutableFormComponent &lbrace;
 
   <h3>NgRx Integration</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '&#64;angular/core';
 import &lbrace; Store &rbrace; from '&#64;ngrx/store';
 import &lbrace; FormBuilder, Validators &rbrace; from '&#64;angular/forms';
 import &lbrace; selectUserData &rbrace; from './store/user.selectors';
@@ -556,7 +556,7 @@ export class NgrxFormComponent &lbrace;
 
   <h3>Configuration Interface</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">interface FormFieldConfig &lbrace;
+  <div ><pre><code class="language-typescript">interface FormFieldConfig &lbrace;
   key: string;
   type: 'text' | 'email' | 'number' | 'select' | 'checkbox' | 'textarea';
   label: string;
@@ -577,7 +577,7 @@ interface FormConfig &lbrace;
 
   <h3>Dynamic Form Service</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Injectable &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Injectable &rbrace; from '&#64;angular/core';
 import &lbrace; FormBuilder, FormGroup, Validators, ValidatorFn &rbrace; from '&#64;angular/forms';
 
 &#64;Injectable(&lbrace; providedIn: 'root' &rbrace;)
@@ -735,7 +735,7 @@ export class DynamicFormComponent implements OnChanges &lbrace;
 
   <h3>Usage</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  <div ><pre><code class="language-typescript">&#64;Component(&lbrace;
   selector: 'app-survey',
   template: &#96;
     &lt;app-dynamic-form 
@@ -807,7 +807,7 @@ export class SurveyComponent &lbrace;
 
   <h3>Step Configuration</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">interface FormStep &lbrace;
+  <div ><pre><code class="language-typescript">interface FormStep &lbrace;
   id: string;
   title: string;
   fields: FormFieldConfig[];
@@ -991,7 +991,7 @@ export class MultiStepFormComponent &lbrace;
 
   <h3>Form Factory Service</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Injectable, inject &rbrace; from '&#64;angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Injectable, inject &rbrace; from '&#64;angular/core';
 import &lbrace; FormBuilder, FormGroup, Validators, AbstractControl &rbrace; from '&#64;angular/forms';
 
 &#64;Injectable(&lbrace; providedIn: 'root' &rbrace;)
@@ -1066,7 +1066,7 @@ export class FormFactoryService &lbrace;
 
   <h3>Using the Factory</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  <div ><pre><code class="language-typescript">&#64;Component(&lbrace;
   selector: 'app-checkout',
   template: &#96;
     &lt;form [formGroup]="orderForm" (ngSubmit)="placeOrder()"&gt;
@@ -1126,7 +1126,7 @@ export class CheckoutComponent &lbrace;
 
   <h3>Implementation</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; 
+  <div ><pre><code class="language-typescript">import &lbrace; 
   Component, 
   ChangeDetectionStrategy, 
   inject, 
@@ -1194,7 +1194,7 @@ export class OptimizedFormComponent &lbrace;
 
   <h3>Best Practices for OnPush</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  <div ><pre><code class="language-typescript">&#64;Component(&lbrace;
   changeDetection: ChangeDetectionStrategy.OnPush
 &rbrace;)
 export class OnPushFormComponent &lbrace;

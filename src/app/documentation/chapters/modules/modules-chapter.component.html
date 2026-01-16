@@ -28,7 +28,7 @@
 
   <p>Angular provides two separate modules for forms functionality. Understanding their differences and proper usage is essential for building Angular applications.</p>
 
-  <div ngNonBindable><pre><code class="language-text">┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code class="language-text">┌─────────────────────────────────────────────────────────────────┐
 │                    @angular/forms PACKAGE                        │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -108,7 +108,7 @@
 
   <h3>Import</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';</code></pre></div>
+  <div ><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';</code></pre></div>
 
   <h3>Exported Directives</h3>
 
@@ -176,7 +176,7 @@
 
   <h3>Basic Setup (NgModule)</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// app.module.ts
+  <div ><pre><code class="language-typescript">// app.module.ts
 import &lbrace; NgModule &rbrace; from '@angular/core';
 import &lbrace; BrowserModule &rbrace; from '@angular/platform-browser';
 import &lbrace; FormsModule &rbrace; from '@angular/forms';
@@ -199,7 +199,7 @@ export class AppModule &lbrace; &rbrace;</code></pre></div>
 
   <h3>Usage Example</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// contact-form.component.ts
+  <div ><pre><code class="language-typescript">// contact-form.component.ts
 @Component(&lbrace;
   selector: 'app-contact-form',
   template: `
@@ -233,7 +233,7 @@ export class ContactFormComponent &lbrace;
 
   <h3>Import</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';</code></pre></div>
+  <div ><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';</code></pre></div>
 
   <h3>Exported Classes</h3>
 
@@ -309,7 +309,7 @@ export class ContactFormComponent &lbrace;
 
   <h3>Basic Setup (NgModule)</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// app.module.ts
+  <div ><pre><code class="language-typescript">// app.module.ts
 import &lbrace; NgModule &rbrace; from '@angular/core';
 import &lbrace; BrowserModule &rbrace; from '@angular/platform-browser';
 import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';
@@ -332,7 +332,7 @@ export class AppModule &lbrace; &rbrace;</code></pre></div>
 
   <h3>Usage Example</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// registration-form.component.ts
+  <div ><pre><code class="language-typescript">// registration-form.component.ts
 import &lbrace; Component &rbrace; from '@angular/core';
 import &lbrace; FormBuilder, FormGroup, Validators &rbrace; from '@angular/forms';
 
@@ -373,7 +373,7 @@ export class RegistrationFormComponent &lbrace;
 
   <p>You can use both modules in the same application for different forms:</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@NgModule(&lbrace;
+  <div ><pre><code class="language-typescript">@NgModule(&lbrace;
   imports: [
     FormsModule,         // For template-driven forms
     ReactiveFormsModule  // For reactive forms
@@ -385,7 +385,7 @@ export class AppModule &lbrace; &rbrace;</code></pre></div>
 
   <p>Each feature module that uses forms needs to import the appropriate module:</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">// user.module.ts
+  <div ><pre><code class="language-typescript">// user.module.ts
 @NgModule(&lbrace;
   imports: [
     CommonModule,
@@ -402,7 +402,7 @@ export class UserModule &lbrace; &rbrace;</code></pre></div>
 
   <p>For large applications, create a shared forms module:</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">// shared/forms-shared.module.ts
+  <div ><pre><code class="language-typescript">// shared/forms-shared.module.ts
 import &lbrace; NgModule &rbrace; from '@angular/core';
 import &lbrace; FormsModule, ReactiveFormsModule &rbrace; from '@angular/forms';
 
@@ -430,7 +430,7 @@ import &lbrace; FormFieldComponent &rbrace; from './form-field.component';
 &rbrace;)
 export class FormsSharedModule &lbrace; &rbrace;</code></pre></div>
 
-  <div ngNonBindable><pre><code class="language-typescript">// feature.module.ts
+  <div ><pre><code class="language-typescript">// feature.module.ts
 @NgModule(&lbrace;
   imports: [
     CommonModule,
@@ -447,7 +447,7 @@ export class FeatureModule &lbrace; &rbrace;</code></pre></div>
 
   <h3>Standalone with ReactiveFormsModule</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '@angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '@angular/core';
 import &lbrace; ReactiveFormsModule, FormBuilder, Validators &rbrace; from '@angular/forms';
 import &lbrace; CommonModule &rbrace; from '@angular/common';
 
@@ -483,7 +483,7 @@ export class LoginComponent &lbrace;
 
   <h3>Standalone with FormsModule</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '@angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '@angular/core';
 import &lbrace; FormsModule &rbrace; from '@angular/forms';
 import &lbrace; CommonModule &rbrace; from '@angular/common';
 
@@ -509,7 +509,7 @@ export class SearchComponent &lbrace;
 
   <h3>Modern Angular (v19+) with inject()</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '@angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '@angular/core';
 import &lbrace; ReactiveFormsModule, FormBuilder, Validators &rbrace; from '@angular/forms';
 
 @Component(&lbrace;
@@ -541,7 +541,7 @@ export class ModernFormComponent &lbrace;
 
   <h3>Lazy-Loaded Forms Module</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// forms-feature.module.ts
+  <div ><pre><code class="language-typescript">// forms-feature.module.ts
 @NgModule(&lbrace;
   imports: [
     CommonModule,
@@ -569,7 +569,7 @@ const routes: Routes = [
 
   <p>Provide form-related services at module level:</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">// forms-core.module.ts
+  <div ><pre><code class="language-typescript">// forms-core.module.ts
 import &lbrace; NgModule, ModuleWithProviders &rbrace; from '@angular/core';
 import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';
 
@@ -602,7 +602,7 @@ export class AppModule &lbrace; &rbrace;</code></pre></div>
 
   <h3>Testing Configuration</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// form.component.spec.ts
+  <div ><pre><code class="language-typescript">// form.component.spec.ts
 import &lbrace; ComponentFixture, TestBed &rbrace; from '@angular/core/testing';
 import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';
 import &lbrace; FormComponent &rbrace; from './form.component';

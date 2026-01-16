@@ -27,7 +27,7 @@
 
   <p>Angular Forms repose sur quatre classes principales qui forment une hiérarchie de contrôles. Toutes ces classes héritent de <code>AbstractControl</code>.</p>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                    HIÉRARCHIE DES CLASSES                        │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -47,7 +47,7 @@
 
   <h3>Import</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; 
+  <div ><pre><code class="language-typescript">import &lbrace; 
   FormControl, 
   FormGroup, 
   FormArray, 
@@ -64,7 +64,7 @@
 
   <h3>Signature du Constructeur</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">new FormControl&lt;T&gt;(
+  <div ><pre><code class="language-typescript">new FormControl&lt;T&gt;(
   value: T,
   validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions,
   asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
@@ -72,7 +72,7 @@
 
   <h3>Options de Configuration</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">interface FormControlOptions &lbrace;
+  <div ><pre><code class="language-typescript">interface FormControlOptions &lbrace;
   validators?: ValidatorFn | ValidatorFn[];
   asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[];
   updateOn?: 'change' | 'blur' | 'submit';
@@ -81,7 +81,7 @@
 
   <h3>Exemples de Création</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// Création simple
+  <div ><pre><code class="language-typescript">// Création simple
 const name = new FormControl('');
 
 // Avec valeur initiale
@@ -113,7 +113,7 @@ const requiredName = new FormControl('', &lbrace;
 
   <h3>Typed Forms (Angular 14+)</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// Typage explicite
+  <div ><pre><code class="language-typescript">// Typage explicite
 const email = new FormControl&lt;string&gt;('');
 const age = new FormControl&lt;number | null&gt;(null);
 
@@ -175,7 +175,7 @@ const required = new FormControl('', &lbrace; nonNullable: true &rbrace;);
 
   <h3>Exemple Complet</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-email-input',
   template: `
     &lt;input [formControl]="emailControl" placeholder="Email"&gt;
@@ -201,7 +201,7 @@ export class EmailInputComponent &lbrace;
 
   <h3>Signature du Constructeur</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">new FormGroup&lt;T&gt;(
+  <div ><pre><code class="language-typescript">new FormGroup&lt;T&gt;(
   controls: T,
   validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions,
   asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
@@ -209,7 +209,7 @@ export class EmailInputComponent &lbrace;
 
   <h3>Création</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// Création basique
+  <div ><pre><code class="language-typescript">// Création basique
 const form = new FormGroup(&lbrace;
   firstName: new FormControl(''),
   lastName: new FormControl(''),
@@ -238,7 +238,7 @@ const form = new FormGroup(&lbrace;
 
   <h3>Accéder aux Contrôles</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   email: new FormControl(''),
   password: new FormControl('')
 &rbrace;);
@@ -256,7 +256,7 @@ const email = form.controls['email'];</code></pre></div>
 
   <h3>setValue vs patchValue</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   firstName: new FormControl(''),
   lastName: new FormControl(''),
   email: new FormControl('')
@@ -277,7 +277,7 @@ form.patchValue(&lbrace;
 
   <h3>Exemple Complet</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-user-form',
   template: `
     &lt;form [formGroup]="userForm" (ngSubmit)="onSubmit()"&gt;
@@ -321,7 +321,7 @@ export class UserFormComponent &lbrace;
 
   <h3>Signature du Constructeur</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">new FormArray&lt;T&gt;(
+  <div ><pre><code class="language-typescript">new FormArray&lt;T&gt;(
   controls: T[],
   validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions,
   asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[]
@@ -329,7 +329,7 @@ export class UserFormComponent &lbrace;
 
   <h3>Création et Manipulation</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// Création
+  <div ><pre><code class="language-typescript">// Création
 const phones = new FormArray([
   new FormControl(''),
   new FormControl('')
@@ -355,7 +355,7 @@ console.log(phones.length);</code></pre></div>
 
   <h3>FormArray de FormGroups</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const users = new FormArray([
+  <div ><pre><code class="language-typescript">const users = new FormArray([
   new FormGroup(&lbrace;
     name: new FormControl(''),
     email: new FormControl('')
@@ -374,7 +374,7 @@ users.push(new FormGroup(&lbrace;
 
   <h3>Exemple Complet - Liste Dynamique</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-phone-list',
   template: `
     &lt;form [formGroup]="form"&gt;
@@ -423,7 +423,7 @@ export class PhoneListComponent &lbrace;
 
   <h3>Injection</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '@angular/core';
+  <div ><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '@angular/core';
 import &lbrace; FormBuilder &rbrace; from '@angular/forms';
 
 @Component(&lbrace;...&rbrace;)
@@ -461,7 +461,7 @@ export class MyComponent &lbrace;
 
   <h3>Syntaxe Abrégée</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// Sans FormBuilder
+  <div ><pre><code class="language-typescript">// Sans FormBuilder
 const form = new FormGroup(&lbrace;
   email: new FormControl('', Validators.required),
   password: new FormControl('', [Validators.required, Validators.minLength(8)])
@@ -475,7 +475,7 @@ const form = this.fb.group(&lbrace;
 
   <h3>Syntaxe Complète</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = this.fb.group(&lbrace;
+  <div ><pre><code class="language-typescript">const form = this.fb.group(&lbrace;
   // [valeur, validateurs sync, validateurs async]
   email: ['', [Validators.required, Validators.email], [asyncEmailValidator]],
   
@@ -500,7 +500,7 @@ const form = this.fb.group(&lbrace;
 
   <h3>NonNullableFormBuilder (Angular 14+)</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
+  <div ><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
 export class MyComponent &lbrace;
   private fb = inject(FormBuilder);
   
@@ -519,7 +519,7 @@ export class MyComponent &lbrace;
 
   <h3>Exemple Complet</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-registration',
   template: `
     &lt;form [formGroup]="registrationForm" (ngSubmit)="onSubmit()"&gt;

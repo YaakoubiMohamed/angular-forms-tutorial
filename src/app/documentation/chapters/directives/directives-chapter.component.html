@@ -22,7 +22,7 @@
 
   <p>Les directives connectent les éléments de formulaire du template aux instances de contrôle dans le code TypeScript.</p>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                    DIRECTIVES DE FORMULAIRES                     │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -46,7 +46,7 @@
 
   <p>Lie un élément <code>&lt;form&gt;</code> à une instance de <code>FormGroup</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule, FormGroup, FormControl &rbrace; from '@angular/forms';
+  <div ><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule, FormGroup, FormControl &rbrace; from '@angular/forms';
 
 @Component(&lbrace;
   imports: [ReactiveFormsModule],
@@ -67,7 +67,7 @@ export class ProfileComponent &lbrace;
 
   <p>Lie un élément de saisie à un <code>FormControl</code> par son nom (chaîne).</p>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;form [formGroup]="profileForm"&gt;
+  <div ><pre><code class="language-html">&lt;form [formGroup]="profileForm"&gt;
   &lt;input formControlName="firstName" placeholder="Prénom"&gt;
   &lt;input formControlName="lastName" placeholder="Nom"&gt;
 &lt;/form&gt;</code></pre></div>
@@ -78,7 +78,7 @@ export class ProfileComponent &lbrace;
 
   <p>Lie un groupe d'éléments à un <code>FormGroup</code> imbriqué.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="userForm"&gt;
       &lt;input formControlName="username"&gt;
@@ -106,7 +106,7 @@ export class UserComponent &lbrace;
 
   <p>Lie un élément conteneur à un <code>FormArray</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="orderForm"&gt;
       &lt;div formArrayName="items"&gt;
@@ -134,7 +134,7 @@ export class OrderComponent &lbrace;
 
   <p>Lie directement un élément à une instance de <code>FormControl</code> (sans FormGroup parent).</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   imports: [ReactiveFormsModule],
   template: `
     &lt;input [formControl]="searchControl" placeholder="Rechercher..."&gt;
@@ -159,7 +159,7 @@ export class SearchComponent &lbrace;
 
   <p>Automatiquement ajouté à tout <code>&lt;form&gt;</code> quand <code>FormsModule</code> est importé. Crée une instance de <code>NgForm</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';
+  <div ><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';
 
 @Component(&lbrace;
   imports: [FormsModule],
@@ -183,11 +183,11 @@ export class MyComponent &lbrace;
 
   <h4>Lecture Seule</h4>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;input [ngModel]="userName" name="userName"&gt;</code></pre></div>
+  <div ><pre><code class="language-html">&lt;input [ngModel]="userName" name="userName"&gt;</code></pre></div>
 
   <h4>Two-Way Binding (Banana-in-a-box)</h4>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   imports: [FormsModule],
   template: `
     &lt;input [(ngModel)]="user.name" name="name" placeholder="Nom"&gt;
@@ -206,7 +206,7 @@ export class UserComponent &lbrace;
 
   <h4>ngModel avec Validation</h4>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;input 
+  <div ><pre><code class="language-html">&lt;input 
   [(ngModel)]="email" 
   name="email"
   required
@@ -222,7 +222,7 @@ export class UserComponent &lbrace;
 
   <p>Groupe plusieurs contrôles <code>ngModel</code> en un sous-objet.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   imports: [FormsModule],
   template: `
     &lt;form #userForm="ngForm"&gt;
@@ -248,7 +248,7 @@ export class UserFormComponent &lbrace;
 &rbrace;</code></pre></div>
 
   <p><strong>Sortie</strong> :</p>
-  <div ngNonBindable><pre><code class="language-json">&lbrace;
+  <div ><pre><code class="language-json">&lbrace;
   "name": "Jean Dupont",
   "address": &lbrace;
     "street": "123 Rue de Paris",
@@ -301,7 +301,7 @@ export class UserFormComponent &lbrace;
 
   <h3>Quand Utiliser Quelle Directive</h3>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                ARBRE DE DÉCISION - DIRECTIVES                    │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -329,7 +329,7 @@ export class UserFormComponent &lbrace;
   <h3>Exemples Équivalents</h3>
 
   <p><strong>Template-Driven</strong>:</p>
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   imports: [FormsModule],
   template: `
     &lt;form #f="ngForm" (ngSubmit)="save(f.value)"&gt;
@@ -348,7 +348,7 @@ export class TemplateFormComponent &lbrace;
 &rbrace;</code></pre></div>
 
   <p><strong>Reactive Forms</strong> (équivalent):</p>
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   imports: [ReactiveFormsModule],
   template: `
     &lt;form [formGroup]="form" (ngSubmit)="save()"&gt;
@@ -379,7 +379,7 @@ export class ReactiveFormComponent &lbrace;
 
   <h3>1. Ne Jamais Mélanger les Approches</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- ❌ INCORRECT - Ne pas mélanger Reactive et Template-Driven --&gt;
+  <div ><pre><code class="language-html">&lt;!-- ❌ INCORRECT - Ne pas mélanger Reactive et Template-Driven --&gt;
 &lt;form [formGroup]="myForm"&gt;
   &lt;input [(ngModel)]="name" name="name"&gt;
 &lt;/form&gt;
@@ -391,7 +391,7 @@ export class ReactiveFormComponent &lbrace;
 
   <h3>2. Toujours Utiliser l'Attribut name avec ngModel</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- ❌ INCORRECT --&gt;
+  <div ><pre><code class="language-html">&lt;!-- ❌ INCORRECT --&gt;
 &lt;input [(ngModel)]="name"&gt;
 
 &lt;!-- ✅ CORRECT --&gt;
@@ -399,7 +399,7 @@ export class ReactiveFormComponent &lbrace;
 
   <h3>3. Utiliser les Références de Template pour l'Accès Local</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- Accéder au contrôle dans le template --&gt;
+  <div ><pre><code class="language-html">&lt;!-- Accéder au contrôle dans le template --&gt;
 &lt;input formControlName="email" #emailInput&gt;
 &lt;input ngModel name="email" #emailCtrl="ngModel"&gt;
 

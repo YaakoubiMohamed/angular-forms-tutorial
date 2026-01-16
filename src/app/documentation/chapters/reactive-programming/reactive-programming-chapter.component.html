@@ -29,7 +29,7 @@
 
   <p>Angular Forms s'intègre parfaitement avec RxJS grâce aux Observables <code>valueChanges</code> et <code>statusChanges</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">┌─────────────────────────────────────────────────────────────────┐
+  <div ><pre><code class="language-typescript">┌─────────────────────────────────────────────────────────────────┐
 │                    FLUX RÉACTIF                                  │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -62,7 +62,7 @@
 
   <h3>Syntaxe de Base</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormControl &rbrace; from '@angular/forms';
+  <div ><pre><code class="language-typescript">import &lbrace; FormControl &rbrace; from '@angular/forms';
 
 const searchControl = new FormControl('');
 
@@ -73,7 +73,7 @@ searchControl.valueChanges.subscribe(value => &lbrace;
 
   <h3>Sur FormControl</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
+  <div ><pre><code class="language-typescript">const email = new FormControl('');
 
 email.valueChanges.subscribe(value => &lbrace;
   console.log('Email :', value);
@@ -81,7 +81,7 @@ email.valueChanges.subscribe(value => &lbrace;
 
   <h3>Sur FormGroup</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
+  <div ><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   firstName: new FormControl(''),
   lastName: new FormControl('')
 &rbrace;);
@@ -99,7 +99,7 @@ form.get('firstName')?.valueChanges.subscribe(value => &lbrace;
 
   <h3>Sur FormArray</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const items = new FormArray([
+  <div ><pre><code class="language-typescript">const items = new FormArray([
   new FormControl(''),
   new FormControl('')
 ]);
@@ -148,7 +148,7 @@ items.valueChanges.subscribe(values => &lbrace;
 
   <h3>Exemple</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('', [
+  <div ><pre><code class="language-typescript">const email = new FormControl('', [
   Validators.required,
   Validators.email
 ], [
@@ -180,7 +180,7 @@ email.statusChanges.subscribe(status => &lbrace;
 
   <p>Attend un délai après la dernière émission avant de transmettre.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; debounceTime &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; debounceTime &rbrace; from 'rxjs/operators';
 
 searchControl.valueChanges.pipe(
   debounceTime(300)  // Attend 300ms
@@ -192,7 +192,7 @@ searchControl.valueChanges.pipe(
 
   <p>Émet uniquement si la valeur est différente de la précédente.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; distinctUntilChanged &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; distinctUntilChanged &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
   distinctUntilChanged()
@@ -204,7 +204,7 @@ control.valueChanges.pipe(
 
   <p>Filtre les valeurs selon une condition.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; filter &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; filter &rbrace; from 'rxjs/operators';
 
 searchControl.valueChanges.pipe(
   filter(value => value.length >= 3)  // Au moins 3 caractères
@@ -216,7 +216,7 @@ searchControl.valueChanges.pipe(
 
   <p>Transforme les valeurs émises.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; map &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; map &rbrace; from 'rxjs/operators';
 
 emailControl.valueChanges.pipe(
   map(value => value.toLowerCase().trim())
@@ -228,7 +228,7 @@ emailControl.valueChanges.pipe(
 
   <p>Annule la requête précédente et lance une nouvelle.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; switchMap &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; switchMap &rbrace; from 'rxjs/operators';
 
 searchControl.valueChanges.pipe(
   debounceTime(300),
@@ -242,7 +242,7 @@ searchControl.valueChanges.pipe(
 
   <p>Exécute un effet secondaire sans modifier le flux.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; tap &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; tap &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
   tap(value => console.log('Valeur reçue :', value)),
@@ -255,7 +255,7 @@ control.valueChanges.pipe(
 
   <p>Émet une valeur initiale avant les autres émissions.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; startWith &rbrace; from 'rxjs/operators';
+  <div ><pre><code class="language-typescript">import &lbrace; startWith &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
   startWith(control.value)  // Émet la valeur initiale
@@ -267,7 +267,7 @@ control.valueChanges.pipe(
 
   <p>Combine plusieurs Observables.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; combineLatest &rbrace; from 'rxjs';
+  <div ><pre><code class="language-typescript">import &lbrace; combineLatest &rbrace; from 'rxjs';
 
 combineLatest([
   this.form.get('minPrice')!.valueChanges.pipe(startWith(0)),
@@ -328,7 +328,7 @@ export class AutocompleteComponent implements OnInit, OnDestroy &lbrace;
 
   <h3>Sauvegarde Automatique</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="form"&gt;
       &lt;input formControlName="title" placeholder="Titre"&gt;
@@ -421,7 +421,7 @@ export class ConditionalValidationComponent implements OnInit &lbrace;
 
   <h3>Synchronisation de Champs</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="form"&gt;
       &lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
@@ -459,7 +459,7 @@ export class SlugSyncComponent implements OnInit &lbrace;
 
   <h3>Filtrage en Temps Réel</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
+  <div ><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="filterForm"&gt;
       &lt;input formControlName="search" placeholder="Rechercher..."&gt;
@@ -543,7 +543,7 @@ export class MultiStepFormComponent implements OnInit &lbrace;
 
   <h3>Gestion de la Mémoire</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
+  <div ><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
 export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
   private destroy$ = new Subject&lt;void&gt;();
   
@@ -574,7 +574,7 @@ export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
 
   <h3>1. Toujours se Désabonner</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// ✅ Utiliser takeUntil
+  <div ><pre><code class="language-typescript">// ✅ Utiliser takeUntil
 private destroy$ = new Subject&lt;void&gt;();
 
 ngOnInit() &lbrace;
@@ -591,7 +591,7 @@ ngOnDestroy() &lbrace;
 
   <h3>2. Éviter les Effets en Cascade</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// ❌ Risque de boucle infinie
+  <div ><pre><code class="language-typescript">// ❌ Risque de boucle infinie
 control1.valueChanges.subscribe(v => control2.setValue(v));
 control2.valueChanges.subscribe(v => control1.setValue(v));
 
@@ -602,7 +602,7 @@ control1.valueChanges.subscribe(v => &lbrace;
 
   <h3>3. Utiliser startWith pour la Valeur Initiale</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// ✅ Obtenir la valeur initiale immédiatement
+  <div ><pre><code class="language-typescript">// ✅ Obtenir la valeur initiale immédiatement
 control.valueChanges.pipe(
   startWith(control.value)
 ).subscribe(value => &lbrace;

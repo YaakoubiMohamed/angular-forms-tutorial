@@ -50,7 +50,7 @@
 
   <h3>Import</h3>
 
-  <pre><code class="language-typescript">import { Validators, ValidatorFn, AsyncValidatorFn } from '@angular/forms';</code></pre>
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Validators, ValidatorFn, AsyncValidatorFn &rbrace; from '&#64;angular/forms';</code></pre></div>
 
   <hr>
 
@@ -82,22 +82,22 @@
       <tr>
         <td><code>Validators.min(n)</code></td>
         <td>Valeur minimum</td>
-        <td><code>&lbrace; min: { min: n, actual: x } &rbrace;</code></td>
+        <td><code>&lbrace; min: &lbrace; min: n, actual: x &rbrace; &rbrace;</code></td>
       </tr>
       <tr>
         <td><code>Validators.max(n)</code></td>
         <td>Valeur maximum</td>
-        <td><code>&lbrace; max: { max: n, actual: x } &rbrace;</code></td>
+        <td><code>&lbrace; max: &lbrace; max: n, actual: x &rbrace; &rbrace;</code></td>
       </tr>
       <tr>
         <td><code>Validators.minLength(n)</code></td>
         <td>Longueur minimum</td>
-        <td><code>&lbrace; minlength: { requiredLength: n, actualLength: x } &rbrace;</code></td>
+        <td><code>&lbrace; minlength: &lbrace; requiredLength: n, actualLength: x &rbrace; &rbrace;</code></td>
       </tr>
       <tr>
         <td><code>Validators.maxLength(n)</code></td>
         <td>Longueur maximum</td>
-        <td><code>&lbrace; maxlength: { requiredLength: n, actualLength: x } &rbrace;</code></td>
+        <td><code>&lbrace; maxlength: &lbrace; requiredLength: n, actualLength: x &rbrace; &rbrace;</code></td>
       </tr>
       <tr>
         <td><code>Validators.email</code></td>
@@ -115,7 +115,7 @@
         <td><code>null</code></td>
       </tr>
     </tbody>
-  </table></div>
+  </table>
 
   <h3>Exemples d'Utilisation</h3>
 
@@ -344,15 +344,15 @@ export class RegisterComponent &lbrace;
 
   <h3>Indicateur de Chargement</h3>
 
-  <pre><code class="language-html">&lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
+  <div ngNonBindable><pre><code class="language-html">&lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
 
-@if (form.get('username')?.pending) {
+&#64;if (form.get('username')?.pending) &lbrace;
   &lt;span&gt;Vérification en cours...&lt;/span&gt;
-}
+&rbrace;
 
-@if (form.get('username')?.hasError('usernameTaken')) {
+&#64;if (form.get('username')?.hasError('usernameTaken')) &lbrace;
   &lt;span&gt;Ce nom d'utilisateur est déjà pris&lt;/span&gt;
-}</code></pre>
+&rbrace;</code></pre></div>
 
   <hr>
 
@@ -418,17 +418,17 @@ const contactForm = new FormGroup(&lbrace;
 
   <h3>Afficher les Erreurs Cross-Field</h3>
 
-  <pre><code class="language-html">&lt;form [formGroup]="form"&gt;
+  <div ngNonBindable><pre><code class="language-html">&lt;form [formGroup]="form"&gt;
   &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
   &lt;input formControlName="confirmPassword" type="password" placeholder="Confirmer"&gt;
   
   &lt;!-- Erreur au niveau du groupe --&gt;
-  @if (form.hasError('passwordMismatch')) {
+  &#64;if (form.hasError('passwordMismatch')) &lbrace;
     &lt;div class="error"&gt;
       Les mots de passe ne correspondent pas
     &lt;/div&gt;
-  }
-&lt;/form&gt;</code></pre>
+  &rbrace;
+&lt;/form&gt;</code></pre></div>
 
   <hr>
 
@@ -436,22 +436,22 @@ const contactForm = new FormGroup(&lbrace;
 
   <h3>Composant de Message d'Erreur Réutilisable</h3>
 
-  <pre><code class="language-typescript">@Component({
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
   selector: 'app-form-error',
   standalone: true,
   template: `
-    @if (control && control.invalid && control.touched) {
+    &#64;if (control && control.invalid && control.touched) &lbrace;
       &lt;div class="error-message"&gt;
-        @for (error of errorMessages; track error.key) {
-          @if (control.hasError(error.key)) {
-            &lt;p&gt;{{ error.message }}&lt;/p&gt;
-          }
-        }
+        &#64;for (error of errorMessages; track error.key) &lbrace;
+          &#64;if (control.hasError(error.key)) &lbrace;
+            &lt;p&gt;$&lbrace;&lbrace; error.message &rbrace;&rbrace;&lt;/p&gt;
+          &rbrace;
+        &rbrace;
       &lt;/div&gt;
-    }
+    &rbrace;
   `,
   styles: [`
-    .error-message {
+    .error-message &lbrace;
       color: #dc3545;
       font-size: 0.875rem;
       margin-top: 0.25rem;
@@ -459,8 +459,8 @@ const contactForm = new FormGroup(&lbrace;
   `]
 &rbrace;)
 export class FormErrorComponent &lbrace;
-  @Input() control: AbstractControl | null = null;
-  @Input() errorMessages: &lbrace; key: string; message: string &rbrace;[] = [];
+  &#64;Input() control: AbstractControl | null = null;
+  &#64;Input() errorMessages: &lbrace; key: string; message: string &rbrace;[] = [];
 &rbrace;</code></pre></div>
 
   <h3>Utilisation</h3>

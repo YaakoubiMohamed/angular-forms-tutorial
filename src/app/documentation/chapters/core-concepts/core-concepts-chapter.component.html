@@ -56,19 +56,19 @@ const allErrors = this.form.errors;</code></pre>
   <h4>3. Basé sur les Observables</h4>
   <p>Les changements sont émis via des flux RxJS, permettant des patterns réactifs puissants :</p>
 
-  <pre><code class="language-typescript">this.form.get('email')?.valueChanges.pipe(
+  <div ngNonBindable><pre><code class="language-typescript">this.form.get('email')?.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged(),
   switchMap(email => this.validateEmail(email))
-).subscribe(result => {
+).subscribe(result => &lbrace;
   console.log('Résultat de validation:', result);
-});</code></pre>
+&rbrace;);</code></pre></div>
 
   <h3>Exemple d'Implémentation</h3>
-  <pre><code class="language-typescript">import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, inject &rbrace; from '&#64;angular/core';
+import &lbrace; ReactiveFormsModule, FormBuilder, Validators &rbrace; from '&#64;angular/forms';
 
-@Component({
+&#64;Component(&lbrace;
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule],
@@ -79,21 +79,21 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
       &lt;button type="submit" [disabled]="loginForm.invalid"&gt;Connexion&lt;/button&gt;
     &lt;/form&gt;
   `
-})
-export class LoginComponent {
+&rbrace;)
+export class LoginComponent &lbrace;
   private fb = inject(FormBuilder);
   
-  loginForm = this.fb.group({
+  loginForm = this.fb.group(&lbrace;
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]]
-  });
+  &rbrace;);
   
-  onSubmit() {
-    if (this.loginForm.valid) {
+  onSubmit() &lbrace;
+    if (this.loginForm.valid) &lbrace;
       console.log('Données du formulaire:', this.loginForm.value);
-    }
-  }
-}</code></pre>
+    &rbrace;
+  &rbrace;
+&rbrace;</code></pre></div>
 
   <hr>
 
@@ -116,24 +116,24 @@ export class LoginComponent {
   <h4>2. Two-Way Binding Automatique</h4>
   <p>Les changements sont automatiquement synchronisés entre le modèle et la vue :</p>
 
-  <pre><code class="language-typescript">@Component({...})
-export class UserComponent {
-  user = {
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;...&rbrace;)
+export class UserComponent &lbrace;
+  user = &lbrace;
     email: '',
     password: ''
-  };
+  &rbrace;;
   
   // user.email est automatiquement mis à jour
   // quand l'utilisateur tape dans l'input
-}</code></pre>
+&rbrace;</code></pre></div>
 
   <h4>3. Moins de Code TypeScript</h4>
   <p>Le composant reste simple :</p>
 
-  <pre><code class="language-typescript">import { Component } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component &rbrace; from '&#64;angular/core';
+import &lbrace; FormsModule, NgForm &rbrace; from '&#64;angular/forms';
 
-@Component({
+&#64;Component(&lbrace;
   selector: 'app-contact',
   standalone: true,
   imports: [FormsModule],
@@ -145,16 +145,16 @@ import { FormsModule, NgForm } from '@angular/forms';
       &lt;button type="submit"&gt;Envoyer&lt;/button&gt;
     &lt;/form&gt;
   `
-})
-export class ContactComponent {
-  contact = { name: '', email: '', message: '' };
+&rbrace;)
+export class ContactComponent &lbrace;
+  contact = &lbrace; name: '', email: '', message: '' &rbrace;;
   
-  onSubmit(form: NgForm) {
-    if (form.valid) {
+  onSubmit(form: NgForm) &lbrace;
+    if (form.valid) &lbrace;
       console.log('Contact:', this.contact);
-    }
-  }
-}</code></pre>
+    &rbrace;
+  &rbrace;
+&rbrace;</code></pre></div>
 
   <hr>
 

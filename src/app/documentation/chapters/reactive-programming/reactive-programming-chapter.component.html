@@ -1,5 +1,5 @@
 <div class="chapter-content" (click)="onAnchorClick($event)">
-  <h1>Programmation Réactive</h1>
+  <h1>Programmation Rï¿½active</h1>
 
   <div style="text-align: center;">
     <p><strong>Angular Forms - RxJS et Observables</strong></p>
@@ -12,53 +12,53 @@
 
   <hr>
 
-  <h2 id="table-des-matieres">Table des Matières</h2>
+  <h2 id="table-des-matieres">Table des Matiï¿½res</h2>
 
   <ul>
-    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#apercu">Aperï¿½u</a></li>
     <li><a href="#valuechanges">valueChanges</a></li>
     <li><a href="#statuschanges">statusChanges</a></li>
-    <li><a href="#operateurs-rxjs-essentiels">Opérateurs RxJS Essentiels</a></li>
-    <li><a href="#patterns-avances">Patterns Avancés</a></li>
+    <li><a href="#operateurs-rxjs-essentiels">Opï¿½rateurs RxJS Essentiels</a></li>
+    <li><a href="#patterns-avances">Patterns Avancï¿½s</a></li>
     <li><a href="#exemples-pratiques">Exemples Pratiques</a></li>
   </ul>
 
   <hr>
 
-  <h2 id="apercu">Aperçu</h2>
+  <h2 id="apercu">Aperï¿½u</h2>
 
-  <p>Angular Forms s'intègre parfaitement avec RxJS grâce aux Observables <code>valueChanges</code> et <code>statusChanges</code>.</p>
+  <p>Angular Forms s'intï¿½gre parfaitement avec RxJS grï¿½ce aux Observables <code>valueChanges</code> et <code>statusChanges</code>.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">+-----------------------------------------------------------------+
-¦                    FLUX RÉACTIF                                  ¦
+ï¿½                    FLUX Rï¿½ACTIF                                  ï¿½
 +-----------------------------------------------------------------+
 
     +---------+        +-------------+        +-------------+
-    ¦ Saisie  ¦  ---?  ¦ FormControl ¦  ---?  ¦ Observable  ¦
-    ¦ Clavier ¦        ¦             ¦        ¦             ¦
+    ï¿½ Saisie  ï¿½  ---?  ï¿½ FormControl ï¿½  ---?  ï¿½ Observable  ï¿½
+    ï¿½ Clavier ï¿½        ï¿½             ï¿½        ï¿½             ï¿½
     +---------+        +-------------+        +-------------+
-                              ¦                      ¦
+                              ï¿½                      ï¿½
                               ?                      ?
-                       valueChanges           Opérateurs RxJS
+                       valueChanges           Opï¿½rateurs RxJS
                        statusChanges          (map, filter, etc.)
-                              ¦                      ¦
+                              ï¿½                      ï¿½
                               +----------------------+
-                                         ¦
+                                         ï¿½
                                          ?
                               +---------------------+
-                              ¦ Actions Réactives   ¦
-                              ¦ • Recherche API     ¦
-                              ¦ • Mise à jour UI    ¦
-                              ¦ • Validation        ¦
+                              ï¿½ Actions Rï¿½actives   ï¿½
+                              ï¿½ ï¿½ Recherche API     ï¿½
+                              ï¿½ ï¿½ Mise ï¿½ jour UI    ï¿½
+                              ï¿½ ï¿½ Validation        ï¿½
                               +---------------------+</code></pre></div>
 
   <hr>
 
   <h2 id="valuechanges">valueChanges</h2>
 
-  <h3>Définition</h3>
+  <h3>Dï¿½finition</h3>
 
-  <p><code>valueChanges</code> est un Observable qui émet la nouvelle valeur à chaque modification du contrôle.</p>
+  <p><code>valueChanges</code> est un Observable qui ï¿½met la nouvelle valeur ï¿½ chaque modification du contrï¿½le.</p>
 
   <h3>Syntaxe de Base</h3>
 
@@ -86,15 +86,15 @@ email.valueChanges.subscribe(value => &lbrace;
   lastName: new FormControl('')
 &rbrace;);
 
-// Écouter tout le groupe
+// ï¿½couter tout le groupe
 form.valueChanges.subscribe(value => &lbrace;
   console.log('Formulaire :', value);
   // &lbrace; firstName: '...', lastName: '...' &rbrace;
 &rbrace;);
 
-// Écouter un contrôle spécifique
+// ï¿½couter un contrï¿½le spï¿½cifique
 form.get('firstName')?.valueChanges.subscribe(value => &lbrace;
-  console.log('Prénom :', value);
+  console.log('Prï¿½nom :', value);
 &rbrace;);</code></pre></div>
 
   <h3>Sur FormArray</h3>
@@ -113,9 +113,9 @@ items.valueChanges.subscribe(values => &lbrace;
 
   <h2 id="statuschanges">statusChanges</h2>
 
-  <h3>Définition</h3>
+  <h3>Dï¿½finition</h3>
 
-  <p><code>statusChanges</code> est un Observable qui émet le statut de validation à chaque changement.</p>
+  <p><code>statusChanges</code> est un Observable qui ï¿½met le statut de validation ï¿½ chaque changement.</p>
 
   <h3>Valeurs Possibles</h3>
 
@@ -133,7 +133,7 @@ items.valueChanges.subscribe(values => &lbrace;
       </tr>
       <tr>
         <td><code>'INVALID'</code></td>
-        <td>Au moins une validation échoue</td>
+        <td>Au moins une validation ï¿½choue</td>
       </tr>
       <tr>
         <td><code>'PENDING'</code></td>
@@ -141,7 +141,7 @@ items.valueChanges.subscribe(values => &lbrace;
       </tr>
       <tr>
         <td><code>'DISABLED'</code></td>
-        <td>Le contrôle est désactivé</td>
+        <td>Le contrï¿½le est dï¿½sactivï¿½</td>
       </tr>
     </tbody>
   </table>
@@ -164,21 +164,21 @@ email.statusChanges.subscribe(status => &lbrace;
       console.log('? Email invalide');
       break;
     case 'PENDING':
-      console.log('? Vérification en cours...');
+      console.log('? Vï¿½rification en cours...');
       break;
     case 'DISABLED':
-      console.log('?? Champ désactivé');
+      console.log('?? Champ dï¿½sactivï¿½');
       break;
   &rbrace;
 &rbrace;);</code></pre></div>
 
   <hr>
 
-  <h2 id="operateurs-rxjs-essentiels">Opérateurs RxJS Essentiels</h2>
+  <h2 id="operateurs-rxjs-essentiels">Opï¿½rateurs RxJS Essentiels</h2>
 
   <h3>debounceTime</h3>
 
-  <p>Attend un délai après la dernière émission avant de transmettre.</p>
+  <p>Attend un dï¿½lai aprï¿½s la derniï¿½re ï¿½mission avant de transmettre.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; debounceTime &rbrace; from 'rxjs/operators';
 
@@ -190,14 +190,14 @@ searchControl.valueChanges.pipe(
 
   <h3>distinctUntilChanged</h3>
 
-  <p>Émet uniquement si la valeur est différente de la précédente.</p>
+  <p>ï¿½met uniquement si la valeur est diffï¿½rente de la prï¿½cï¿½dente.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; distinctUntilChanged &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
   distinctUntilChanged()
 ).subscribe(value => &lbrace;
-  // Ne réagit pas aux valeurs identiques consécutives
+  // Ne rï¿½agit pas aux valeurs identiques consï¿½cutives
 &rbrace;);</code></pre></div>
 
   <h3>filter</h3>
@@ -207,26 +207,26 @@ control.valueChanges.pipe(
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; filter &rbrace; from 'rxjs/operators';
 
 searchControl.valueChanges.pipe(
-  filter(value => value.length >= 3)  // Au moins 3 caractères
+  filter(value => value.length >= 3)  // Au moins 3 caractï¿½res
 ).subscribe(value => &lbrace;
   this.search(value);
 &rbrace;);</code></pre></div>
 
   <h3>map</h3>
 
-  <p>Transforme les valeurs émises.</p>
+  <p>Transforme les valeurs ï¿½mises.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; map &rbrace; from 'rxjs/operators';
 
 emailControl.valueChanges.pipe(
   map(value => value.toLowerCase().trim())
 ).subscribe(normalizedEmail => &lbrace;
-  // Email normalisé
+  // Email normalisï¿½
 &rbrace;);</code></pre></div>
 
   <h3>switchMap</h3>
 
-  <p>Annule la requête précédente et lance une nouvelle.</p>
+  <p>Annule la requï¿½te prï¿½cï¿½dente et lance une nouvelle.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; switchMap &rbrace; from 'rxjs/operators';
 
@@ -240,12 +240,12 @@ searchControl.valueChanges.pipe(
 
   <h3>tap</h3>
 
-  <p>Exécute un effet secondaire sans modifier le flux.</p>
+  <p>Exï¿½cute un effet secondaire sans modifier le flux.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; tap &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
-  tap(value => console.log('Valeur reçue :', value)),
+  tap(value => console.log('Valeur reï¿½ue :', value)),
   map(value => value.toUpperCase())
 ).subscribe(value => &lbrace;
   // Traitement
@@ -253,14 +253,14 @@ control.valueChanges.pipe(
 
   <h3>startWith</h3>
 
-  <p>Émet une valeur initiale avant les autres émissions.</p>
+  <p>ï¿½met une valeur initiale avant les autres ï¿½missions.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">import &lbrace; startWith &rbrace; from 'rxjs/operators';
 
 control.valueChanges.pipe(
-  startWith(control.value)  // Émet la valeur initiale
+  startWith(control.value)  // ï¿½met la valeur initiale
 ).subscribe(value => &lbrace;
-  // Reçoit immédiatement la valeur actuelle
+  // Reï¿½oit immï¿½diatement la valeur actuelle
 &rbrace;);</code></pre></div>
 
   <h3>combineLatest</h3>
@@ -279,30 +279,30 @@ combineLatest([
 
   <hr>
 
-  <h2 id="patterns-avances">Patterns Avancés</h2>
+  <h2 id="patterns-avances">Patterns Avancï¿½s</h2>
 
   <h3>Recherche avec Autocomplete</h3>
 
-  <pre><code class="language-typescript">@Component({
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
   template: `
     &lt;input [formControl]="searchControl" placeholder="Rechercher..."&gt;
-    @if (isLoading) {
+    &#64;if (isLoading) &lbrace;
       &lt;div class="loading"&gt;Chargement...&lt;/div&gt;
-    }
+    &rbrace;
     &lt;ul class="results"&gt;
-      @for (result of results; track result.id) {
-        &lt;li&gt;{{ result.name }}&lt;/li&gt;
-      }
+      &#64;for (result of results; track result.id) &lbrace;
+        &lt;li&gt;$&lbrace;&lbrace; result.name &rbrace;&rbrace;&lt;/li&gt;
+      &rbrace;
     &lt;/ul&gt;
   `
-})
+&rbrace;)
 export class AutocompleteComponent implements OnInit, OnDestroy &lbrace;
   searchControl = new FormControl('');
   results: any[] = [];
   isLoading = false;
   private destroy$ = new Subject&lt;void&gt;();
   
-  constructor(private searchService: SearchService) &lbrace;
+  constructor(private searchService: SearchService) &lbrace;&rbrace;
   
   ngOnInit() &lbrace;
     this.searchControl.valueChanges.pipe(
@@ -343,7 +343,7 @@ export class AutoSaveComponent implements OnInit, OnDestroy &lbrace;
     content: new FormControl('')
   &rbrace;);
   
-  saveStatus = 'Prêt';
+  saveStatus = 'Prï¿½t';
   private destroy$ = new Subject&lt;void&gt;();
   
   ngOnInit() &lbrace;
@@ -354,7 +354,7 @@ export class AutoSaveComponent implements OnInit, OnDestroy &lbrace;
       tap(() => this.saveStatus = 'Sauvegarde en cours...'),
       switchMap(value => this.save(value))
     ).subscribe(&lbrace;
-      next: () => this.saveStatus = 'Sauvegardé ?',
+      next: () => this.saveStatus = 'Sauvegardï¿½ ?',
       error: () => this.saveStatus = 'Erreur de sauvegarde ?'
     &rbrace;);
   &rbrace;
@@ -369,26 +369,26 @@ export class AutoSaveComponent implements OnInit, OnDestroy &lbrace;
   &rbrace;
 &rbrace;</code></pre></div>
 
-  <h3>Validation Conditionnelle Réactive</h3>
+  <h3>Validation Conditionnelle Rï¿½active</h3>
 
-  <pre><code class="language-typescript">@Component({
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
   template: `
     &lt;form [formGroup]="form"&gt;
       &lt;select formControlName="contactMethod"&gt;
         &lt;option value="email"&gt;Email&lt;/option&gt;
-        &lt;option value="phone"&gt;Téléphone&lt;/option&gt;
+        &lt;option value="phone"&gt;TÃ©lÃ©phone&lt;/option&gt;
       &lt;/select&gt;
       
-      @if (contactMethod === 'email') {
+      &#64;if (contactMethod === 'email') &lbrace;
         &lt;input formControlName="email" placeholder="Email"&gt;
-      }
+      &rbrace;
       
-      @if (contactMethod === 'phone') {
-        &lt;input formControlName="phone" placeholder="Téléphone"&gt;
-      }
+      &#64;if (contactMethod === 'phone') &lbrace;
+        &lt;input formControlName="phone" placeholder="TÃ©lÃ©phone"&gt;
+      &rbrace;
     &lt;/form&gt;
   `
-})
+&rbrace;)
 export class ConditionalValidationComponent implements OnInit &lbrace;
   form = new FormGroup(&lbrace;
     contactMethod: new FormControl('email'),
@@ -457,27 +457,27 @@ export class SlugSyncComponent implements OnInit &lbrace;
 
   <h2 id="exemples-pratiques">Exemples Pratiques</h2>
 
-  <h3>Filtrage en Temps Réel</h3>
+  <h3>Filtrage en Temps Rï¿½el</h3>
 
   <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
   template: `
     &lt;form [formGroup]="filterForm"&gt;
       &lt;input formControlName="search" placeholder="Rechercher..."&gt;
       &lt;select formControlName="category"&gt;
-        &lt;option value=""&gt;Toutes catégories&lt;/option&gt;
-        &lt;option value="electronics"&gt;Électronique&lt;/option&gt;
-        &lt;option value="clothing"&gt;Vêtements&lt;/option&gt;
+        &lt;option value=""&gt;Toutes catï¿½gories&lt;/option&gt;
+        &lt;option value="electronics"&gt;ï¿½lectronique&lt;/option&gt;
+        &lt;option value="clothing"&gt;Vï¿½tements&lt;/option&gt;
       &lt;/select&gt;
       &lt;input formControlName="minPrice" type="number" placeholder="Prix min"&gt;
       &lt;input formControlName="maxPrice" type="number" placeholder="Prix max"&gt;
     &lt;/form&gt;
     
     &lt;div class="products"&gt;
-      @for (product of filteredProducts$ | async; track product.id) {
+      &#64;for (product of filteredProducts$ | async; track product.id) &lbrace;
         &lt;div&gt;
-          {{ product.name }} - {{ product.price }}€
+          $&lbrace;&lbrace; product.name &rbrace;&rbrace; - $&lbrace;&lbrace; product.price &rbrace;&rbrace;â‚¬
         &lt;/div&gt;
-      }
+      &rbrace;
     &lt;/div&gt;
   `
 &rbrace;)
@@ -502,30 +502,30 @@ export class ProductFilterComponent implements OnInit &lbrace;
   &rbrace;
 &rbrace;</code></pre></div>
 
-  <h3>Formulaire Multi-Étapes avec État</h3>
+  <h3>Formulaire Multi-ï¿½tapes avec ï¿½tat</h3>
 
-  <pre><code class="language-typescript">@Component({
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
   template: `
     &lt;div class="steps"&gt;
-      @for (step of steps; track step; let i = $index) {
+      &#64;for (step of steps; track step; let i = $index) &lbrace;
         &lt;div 
           [class.completed]="stepStatus[i] === 'VALID'"
           [class.current]="currentStep === i"&gt;
-          Étape {{ i + 1 }}
+          Ã‰tape $&lbrace;&lbrace; i + 1 &rbrace;&rbrace;
         &lt;/div&gt;
-      }
+      &rbrace;
     &lt;/div&gt;
     
     &lt;form [formGroup]="forms[currentStep]"&gt;
-      &lt;!-- Contenu dynamique de l'étape --&gt;
+      &lt;!-- Contenu dynamique de l'ï¿½tape --&gt;
     &lt;/form&gt;
   `
 &rbrace;)
 export class MultiStepFormComponent implements OnInit &lbrace;
   forms: FormGroup[] = [
-    new FormGroup(&lbrace; /* étape 1 */ &rbrace;),
-    new FormGroup(&lbrace; /* étape 2 */ &rbrace;),
-    new FormGroup(&lbrace; /* étape 3 */ &rbrace;)
+    new FormGroup(&lbrace; /* ï¿½tape 1 */ &rbrace;),
+    new FormGroup(&lbrace; /* ï¿½tape 2 */ &rbrace;),
+    new FormGroup(&lbrace; /* ï¿½tape 3 */ &rbrace;)
   ];
   
   steps = ['Informations', 'Contact', 'Confirmation'];
@@ -541,7 +541,7 @@ export class MultiStepFormComponent implements OnInit &lbrace;
   &rbrace;
 &rbrace;</code></pre></div>
 
-  <h3>Gestion de la Mémoire</h3>
+  <h3>Gestion de la Mï¿½moire</h3>
 
   <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;...&rbrace;)
 export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
@@ -552,7 +552,7 @@ export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
   &rbrace;);
   
   ngOnInit() &lbrace;
-    // Utiliser takeUntil pour éviter les fuites de mémoire
+    // Utiliser takeUntil pour ï¿½viter les fuites de mï¿½moire
     this.form.get('search')!.valueChanges.pipe(
       takeUntil(this.destroy$),
       debounceTime(300)
@@ -562,7 +562,7 @@ export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
   &rbrace;
   
   ngOnDestroy() &lbrace;
-    // Compléter le Subject pour désabonner tous les observables
+    // Complï¿½ter le Subject pour dï¿½sabonner tous les observables
     this.destroy$.next();
     this.destroy$.complete();
   &rbrace;
@@ -572,7 +572,7 @@ export class SafeFormComponent implements OnInit, OnDestroy &lbrace;
 
   <h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
 
-  <h3>1. Toujours se Désabonner</h3>
+  <h3>1. Toujours se Dï¿½sabonner</h3>
 
   <div ngNonBindable><pre><code class="language-typescript">// ? Utiliser takeUntil
 private destroy$ = new Subject&lt;void&gt;();
@@ -589,7 +589,7 @@ ngOnDestroy() &lbrace;
 // ? Ou utiliser le pipe async dans le template
 // &lbrace;&lbrace; data$ | async &rbrace;&rbrace;</code></pre></div>
 
-  <h3>2. Éviter les Effets en Cascade</h3>
+  <h3>2. ï¿½viter les Effets en Cascade</h3>
 
   <div ngNonBindable><pre><code class="language-typescript">// ? Risque de boucle infinie
 control1.valueChanges.subscribe(v => control2.setValue(v));
@@ -602,11 +602,11 @@ control1.valueChanges.subscribe(v => &lbrace;
 
   <h3>3. Utiliser startWith pour la Valeur Initiale</h3>
 
-  <div ngNonBindable><pre><code class="language-typescript">// ? Obtenir la valeur initiale immédiatement
+  <div ngNonBindable><pre><code class="language-typescript">// ? Obtenir la valeur initiale immï¿½diatement
 control.valueChanges.pipe(
   startWith(control.value)
 ).subscribe(value => &lbrace;
-  // Reçoit la valeur initiale puis les changements
+  // Reï¿½oit la valeur initiale puis les changements
 &rbrace;);</code></pre></div>
 
   <hr>

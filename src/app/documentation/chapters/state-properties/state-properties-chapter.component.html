@@ -1,8 +1,8 @@
 <div class="chapter-content" (click)="onAnchorClick($event)">
-  <h1>Propriétés d'État</h1>
+  <h1>Propriï¿½tï¿½s d'ï¿½tat</h1>
 
   <div style="text-align: center;">
-    <p><strong>Angular Forms - États et Statuts</strong></p>
+    <p><strong>Angular Forms - ï¿½tats et Statuts</strong></p>
     <p>
       <a routerLink="/documentation/directives">? Directives</a> | 
       <a routerLink="/documentation/api-reference">Index</a> | 
@@ -12,42 +12,42 @@
 
   <hr>
 
-  <h2 id="table-des-matieres">Table des Matières</h2>
+  <h2 id="table-des-matieres">Table des Matiï¿½res</h2>
   <ul>
-    <li><a href="#apercu">Aperçu</a></li>
-    <li><a href="#proprietes-de-valeur">Propriétés de Valeur</a></li>
-    <li><a href="#proprietes-de-validite">Propriétés de Validité</a></li>
-    <li><a href="#proprietes-dinteraction">Propriétés d'Interaction</a></li>
+    <li><a href="#apercu">Aperï¿½u</a></li>
+    <li><a href="#proprietes-de-valeur">Propriï¿½tï¿½s de Valeur</a></li>
+    <li><a href="#proprietes-de-validite">Propriï¿½tï¿½s de Validitï¿½</a></li>
+    <li><a href="#proprietes-dinteraction">Propriï¿½tï¿½s d'Interaction</a></li>
     <li><a href="#classes-css">Classes CSS</a></li>
     <li><a href="#exemples-pratiques">Exemples Pratiques</a></li>
   </ul>
 
   <hr>
 
-  <h2 id="apercu">Aperçu</h2>
-  <p>Chaque contrôle de formulaire (FormControl, FormGroup, FormArray) possède des propriétés qui reflètent son état actuel.</p>
+  <h2 id="apercu">Aperï¿½u</h2>
+  <p>Chaque contrï¿½le de formulaire (FormControl, FormGroup, FormArray) possï¿½de des propriï¿½tï¿½s qui reflï¿½tent son ï¿½tat actuel.</p>
 
   <div ngNonBindable><pre><code>+-----------------------------------------------------------------+
-¦                    PROPRIÉTÉS D'ÉTAT                             ¦
+ï¿½                    PROPRIï¿½Tï¿½S D'ï¿½TAT                             ï¿½
 +-----------------------------------------------------------------+
 
 +-----------------------------------------------------------------+
-¦  VALEUR           ¦  VALIDITÉ         ¦  INTERACTION            ¦
-+-------------------+-------------------+-------------------------¦
-¦  • value          ¦  • valid          ¦  • pristine             ¦
-¦  • valueChanges   ¦  • invalid        ¦  • dirty                ¦
-¦                   ¦  • errors         ¦  • touched              ¦
-¦                   ¦  • status         ¦  • untouched            ¦
-¦                   ¦  • pending        ¦  • disabled             ¦
-¦                   ¦  • statusChanges  ¦  • enabled              ¦
+ï¿½  VALEUR           ï¿½  VALIDITï¿½         ï¿½  INTERACTION            ï¿½
++-------------------+-------------------+-------------------------ï¿½
+ï¿½  ï¿½ value          ï¿½  ï¿½ valid          ï¿½  ï¿½ pristine             ï¿½
+ï¿½  ï¿½ valueChanges   ï¿½  ï¿½ invalid        ï¿½  ï¿½ dirty                ï¿½
+ï¿½                   ï¿½  ï¿½ errors         ï¿½  ï¿½ touched              ï¿½
+ï¿½                   ï¿½  ï¿½ status         ï¿½  ï¿½ untouched            ï¿½
+ï¿½                   ï¿½  ï¿½ pending        ï¿½  ï¿½ disabled             ï¿½
+ï¿½                   ï¿½  ï¿½ statusChanges  ï¿½  ï¿½ enabled              ï¿½
 +-----------------------------------------------------------------+</code></pre></div>
 
   <hr>
 
-  <h2 id="proprietes-de-valeur">Propriétés de Valeur</h2>
+  <h2 id="proprietes-de-valeur">Propriï¿½tï¿½s de Valeur</h2>
 
   <h3>value</h3>
-  <p>Retourne la valeur actuelle du contrôle.</p>
+  <p>Retourne la valeur actuelle du contrï¿½le.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">// FormControl
 const name = new FormControl('Jean');
@@ -68,7 +68,7 @@ const phones = new FormArray([
 console.log(phones.value);  // ['0601020304', '0102030405']</code></pre></div>
 
   <h3>getRawValue()</h3>
-  <p>Retourne la valeur incluant les contrôles désactivés (disabled).</p>
+  <p>Retourne la valeur incluant les contrï¿½les dï¿½sactivï¿½s (disabled).</p>
 
   <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;
   username: new FormControl('admin'),
@@ -79,7 +79,7 @@ console.log(form.value);        // &lbrace; username: 'admin' &rbrace;
 console.log(form.getRawValue()); // &lbrace; username: 'admin', role: 'super-admin' &rbrace;</code></pre></div>
 
   <h3>valueChanges</h3>
-  <p>Observable qui émet à chaque changement de valeur.</p>
+  <p>Observable qui ï¿½met ï¿½ chaque changement de valeur.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
 
@@ -87,7 +87,7 @@ email.valueChanges.subscribe(value => &lbrace;
   console.log('Nouvelle valeur :', value);
 &rbrace;);
 
-// Peut être combiné avec des opérateurs RxJS
+// Peut ï¿½tre combinï¿½ avec des opï¿½rateurs RxJS
 email.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged(),
@@ -98,10 +98,10 @@ email.valueChanges.pipe(
 
   <hr>
 
-  <h2 id="proprietes-de-validite">Propriétés de Validité</h2>
+  <h2 id="proprietes-de-validite">Propriï¿½tï¿½s de Validitï¿½</h2>
 
   <h3>valid / invalid</h3>
-  <p>Indique si le contrôle passe toutes les validations.</p>
+  <p>Indique si le contrï¿½le passe toutes les validations.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('', [Validators.required, Validators.email]);
 
@@ -114,7 +114,7 @@ console.log(email.valid);   // true
 console.log(email.invalid); // false</code></pre></div>
 
   <h3>status</h3>
-  <p>Retourne le statut de validation sous forme de chaîne.</p>
+  <p>Retourne le statut de validation sous forme de chaï¿½ne.</p>
 
   <table>
     <thead>
@@ -130,7 +130,7 @@ console.log(email.invalid); // false</code></pre></div>
       </tr>
       <tr>
         <td><code>'INVALID'</code></td>
-        <td>Au moins une validation échoue</td>
+        <td>Au moins une validation ï¿½choue</td>
       </tr>
       <tr>
         <td><code>'PENDING'</code></td>
@@ -138,7 +138,7 @@ console.log(email.invalid); // false</code></pre></div>
       </tr>
       <tr>
         <td><code>'DISABLED'</code></td>
-        <td>Le contrôle est désactivé</td>
+        <td>Le contrï¿½le est dï¿½sactivï¿½</td>
       </tr>
     </tbody>
   </table>
@@ -146,13 +146,13 @@ console.log(email.invalid); // false</code></pre></div>
   <div ngNonBindable><pre><code class="language-typescript">const username = new FormControl('', [
   Validators.required
 ], [
-  asyncUsernameValidator // Vérifie la disponibilité
+  asyncUsernameValidator // Vï¿½rifie la disponibilitï¿½
 ]);
 
 // Observation des changements de statut
 username.statusChanges.subscribe(status => &lbrace;
   console.log('Statut :', status);
-  // Émet: 'INVALID' -> 'PENDING' -> 'VALID' ou 'INVALID'
+  // ï¿½met: 'INVALID' -> 'PENDING' -> 'VALID' ou 'INVALID'
 &rbrace;);</code></pre></div>
 
   <h3>pending</h3>
@@ -179,14 +179,14 @@ console.log(password.errors);
 //   pattern: &lbrace; requiredPattern: '/[A-Z]/', actualValue: 'abc' &rbrace;
 // &rbrace;
 
-// Vérifier une erreur spécifique
+// Vï¿½rifier une erreur spï¿½cifique
 if (password.hasError('minlength')) &lbrace;
   const error = password.getError('minlength');
-  console.log(`Minimum $&lbrace;error.requiredLength&rbrace; caractères requis`);
+  console.log(`Minimum $&lbrace;error.requiredLength&rbrace; caractï¿½res requis`);
 &rbrace;</code></pre></div>
 
   <h3>statusChanges</h3>
-  <p>Observable qui émet à chaque changement de statut.</p>
+  <p>Observable qui ï¿½met ï¿½ chaque changement de statut.</p>
 
   <div ngNonBindable><pre><code class="language-typescript">const form = new FormGroup(&lbrace;...&rbrace;);
 
@@ -200,12 +200,12 @@ form.statusChanges.subscribe(status => &lbrace;
 
   <hr>
 
-  <h2 id="proprietes-dinteraction">Propriétés d'Interaction</h2>
+  <h2 id="proprietes-dinteraction">Propriï¿½tï¿½s d'Interaction</h2>
 
   <h3>pristine / dirty</h3>
   <ul>
-    <li><strong>pristine</strong> : <code>true</code> si la valeur n'a jamais été modifiée</li>
-    <li><strong>dirty</strong> : <code>true</code> si la valeur a été modifiée</li>
+    <li><strong>pristine</strong> : <code>true</code> si la valeur n'a jamais ï¿½tï¿½ modifiï¿½e</li>
+    <li><strong>dirty</strong> : <code>true</code> si la valeur a ï¿½tï¿½ modifiï¿½e</li>
   </ul>
 
   <div ngNonBindable><pre><code class="language-typescript">const name = new FormControl('Jean');
@@ -220,8 +220,8 @@ console.log(name.dirty);    // true</code></pre></div>
 
   <h3>touched / untouched</h3>
   <ul>
-    <li><strong>touched</strong> : <code>true</code> si le contrôle a reçu le focus puis l'a perdu (blur)</li>
-    <li><strong>untouched</strong> : <code>true</code> si le contrôle n'a jamais été touché</li>
+    <li><strong>touched</strong> : <code>true</code> si le contrï¿½le a reï¿½u le focus puis l'a perdu (blur)</li>
+    <li><strong>untouched</strong> : <code>true</code> si le contrï¿½le n'a jamais ï¿½tï¿½ touchï¿½</li>
   </ul>
 
   <div ngNonBindable><pre><code class="language-typescript">const email = new FormControl('');
@@ -229,7 +229,7 @@ console.log(name.dirty);    // true</code></pre></div>
 console.log(email.touched);   // false
 console.log(email.untouched); // true
 
-// Après que l'utilisateur clique dans le champ puis en sort
+// Aprï¿½s que l'utilisateur clique dans le champ puis en sort
 email.markAsTouched();
 
 console.log(email.touched);   // true
@@ -237,8 +237,8 @@ console.log(email.untouched); // false</code></pre></div>
 
   <h3>disabled / enabled</h3>
   <ul>
-    <li><strong>disabled</strong> : <code>true</code> si le contrôle est désactivé</li>
-    <li><strong>enabled</strong> : <code>true</code> si le contrôle est activé</li>
+    <li><strong>disabled</strong> : <code>true</code> si le contrï¿½le est dï¿½sactivï¿½</li>
+    <li><strong>enabled</strong> : <code>true</code> si le contrï¿½le est activï¿½</li>
   </ul>
 
   <div ngNonBindable><pre><code class="language-typescript">const field = new FormControl('');
@@ -258,23 +258,23 @@ console.log(field.disabled); // false</code></pre></div>
 
   <hr>
 
-  <h2 id="methodes-de-marquage">Méthodes de Marquage</h2>
+  <h2 id="methodes-de-marquage">Mï¿½thodes de Marquage</h2>
 
-  <h3>Modifier l'État Manuellement</h3>
+  <h3>Modifier l'ï¿½tat Manuellement</h3>
 
   <div ngNonBindable><pre><code class="language-typescript">const control = new FormControl('');
 
-// Marquer comme touché
+// Marquer comme touchï¿½
 control.markAsTouched();
 control.markAsUntouched();
 
-// Marquer comme modifié
+// Marquer comme modifiï¿½
 control.markAsDirty();
 control.markAsPristine();
 
 // Options : propager aux enfants/parents
 control.markAsTouched(&lbrace; onlySelf: true &rbrace;);     // Ne pas propager aux parents
-control.markAsTouched(&lbrace; emitEvent: false &rbrace;);   // Ne pas émettre d'événement</code></pre></div>
+control.markAsTouched(&lbrace; emitEvent: false &rbrace;);   // Ne pas ï¿½mettre d'ï¿½vï¿½nement</code></pre></div>
 
   <h3>Pour les Groupes</h3>
 
@@ -283,36 +283,36 @@ control.markAsTouched(&lbrace; emitEvent: false &rbrace;);   // Ne pas émettre d
   email: new FormControl('')
 &rbrace;);
 
-// Marquer tous les enfants comme touchés
+// Marquer tous les enfants comme touchï¿½s
 form.markAllAsTouched();</code></pre></div>
 
   <hr>
 
   <h2 id="classes-css">Classes CSS</h2>
-  <p>Angular ajoute automatiquement des classes CSS selon l'état des contrôles.</p>
+  <p>Angular ajoute automatiquement des classes CSS selon l'ï¿½tat des contrï¿½les.</p>
 
   <h3>Tableau des Classes</h3>
   <table>
     <thead>
       <tr>
-        <th>État</th>
+        <th>ï¿½tat</th>
         <th>Classe Vraie</th>
         <th>Classe Fausse</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Validité</td>
+        <td>Validitï¿½</td>
         <td><code>.ng-valid</code></td>
         <td><code>.ng-invalid</code></td>
       </tr>
       <tr>
-        <td>Modifié</td>
+        <td>Modifiï¿½</td>
         <td><code>.ng-dirty</code></td>
         <td><code>.ng-pristine</code></td>
       </tr>
       <tr>
-        <td>Touché</td>
+        <td>Touchï¿½</td>
         <td><code>.ng-touched</code></td>
         <td><code>.ng-untouched</code></td>
       </tr>
@@ -326,13 +326,13 @@ form.markAllAsTouched();</code></pre></div>
 
   <h3>Exemple de Style</h3>
 
-  <div ngNonBindable><pre><code class="language-css">/* Champ invalide et touché - bordure rouge */
+  <div ngNonBindable><pre><code class="language-css">/* Champ invalide et touchï¿½ - bordure rouge */
 input.ng-invalid.ng-touched &lbrace;
   border: 2px solid #dc3545;
   background-color: #fff5f5;
 &rbrace;
 
-/* Champ valide et modifié - bordure verte */
+/* Champ valide et modifiï¿½ - bordure verte */
 input.ng-valid.ng-dirty &lbrace;
   border: 2px solid #28a745;
   background-color: #f5fff5;
@@ -343,20 +343,20 @@ input.ng-pending &lbrace;
   border: 2px solid #ffc107;
 &rbrace;
 
-/* Champ désactivé */
+/* Champ dï¿½sactivï¿½ */
 input:disabled &lbrace;
   background-color: #e9ecef;
   cursor: not-allowed;
 &rbrace;</code></pre></div>
 
-  <h3>Inspecteur d'État</h3>
-  <p>Outil pour déboguer l'état des contrôles :</p>
+  <h3>Inspecteur d'ï¿½tat</h3>
+  <p>Outil pour dï¿½boguer l'ï¿½tat des contrï¿½les :</p>
 
   <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
   selector: 'app-state-inspector',
   template: `
     &lt;div class="inspector"&gt;
-      &lt;h4&gt;Inspecteur d'État : &lbrace;&lbrace; controlName &rbrace;&rbrace;&lt;/h4&gt;
+      &lt;h4&gt;Inspecteur d'ï¿½tat : &lbrace;&lbrace; controlName &rbrace;&rbrace;&lt;/h4&gt;
       &lt;table&gt;
         &lt;tr&gt;&lt;td&gt;value&lt;/td&gt;&lt;td&gt;&lbrace;&lbrace; control.value | json &rbrace;&rbrace;&lt;/td&gt;&lt;/tr&gt;
         &lt;tr&gt;&lt;td&gt;valid&lt;/td&gt;&lt;td [class.true]="control.valid"&gt;&lbrace;&lbrace; control.valid &rbrace;&rbrace;&lt;/td&gt;&lt;/tr&gt;
@@ -395,33 +395,33 @@ export class StateInspectorComponent &lbrace;
       placeholder="Email"
       [class.error]="email.invalid && email.touched"&gt;
     
-    &lt;!-- Afficher les erreurs seulement si touché --&gt;
-    @if (email.invalid && email.touched) {
+    &lt;!-- Afficher les erreurs seulement si touchï¿½ --&gt;
+    &#64;if (email.invalid && email.touched) &lbrace;
       &lt;div class="error-messages"&gt;
-        @if (email.hasError('required')) {
+        &#64;if (email.hasError('required')) &lbrace;
           &lt;p&gt;
             L'email est obligatoire
           &lt;/p&gt;
-        }
-        @if (email.hasError('email')) {
+        &rbrace;
+        &#64;if (email.hasError('email')) &lbrace;
           &lt;p&gt;
             Veuillez entrer un email valide
           &lt;/p&gt;
-        }
+        &rbrace;
       &lt;/div&gt;
-    }
+    &rbrace;
     
     &lt;!-- Indicateur de statut --&gt;
     &lt;span class="status-icon"&gt;
-      @if (email.pending) {
-        &lt;span&gt;?&lt;/span&gt;
-      }
-      @if (email.valid && email.dirty) {
-        &lt;span&gt;?&lt;/span&gt;
-      }
-      @if (email.invalid && email.touched) {
-        &lt;span&gt;?&lt;/span&gt;
-      }
+      &#64;if (email.pending) &lbrace;
+        &lt;span&gt;â³&lt;/span&gt;
+      &rbrace;
+      &#64;if (email.valid && email.dirty) &lbrace;
+        &lt;span&gt;âœ“&lt;/span&gt;
+      &rbrace;
+      &#64;if (email.invalid && email.touched) &lbrace;
+        &lt;span&gt;âœ—&lt;/span&gt;
+      &rbrace;
     &lt;/span&gt;
   `
 &rbrace;)
@@ -451,12 +451,12 @@ export class EmailFieldComponent &lbrace;
         &lt;/button&gt;
       &lt;/div&gt;
       
-      &lt;!-- Avertissement de modifications non sauvegardées --&gt;
-      @if (form.dirty) {
+      &lt;!-- Avertissement de modifications non sauvegardï¿½es --&gt;
+      &#64;if (form.dirty) &lbrace;
         &lt;div class="warning"&gt;
-          ?? Vous avez des modifications non sauvegardées
+          âš ï¸ Vous avez des modifications non sauvegardÃ©es
         &lt;/div&gt;
-      }
+      &rbrace;
     &lt;/form&gt;
   `
 &rbrace;)
@@ -469,7 +469,7 @@ export class EditFormComponent implements CanDeactivate &lbrace;
   save() &lbrace;
     if (this.form.valid) &lbrace;
       // Sauvegarder...
-      this.form.markAsPristine(); // Réinitialiser l'état dirty
+      this.form.markAsPristine(); // Rï¿½initialiser l'ï¿½tat dirty
     &rbrace;
   &rbrace;
   
@@ -496,12 +496,12 @@ export class EditFormComponent implements CanDeactivate &lbrace;
           [style.width.%]="validationProgress"&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-      &lt;p&gt;&lbrace;&lbrace; validationProgress &rbrace;&rbrace;% complété&lt;/p&gt;
+      &lt;p&gt;&lbrace;&lbrace; validationProgress &rbrace;&rbrace;% complï¿½tï¿½&lt;/p&gt;
       
       &lt;input formControlName="username" placeholder="Nom d'utilisateur"&gt;
       &lt;input formControlName="email" placeholder="Email"&gt;
       &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
-      &lt;input formControlName="phone" placeholder="Téléphone (optionnel)"&gt;
+      &lt;input formControlName="phone" placeholder="Tï¿½lï¿½phone (optionnel)"&gt;
     &lt;/form&gt;
   `
 &rbrace;)
@@ -522,12 +522,12 @@ export class ProgressFormComponent &lbrace;
 
   <hr>
 
-  <h2 id="resume-des-proprietes">Résumé des Propriétés</h2>
+  <h2 id="resume-des-proprietes">Rï¿½sumï¿½ des Propriï¿½tï¿½s</h2>
 
   <table>
     <thead>
       <tr>
-        <th>Propriété</th>
+        <th>Propriï¿½tï¿½</th>
         <th>Type</th>
         <th>Description</th>
       </tr>
@@ -541,12 +541,12 @@ export class ProgressFormComponent &lbrace;
       <tr>
         <td><code>valid</code></td>
         <td><code>boolean</code></td>
-        <td>Validation réussie</td>
+        <td>Validation rï¿½ussie</td>
       </tr>
       <tr>
         <td><code>invalid</code></td>
         <td><code>boolean</code></td>
-        <td>Validation échouée</td>
+        <td>Validation ï¿½chouï¿½e</td>
       </tr>
       <tr>
         <td><code>pending</code></td>
@@ -556,32 +556,32 @@ export class ProgressFormComponent &lbrace;
       <tr>
         <td><code>disabled</code></td>
         <td><code>boolean</code></td>
-        <td>Contrôle désactivé</td>
+        <td>Contrï¿½le dï¿½sactivï¿½</td>
       </tr>
       <tr>
         <td><code>enabled</code></td>
         <td><code>boolean</code></td>
-        <td>Contrôle activé</td>
+        <td>Contrï¿½le activï¿½</td>
       </tr>
       <tr>
         <td><code>pristine</code></td>
         <td><code>boolean</code></td>
-        <td>Jamais modifié</td>
+        <td>Jamais modifiï¿½</td>
       </tr>
       <tr>
         <td><code>dirty</code></td>
         <td><code>boolean</code></td>
-        <td>A été modifié</td>
+        <td>A ï¿½tï¿½ modifiï¿½</td>
       </tr>
       <tr>
         <td><code>touched</code></td>
         <td><code>boolean</code></td>
-        <td>A reçu puis perdu le focus</td>
+        <td>A reï¿½u puis perdu le focus</td>
       </tr>
       <tr>
         <td><code>untouched</code></td>
         <td><code>boolean</code></td>
-        <td>N'a jamais été touché</td>
+        <td>N'a jamais ï¿½tï¿½ touchï¿½</td>
       </tr>
       <tr>
         <td><code>status</code></td>

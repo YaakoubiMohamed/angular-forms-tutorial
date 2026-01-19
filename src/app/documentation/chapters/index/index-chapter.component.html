@@ -86,27 +86,27 @@
     <tbody>
       <tr>
         <td><a routerLink="/documentation/form-classes" fragment="formcontrol"><code>FormControl</code></a></td>
-        <td><code>@angular/forms</code></td>
+        <td><code ngNonBindable>&#64;angular/forms</code></td>
         <td>Suit la valeur et la validation d'un contrôle individuel</td>
       </tr>
       <tr>
         <td><a routerLink="/documentation/form-classes" fragment="formgroup"><code>FormGroup</code></a></td>
-        <td><code>@angular/forms</code></td>
+        <td><code ngNonBindable>&#64;angular/forms</code></td>
         <td>Suit la valeur et la validité d'un groupe de contrôles</td>
       </tr>
       <tr>
         <td><a routerLink="/documentation/form-classes" fragment="formarray"><code>FormArray</code></a></td>
-        <td><code>@angular/forms</code></td>
+        <td><code ngNonBindable>&#64;angular/forms</code></td>
         <td>Suit la valeur et la validité d'un tableau de contrôles</td>
       </tr>
       <tr>
         <td><a routerLink="/documentation/form-classes" fragment="formbuilder"><code>FormBuilder</code></a></td>
-        <td><code>@angular/forms</code></td>
+        <td><code ngNonBindable>&#64;angular/forms</code></td>
         <td>Service pour créer des instances de contrôles</td>
       </tr>
       <tr>
         <td><a routerLink="/documentation/validation" fragment="validators-class"><code>Validators</code></a></td>
-        <td><code>@angular/forms</code></td>
+        <td><code ngNonBindable>&#64;angular/forms</code></td>
         <td>Fournit des fonctions de validation intégrées</td>
       </tr>
     </tbody>
@@ -252,14 +252,14 @@ type AsyncValidatorFn = (control: AbstractControl) =>
   <h2>Imports de Modules</h2>
 
   <h3>Configuration Reactive Forms</h3>
-  <pre><code class="language-typescript">import &lbrace; ReactiveFormsModule &rbrace; from '@angular/forms';
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule &rbrace; from '&#64;angular/forms';
 import &lbrace; 
   FormControl, 
   FormGroup, 
   FormArray, 
   FormBuilder,
   Validators 
-&rbrace; from '@angular/forms';
+&rbrace; from '&#64;angular/forms';
 
 // Dans un NgModule
 &#64;NgModule(&lbrace;
@@ -270,10 +270,10 @@ import &lbrace;
 &#64;Component(&lbrace;
   standalone: true,
   imports: [ReactiveFormsModule]
-&rbrace;)</code></pre>
+&rbrace;)</code></pre></div>
 
   <h3>Configuration Template-Driven Forms</h3>
-  <pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '&#64;angular/forms';
 
 // Dans un NgModule
 &#64;NgModule(&lbrace;
@@ -284,7 +284,7 @@ import &lbrace;
 &#64;Component(&lbrace;
   standalone: true,
   imports: [FormsModule]
-&rbrace;)</code></pre>
+&rbrace;)</code></pre></div>
 
   <hr>
 

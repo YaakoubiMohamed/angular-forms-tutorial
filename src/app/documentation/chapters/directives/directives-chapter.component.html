@@ -22,21 +22,7 @@
 
   <p>Les directives connectent les éléments de formulaire du template aux instances de contrôle dans le code TypeScript.</p>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
-│                    DIRECTIVES DE FORMULAIRES                     │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────┐    ┌─────────────────────────────┐
-│     REACTIVE FORMS          │    │    TEMPLATE-DRIVEN          │
-├─────────────────────────────┤    ├─────────────────────────────┤
-│                             │    │                             │
-│  formGroup                  │    │  ngForm                     │
-│  formControlName            │    │  ngModel                    │
-│  formGroupName              │    │  ngModelGroup               │
-│  formArrayName              │    │                             │
-│  [formControl]              │    │                             │
-│                             │    │                             │
-└─────────────────────────────┘    └─────────────────────────────┘</code></pre></div>
+  <app-code-block [code]="diagramDirectives" language="text"></app-code-block>
 
   <hr>
 
@@ -46,31 +32,13 @@
 
   <p>Lie un élément <code>&lt;form&gt;</code> à une instance de <code>FormGroup</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; ReactiveFormsModule, FormGroup, FormControl &rbrace; from '@angular/forms';
-
-@Component(&lbrace;
-  imports: [ReactiveFormsModule],
-  template: `
-    &lt;form [formGroup]="profileForm"&gt;
-      &lt;!-- contrôles du formulaire --&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class ProfileComponent &lbrace;
-  profileForm = new FormGroup(&lbrace;
-    firstName: new FormControl(''),
-    lastName: new FormControl('')
-  &rbrace;);
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeFormGroup" language="typescript"></app-code-block>
 
   <h3>formControlName</h3>
 
   <p>Lie un élément de saisie à un <code>FormControl</code> par son nom (chaîne).</p>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;form [formGroup]="profileForm"&gt;
-  &lt;input formControlName="firstName" placeholder="Prénom"&gt;
-  &lt;input formControlName="lastName" placeholder="Nom"&gt;
-&lt;/form&gt;</code></pre></div>
+  <app-code-block [code]="codeFormControlName" language="html"></app-code-block>
 
   <p><strong>Important</strong> : Doit être utilisé à l'intérieur d'un <code>[formGroup]</code>.</p>
 
@@ -78,78 +46,19 @@ export class ProfileComponent &lbrace;
 
   <p>Lie un groupe d'éléments à un <code>FormGroup</code> imbriqué.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  template: `
-    &lt;form [formGroup]="userForm"&gt;
-      &lt;input formControlName="username"&gt;
-      
-      &lt;div formGroupName="address"&gt;
-        &lt;input formControlName="street" placeholder="Rue"&gt;
-        &lt;input formControlName="city" placeholder="Ville"&gt;
-        &lt;input formControlName="postalCode" placeholder="Code Postal"&gt;
-      &lt;/div&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class UserComponent &lbrace;
-  userForm = new FormGroup(&lbrace;
-    username: new FormControl(''),
-    address: new FormGroup(&lbrace;
-      street: new FormControl(''),
-      city: new FormControl(''),
-      postalCode: new FormControl('')
-    &rbrace;)
-  &rbrace;);
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeFormGroupName" language="typescript"></app-code-block>
 
   <h3>formArrayName</h3>
 
   <p>Lie un élément conteneur à un <code>FormArray</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  template: `
-    &lt;form [formGroup]="orderForm"&gt;
-      &lt;div formArrayName="items"&gt;
-        &lt;div *ngFor="let item of items.controls; let i = index"&gt;
-          &lt;input [formControlName]="i" placeholder="Article &lbrace;&lbrace; i + 1 &rbrace;&rbrace;"&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class OrderComponent &lbrace;
-  orderForm = new FormGroup(&lbrace;
-    items: new FormArray([
-      new FormControl(''),
-      new FormControl('')
-    ])
-  &rbrace;);
-  
-  get items(): FormArray &lbrace;
-    return this.orderForm.get('items') as FormArray;
-  &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeFormArrayName" language="typescript"></app-code-block>
 
   <h3>[formControl]</h3>
 
   <p>Lie directement un élément à une instance de <code>FormControl</code> (sans FormGroup parent).</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  imports: [ReactiveFormsModule],
-  template: `
-    &lt;input [formControl]="searchControl" placeholder="Rechercher..."&gt;
-    &lt;p&gt;Recherche : &lbrace;&lbrace; searchControl.value &rbrace;&rbrace;&lt;/p&gt;
-  `
-&rbrace;)
-export class SearchComponent &lbrace;
-  searchControl = new FormControl('');
-  
-  ngOnInit() &lbrace;
-    this.searchControl.valueChanges.subscribe(value =&gt; &lbrace;
-      console.log('Valeur de recherche :', value);
-    &rbrace;);
-  &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeFormControl" language="typescript"></app-code-block>
 
   <hr>
 
@@ -159,23 +68,7 @@ export class SearchComponent &lbrace;
 
   <p>Automatiquement ajouté à tout <code>&lt;form&gt;</code> quand <code>FormsModule</code> est importé. Crée une instance de <code>NgForm</code>.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; FormsModule &rbrace; from '@angular/forms';
-
-@Component(&lbrace;
-  imports: [FormsModule],
-  template: `
-    &lt;form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)"&gt;
-      &lt;!-- contrôles --&gt;
-      &lt;button type="submit" [disabled]="myForm.invalid"&gt;Envoyer&lt;/button&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class MyComponent &lbrace;
-  onSubmit(form: NgForm) &lbrace;
-    console.log('Valeurs du formulaire :', form.value);
-    console.log('Formulaire valide :', form.valid);
-  &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeNgForm" language="typescript"></app-code-block>
 
   <h3>ngModel</h3>
 
@@ -183,78 +76,26 @@ export class MyComponent &lbrace;
 
   <h4>Lecture Seule</h4>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;input [ngModel]="userName" name="userName"&gt;</code></pre></div>
+  <app-code-block [code]="codeNgModelReadOnly" language="html"></app-code-block>
 
   <h4>Two-Way Binding (Banana-in-a-box)</h4>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  imports: [FormsModule],
-  template: `
-    &lt;input [(ngModel)]="user.name" name="name" placeholder="Nom"&gt;
-    &lt;input [(ngModel)]="user.email" name="email" placeholder="Email"&gt;
-    &lt;p&gt;Bonjour, &lbrace;&lbrace; user.name &rbrace;&rbrace;!&lt;/p&gt;
-  `
-&rbrace;)
-export class UserComponent &lbrace;
-  user = &lbrace;
-    name: '',
-    email: ''
-  &rbrace;;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeNgModelTwoWay" language="typescript"></app-code-block>
 
   <p><strong>Important</strong> : L'attribut <code>name</code> est OBLIGATOIRE avec <code>ngModel</code> dans un formulaire.</p>
 
   <h4>ngModel avec Validation</h4>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;input 
-  [(ngModel)]="email" 
-  name="email"
-  required
-  email
-  #emailField="ngModel"&gt;
-  
-&lt;div *ngIf="emailField.invalid &amp;&amp; emailField.touched"&gt;
-  &lt;span *ngIf="emailField.errors?.['required']"&gt;L'email est requis&lt;/span&gt;
-  &lt;span *ngIf="emailField.errors?.['email']"&gt;Format email invalide&lt;/span&gt;
-&lt;/div&gt;</code></pre></div>
+  <app-code-block [code]="codeNgModelValidation" language="html"></app-code-block>
 
   <h3>ngModelGroup</h3>
 
   <p>Groupe plusieurs contrôles <code>ngModel</code> en un sous-objet.</p>
 
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  imports: [FormsModule],
-  template: `
-    &lt;form #userForm="ngForm"&gt;
-      &lt;input [(ngModel)]="user.name" name="name" placeholder="Nom"&gt;
-      
-      &lt;div ngModelGroup="address"&gt;
-        &lt;input [(ngModel)]="user.address.street" name="street" placeholder="Rue"&gt;
-        &lt;input [(ngModel)]="user.address.city" name="city" placeholder="Ville"&gt;
-      &lt;/div&gt;
-      
-      &lt;pre&gt;&lbrace;&lbrace; userForm.value | json &rbrace;&rbrace;&lt;/pre&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class UserFormComponent &lbrace;
-  user = &lbrace;
-    name: '',
-    address: &lbrace;
-      street: '',
-      city: ''
-    &rbrace;
-  &rbrace;;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeNgModelGroup" language="typescript"></app-code-block>
 
   <p><strong>Sortie</strong> :</p>
-  <div ngNonBindable><pre><code class="language-json">&lbrace;
-  "name": "Jean Dupont",
-  "address": &lbrace;
-    "street": "123 Rue de Paris",
-    "city": "Paris"
-  &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeNgModelGroupOutput" language="json"></app-code-block>
 
   <hr>
 
@@ -301,77 +142,15 @@ export class UserFormComponent &lbrace;
 
   <h3>Quand Utiliser Quelle Directive</h3>
 
-  <div ngNonBindable><pre><code>┌─────────────────────────────────────────────────────────────────┐
-│                ARBRE DE DÉCISION - DIRECTIVES                    │
-└─────────────────────────────────────────────────────────────────┘
-
-                    ┌──────────────────┐
-                    │ Formulaire Réactif│
-                    │   ou Template ?   │
-                    └────────┬─────────┘
-                             │
-           ┌─────────────────┴─────────────────┐
-           │                                   │
-           ▼                                   ▼
-    ┌────────────┐                      ┌────────────┐
-    │  Reactive  │                      │  Template  │
-    │   Forms    │                      │   Driven   │
-    └─────┬──────┘                      └─────┬──────┘
-          │                                   │
-          ▼                                   ▼
-    Utiliser:                           Utiliser:
-    • [formGroup]                       • ngForm (auto)
-    • formControlName                   • [(ngModel)]
-    • formGroupName                     • ngModelGroup
-    • formArrayName                     • name="..."
-    • [formControl]</code></pre></div>
+  <app-code-block [code]="diagramDecision" language="text"></app-code-block>
 
   <h3>Exemples Équivalents</h3>
 
   <p><strong>Template-Driven</strong>:</p>
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  imports: [FormsModule],
-  template: `
-    &lt;form #f="ngForm" (ngSubmit)="save(f.value)"&gt;
-      &lt;input [(ngModel)]="user.name" name="name" required&gt;
-      &lt;div ngModelGroup="contact"&gt;
-        &lt;input [(ngModel)]="user.contact.email" name="email" email&gt;
-        &lt;input [(ngModel)]="user.contact.phone" name="phone"&gt;
-      &lt;/div&gt;
-      &lt;button [disabled]="f.invalid"&gt;Sauvegarder&lt;/button&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class TemplateFormComponent &lbrace;
-  user = &lbrace; name: '', contact: &lbrace; email: '', phone: '' &rbrace; &rbrace;;
-  save(value: any) &lbrace; console.log(value); &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeTemplateForm" language="typescript"></app-code-block>
 
   <p><strong>Reactive Forms</strong> (équivalent):</p>
-  <div ngNonBindable><pre><code class="language-typescript">@Component(&lbrace;
-  imports: [ReactiveFormsModule],
-  template: `
-    &lt;form [formGroup]="form" (ngSubmit)="save()"&gt;
-      &lt;input formControlName="name"&gt;
-      &lt;div formGroupName="contact"&gt;
-        &lt;input formControlName="email"&gt;
-        &lt;input formControlName="phone"&gt;
-      &lt;/div&gt;
-      &lt;button [disabled]="form.invalid"&gt;Sauvegarder&lt;/button&gt;
-    &lt;/form&gt;
-  `
-&rbrace;)
-export class ReactiveFormComponent &lbrace;
-  form = new FormGroup(&lbrace;
-    name: new FormControl('', Validators.required),
-    contact: new FormGroup(&lbrace;
-      email: new FormControl('', Validators.email),
-      phone: new FormControl('')
-    &rbrace;)
-  &rbrace;);
-  
-  save() &lbrace; console.log(this.form.value); &rbrace;
-&rbrace;</code></pre></div>
+  <app-code-block [code]="codeReactiveForm" language="typescript"></app-code-block>
 
   <hr>
 
@@ -379,31 +158,15 @@ export class ReactiveFormComponent &lbrace;
 
   <h3>1. Ne Jamais Mélanger les Approches</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- ❌ INCORRECT - Ne pas mélanger Reactive et Template-Driven --&gt;
-&lt;form [formGroup]="myForm"&gt;
-  &lt;input [(ngModel)]="name" name="name"&gt;
-&lt;/form&gt;
-
-&lt;!-- ✅ CORRECT - Une seule approche --&gt;
-&lt;form [formGroup]="myForm"&gt;
-  &lt;input formControlName="name"&gt;
-&lt;/form&gt;</code></pre></div>
+  <app-code-block [code]="codeBadMixing" language="html"></app-code-block>
 
   <h3>2. Toujours Utiliser l'Attribut name avec ngModel</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- ❌ INCORRECT --&gt;
-&lt;input [(ngModel)]="name"&gt;
-
-&lt;!-- ✅ CORRECT --&gt;
-&lt;input [(ngModel)]="name" name="name"&gt;</code></pre></div>
+  <app-code-block [code]="codeBadName" language="html"></app-code-block>
 
   <h3>3. Utiliser les Références de Template pour l'Accès Local</h3>
 
-  <div ngNonBindable><pre><code class="language-html">&lt;!-- Accéder au contrôle dans le template --&gt;
-&lt;input formControlName="email" #emailInput&gt;
-&lt;input ngModel name="email" #emailCtrl="ngModel"&gt;
-
-&lt;!-- emailCtrl.errors, emailCtrl.valid, etc. --&gt;</code></pre></div>
+  <app-code-block [code]="codeTemplateRef" language="html"></app-code-block>
 
   <hr>
 
@@ -412,7 +175,6 @@ export class ReactiveFormComponent &lbrace;
     <a routerLink="/documentation/api-reference" style="margin: 0 1rem;">Index</a>
     <a routerLink="/documentation/state-properties" style="margin-left: 1rem;">Suivant : Propriétés d'État →</a>
   </div>
-
 
 </div>
 

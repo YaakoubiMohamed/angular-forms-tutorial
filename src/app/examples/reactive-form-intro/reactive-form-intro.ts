@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, signal, computed, effect, Signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 /**
- * Exemple: Introduction aux Formulaires Réactifs
+ * Exemple: Introduction aux Formulaires Réactifs avec Angular Signals
  * 
  * Ce composant démontre:
  * - Service FormBuilder pour créer des formulaires
@@ -14,6 +15,7 @@ import { CommonModule } from '@angular/common';
  * - Suivi de l'état du formulaire (valid, invalid, dirty, touched)
  * - Gestion de la soumission du formulaire
  * - Validateur personnalisé (correspondance des mots de passe)
+ * - **Angular Signals** pour la gestion d'état réactive
  * 
  * Concepts Clés:
  * 1. Le formulaire est défini en TypeScript (approche model-driven)
@@ -21,6 +23,12 @@ import { CommonModule } from '@angular/common';
  * 3. Les validateurs sont définis avec les contrôles
  * 4. Facile à tester et manipuler programmatiquement
  * 5. Supporte les groupes imbriqués et les FormArray
+ * 
+ * Angular Signals (Nouveauté Angular 17+):
+ * - signal() : Crée un signal avec une valeur modifiable
+ * - computed() : Crée un signal dérivé qui se recalcule automatiquement
+ * - effect() : Exécute une fonction quand les signals dépendants changent
+ * - toSignal() : Convertit un Observable en Signal
  */
 @Component({
   selector: 'app-reactive-form-intro',
@@ -29,18 +37,55 @@ import { CommonModule } from '@angular/common';
   styleUrl: './reactive-form-intro.css',
 })
 export class ReactiveFormIntro implements OnInit {
+  // ===== FORMULAIRE =====
   // Objet formulaire - FormGroup fortement typé
   registrationForm!: FormGroup;
 
-  // Suivi de la soumission du formulaire
-  submitted = false;
-  submittedData: any = null;
-  submitError: string | null = null;
+  // ===== SIGNALS D'ÉTAT (WritableSignal) =====
+  // Ces signals remplacent les propriétés classiques pour une réactivité fine
+  
+  /** Signal pour suivre si le formulaire a été soumis */
+  submitted: WritableSignal<boolean> = signal(false);
+  
+  /** Signal pour stocker les données soumises */
+  submittedData: WritableSignal<any> = signal(null);
+  
+  /** Signal pour les erreurs de soumission */
+  submitError: WritableSignal<string | null> = signal(null);
+  
+  /** Signal pour la visibilité du mot de passe */
+  showPassword: WritableSignal<boolean> = signal(false);
 
-  // Visibilité du mot de passe
-  showPassword = false;
+  // ===== SIGNALS COMPUTED (Signal - lecture seule) =====
+  // Ces signals sont dérivés automatiquement du formulaire
+  
+  /** Signal calculé: le formulaire est-il valide? */
+  formValid!: Signal<boolean>;
+  
+  /** Signal calculé: le formulaire a-t-il été modifié? */
+  formDirty!: Signal<boolean>;
+  
+  /** Signal calculé: le formulaire a-t-il été touché? */
+  formTouched!: Signal<boolean>;
+  
+  /** Signal calculé: statut du formulaire (VALID, INVALID, PENDING) */
+  formStatus!: Signal<string>;
+  
+  /** Signal calculé: valeur actuelle du formulaire (via toSignal) */
+  formValue!: Signal<any>;
+  
+  /** Signal calculé: nombre d'emails supplémentaires */
+  additionalEmailsCount!: Signal<number>;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    // Effect optionnel pour le débogage - s'exécute quand les signals changent
+    effect(() => {
+      // Cet effect s'exécute chaque fois que submitted ou submitError change
+      if (this.submitted()) {
+        console.log('[Signal Effect] Formulaire soumis, erreur:', this.submitError());
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Initialiser le formulaire en utilisant FormBuilder
@@ -77,6 +122,35 @@ export class ReactiveFormIntro implements OnInit {
         acceptTerms: [false, Validators.requiredTrue],
       }
     );
+
+    // Initialiser les signals computed après la création du formulaire
+    this.initComputedSignals();
+  }
+
+  /**
+   * Initialise les signals computed basés sur l'état du formulaire
+   * Ces signals se mettent à jour automatiquement quand le formulaire change
+   */
+  private initComputedSignals(): void {
+    // Convertir les Observables du formulaire en Signals avec toSignal()
+    // toSignal() permet d'utiliser les streams RxJS comme des Signals
+    this.formValue = toSignal(this.registrationForm.valueChanges, {
+      initialValue: this.registrationForm.value
+    });
+
+    // Signal pour le statut (VALID, INVALID, PENDING, DISABLED)
+    this.formStatus = toSignal(this.registrationForm.statusChanges, {
+      initialValue: this.registrationForm.status
+    });
+
+    // Signals computed basés sur l'état du formulaire
+    // computed() crée un signal dérivé qui se recalcule automatiquement
+    this.formValid = computed(() => this.formStatus() === 'VALID');
+    this.formDirty = computed(() => this.registrationForm.dirty);
+    this.formTouched = computed(() => this.registrationForm.touched);
+    
+    // Signal pour le nombre d'emails dans le FormArray
+    this.additionalEmailsCount = computed(() => this.additionalEmailsArray.length);
   }
 
   /**
@@ -89,6 +163,7 @@ export class ReactiveFormIntro implements OnInit {
     if (!password || !confirmPassword) {
       return null;
     }
+    // if(2 == '2') true, if(2 === '2') false
 
     return password.value === confirmPassword.value ? null : { passwordMismatch: true };
   }
@@ -195,10 +270,12 @@ export class ReactiveFormIntro implements OnInit {
 
   /**
    * Gérer la soumission du formulaire
+   * Utilise les méthodes .set() des Signals pour mettre à jour l'état
    */
   onSubmit(): void {
-    this.submitted = true;
-    this.submitError = null;
+    // Utiliser .set() pour définir une nouvelle valeur du signal
+    this.submitted.set(true);
+    this.submitError.set(null);
 
     // Marquer tous les contrôles comme "touched" pour afficher les erreurs
     this.markFormGroupTouched(this.registrationForm);
@@ -206,7 +283,8 @@ export class ReactiveFormIntro implements OnInit {
     // Vérifier si le formulaire est valide avant la soumission
     if (this.registrationForm.valid) {
       console.log('Formulaire soumis avec données:', this.registrationForm.value);
-      this.submittedData = { ...this.registrationForm.value };
+      // Utiliser .set() au lieu de l'assignation directe
+      this.submittedData.set({ ...this.registrationForm.value });
 
       // Simuler l'envoi au serveur
       // this.userService.registerUser(this.registrationForm.value).subscribe(...)
@@ -214,21 +292,25 @@ export class ReactiveFormIntro implements OnInit {
       // Réinitialiser le formulaire après soumission réussie
       // Décommentez pour réinitialiser:
       // this.registrationForm.reset();
-      // this.submitted = false;
+      // this.submitted.set(false);
     } else {
       console.log('Le formulaire est invalide');
-      this.submitError = 'Veuillez corriger les erreurs du formulaire';
+      // Utiliser .set() pour définir l'erreur
+      this.submitError.set('Veuillez corriger les erreurs du formulaire');
     }
   }
 
   /**
    * Réinitialiser le formulaire à son état initial
+   * Utilise .set() pour réinitialiser tous les signals d'état
    */
   resetForm(): void {
     this.registrationForm.reset();
-    this.submitted = false;
-    this.submittedData = null;
-    this.submitError = null;
+    
+    // Réinitialiser les signals avec .set()
+    this.submitted.set(false);
+    this.submittedData.set(null);
+    this.submitError.set(null);
     
     // Réinitialiser aussi le FormArray
     while (this.additionalEmailsArray.length > 0) {
@@ -261,9 +343,12 @@ export class ReactiveFormIntro implements OnInit {
 
   /**
    * Basculer la visibilité du champ mot de passe
+   * Utilise .update() pour modifier la valeur basée sur la valeur précédente
    */
   togglePasswordField(): void {
-    this.showPassword = !this.showPassword;
+    // .update() prend une fonction qui reçoit la valeur actuelle
+    // et retourne la nouvelle valeur
+    this.showPassword.update(current => !current);
   }
 
   /**
@@ -283,15 +368,36 @@ export class ReactiveFormIntro implements OnInit {
 
   /**
    * Obtenir l'état du formulaire pour le débogage
+   * Combine les signals et les propriétés du formulaire
    */
   getFormState(): any {
     return {
+      // Propriétés du FormGroup
       valid: this.registrationForm.valid,
       invalid: this.registrationForm.invalid,
       dirty: this.registrationForm.dirty,
       touched: this.registrationForm.touched,
       pristine: this.registrationForm.pristine,
       untouched: this.registrationForm.untouched,
+      // Valeurs des Signals (appeler le signal pour obtenir sa valeur)
+      submitted: this.submitted(),
+      submitError: this.submitError(),
+      showPassword: this.showPassword(),
+    };
+  }
+
+  /**
+   * Obtenir l'état complet via les Signals computed
+   * Cette méthode montre comment accéder aux valeurs des signals
+   */
+  getSignalState(): any {
+    return {
+      formValid: this.formValid(),
+      formDirty: this.formDirty(),
+      formTouched: this.formTouched(),
+      formStatus: this.formStatus(),
+      additionalEmailsCount: this.additionalEmailsCount(),
+      formValue: this.formValue(),
     };
   }
 }

@@ -1,16 +1,17 @@
-<div class="container">
+﻿<div class="container">
   <h2>Formulaires Réactifs - Inscription</h2>
   
   <p class="description">
-    Cet exemple démontre les Formulaires Réactifs (approche model-driven).
+    Cet exemple démontre les Formulaires Réactifs (approche model-driven) avec <strong>Angular Signals</strong>.
     La structure du formulaire est définie en TypeScript avec FormBuilder.
-    Le formulaire inclut des groupes imbriqués et un FormArray pour les emails dynamiques.
+    Le formulaire inclut des groupes imbriqués, un FormArray pour les emails dynamiques,
+    et utilise les Signals pour une gestion d'état réactive et performante.
   </p>
 
-  <!-- Message d'erreur global -->
-  @if (submitError) {
+  <!-- Message d'erreur global (utilise un Signal) -->
+  @if (submitError()) {
     <div class="alert alert-error">
-      {{ submitError }}
+      {{ submitError() }}
     </div>
   }
 
@@ -143,7 +144,7 @@
         <label for="password">Mot de Passe:</label>
         <input
           id="password"
-          [type]="showPassword ? 'text' : 'password'"
+          [type]="showPassword() ? 'text' : 'password'"
           formControlName="password"
           placeholder="Minimum 8 caractères"
           class="form-control"
@@ -161,7 +162,7 @@
         <label for="confirmPassword">Confirmer le Mot de Passe:</label>
         <input
           id="confirmPassword"
-          [type]="showPassword ? 'text' : 'password'"
+          [type]="showPassword() ? 'text' : 'password'"
           formControlName="confirmPassword"
           placeholder="Confirmez votre mot de passe"
           class="form-control"
@@ -240,7 +241,7 @@
     <div class="button-group">
       <button
         type="submit"
-        [disabled]="registrationForm.invalid && submitted"
+        [disabled]="registrationForm.invalid && submitted()"
         class="btn btn-primary"
       >
         Soumettre l'Inscription
@@ -267,56 +268,90 @@
         (click)="togglePasswordField()"
         class="btn btn-warning"
       >
-        {{ showPassword ? '🙈 Masquer' : '👁️ Afficher' }} le Mot de Passe
+        {{ showPassword() ? '🙈 Masquer' : '👁️ Afficher' }} le Mot de Passe
       </button>
     </div>
   </form>
 
-  <!-- Affichage de l'État du Formulaire -->
+  <!-- Affichage de l'État du Formulaire via Signals Computed -->
   <div class="form-state">
-    <h3>📊 État du Formulaire (Suivi Réactif)</h3>
+    <h3>📊 État du Formulaire (via Angular Signals)</h3>
+    <p class="signal-note">Ces valeurs utilisent des <code>computed()</code> signals qui se mettent à jour automatiquement.</p>
     <div class="state-grid">
-      <div class="state-item" [class.valid]="registrationForm.valid">
-        <strong>Formulaire Valide:</strong> {{ registrationForm.valid }}
+      <div class="state-item" [class.valid]="formValid()">
+        <strong>Valide (Signal):</strong> {{ formValid() }}
       </div>
-      <div class="state-item" [class.invalid]="registrationForm.invalid">
-        <strong>Formulaire Invalide:</strong> {{ registrationForm.invalid }}
+      <div class="state-item" [class.invalid]="!formValid()">
+        <strong>Invalide:</strong> {{ !formValid() }}
       </div>
-      <div class="state-item" [class.dirty]="registrationForm.dirty">
-        <strong>Formulaire Modifié:</strong> {{ registrationForm.dirty }}
+      <div class="state-item" [class.dirty]="formDirty()">
+        <strong>Modifié (Signal):</strong> {{ formDirty() }}
       </div>
-      <div class="state-item" [class.pristine]="registrationForm.pristine">
-        <strong>Formulaire Vierge:</strong> {{ registrationForm.pristine }}
+      <div class="state-item" [class.pristine]="!formDirty()">
+        <strong>Vierge:</strong> {{ !formDirty() }}
       </div>
-      <div class="state-item" [class.touched]="registrationForm.touched">
-        <strong>Formulaire Touché:</strong> {{ registrationForm.touched }}
-      </div>
-      <div class="state-item" [class.untouched]="registrationForm.untouched">
-        <strong>Formulaire Non Touché:</strong> {{ registrationForm.untouched }}
+      <div class="state-item" [class.touched]="formTouched()">
+        <strong>Touché (Signal):</strong> {{ formTouched() }}
       </div>
       <div class="state-item">
-        <strong>État du Formulaire:</strong> {{ registrationForm.status }}
+        <strong>Statut (Signal):</strong> {{ formStatus() }}
       </div>
       <div class="state-item">
-        <strong>Nombre d'Emails:</strong> {{ additionalEmailsArray.length }}
+        <strong>Soumis (Signal):</strong> {{ submitted() }}
+      </div>
+      <div class="state-item">
+        <strong>Emails (Signal):</strong> {{ additionalEmailsCount() }}
       </div>
     </div>
   </div>
 
-  <!-- Affichage de la Valeur du Formulaire -->
+  <!-- Affichage de la Valeur du Formulaire via Signal -->
   <div class="form-value">
-    <h3>📝 Valeur Actuelle du Formulaire (Mise à jour en Temps Réel)</h3>
-    <pre>{{ registrationForm.value | json }}</pre>
+    <h3>📝 Valeur du Formulaire (via toSignal)</h3>
+    <p class="signal-note">Cette valeur provient du signal <code>formValue</code> créé avec <code>toSignal(valueChanges)</code>.</p>
+    <pre>{{ formValue() | json }}</pre>
   </div>
 
-  <!-- Affichage des Données Soumises -->
-  @if (submittedData) {
+  <!-- Affichage des Données Soumises (Signal) -->
+  @if (submittedData()) {
     <div class="submitted-data">
       <h3>✅ Formulaire Soumis avec Succès!</h3>
-      <p>Les données suivantes ont été soumises:</p>
-      <pre>{{ submittedData | json }}</pre>
+      <p>Les données suivantes ont été soumises (stockées dans un Signal):</p>
+      <pre>{{ submittedData() | json }}</pre>
     </div>
   }
+
+  <!-- Introduction aux Angular Signals -->
+  <div class="signals-intro">
+    <h3>⚡ Angular Signals - Introduction</h3>
+    <p>Les <strong>Signals</strong> sont une nouvelle primitive de réactivité introduite dans Angular 17+. Ils offrent une alternative plus simple et plus performante aux Observables pour la gestion d'état local.</p>
+    
+    <div class="signal-examples">
+      <h4>Types de Signals utilisés dans ce composant:</h4>
+      <div class="signal-grid">
+        <div class="signal-card">
+          <h5>signal()</h5>
+          <code>submitted = signal(false)</code>
+          <p>Crée un signal modifiable (WritableSignal). Utilisez <code>.set()</code> ou <code>.update()</code> pour changer la valeur.</p>
+        </div>
+        <div class="signal-card">
+          <h5>computed()</h5>
+          <code>formValid = computed(() => ...)</code>
+          <p>Crée un signal dérivé qui se recalcule automatiquement quand ses dépendances changent.</p>
+        </div>
+        <div class="signal-card">
+          <h5>toSignal()</h5>
+          <code>formValue = toSignal(valueChanges)</code>
+          <p>Convertit un Observable RxJS en Signal pour une intégration facile.</p>
+        </div>
+        <div class="signal-card">
+          <h5>effect()</h5>
+          <code>effect(() => console.log(...))</code>
+          <p>Exécute une fonction chaque fois que les signals dépendants changent.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Concepts Clés -->
   <div class="concepts">
@@ -334,6 +369,9 @@
       <li><strong>Gestion des Erreurs:</strong> Afficher les messages en fonction de la validation</li>
       <li><strong>Soumission:</strong> Accéder aux données du formulaire via registrationForm.value</li>
       <li><strong>Champs Dynamiques:</strong> Ajouter/supprimer des emails avec FormArray</li>
+      <li><strong>Angular Signals:</strong> signal(), computed(), effect(), toSignal() pour la réactivité</li>
+      <li><strong>WritableSignal:</strong> Signals modifiables avec .set() et .update()</li>
+      <li><strong>Signal Computed:</strong> Dérivation automatique de l'état du formulaire</li>
     </ul>
   </div>
 
@@ -350,7 +388,7 @@
         <p>Facile à tester car la logique est en TypeScript, pas en template</p>
       </div>
       <div class="advantage-card">
-        <h4>⚡ Réactivité</h4>
+        <h4>⚡ Réactivité RxJS</h4>
         <p>Utilise les Observables de RxJS pour une programmation réactive</p>
       </div>
       <div class="advantage-card">
@@ -364,6 +402,14 @@
       <div class="advantage-card">
         <h4>🎨 Flexibilité</h4>
         <p>Implémenter des validations cross-field et des logiques complexes</p>
+      </div>
+      <div class="advantage-card signal-advantage">
+        <h4>⚡ Angular Signals</h4>
+        <p>Réactivité granulaire et performante avec signal(), computed() et effect()</p>
+      </div>
+      <div class="advantage-card signal-advantage">
+        <h4>🔗 Interopérabilité</h4>
+        <p>toSignal() et toObservable() pour connecter Signals et RxJS</p>
       </div>
     </div>
   </div>

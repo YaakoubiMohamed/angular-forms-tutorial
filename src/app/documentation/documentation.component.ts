@@ -32,7 +32,8 @@ export class DocumentationComponent implements OnInit, OnDestroy {
     { id: 'validation', title: 'Validation', file: '05-validation' },
     { id: 'reactive-programming', title: 'Programmation Réactive', file: '06-reactive-programming' },
     { id: 'modules', title: 'Modules', file: '07-modules' },
-    { id: 'patterns', title: 'Patterns et Bonnes Pratiques', file: '08-patterns' }
+    { id: 'patterns', title: 'Patterns et Bonnes Pratiques', file: '08-patterns' },
+    { id: 'signals', title: '⚡ Angular Signals', file: '09-signals' }
   ];
 
   currentChapter: Chapter = this.chapters[0];

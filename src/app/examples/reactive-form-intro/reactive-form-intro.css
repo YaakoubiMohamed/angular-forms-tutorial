@@ -585,3 +585,122 @@ h4 {
     margin-right: 0;
   }
 }
+
+/* ===== ANGULAR SIGNALS STYLES ===== */
+
+.signal-note {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.signal-note code {
+  background-color: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: #d63384;
+}
+
+.signals-intro {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.signals-intro h3 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.signals-intro h4 {
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.signals-intro p {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.signal-examples {
+  margin-top: 20px;
+}
+
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.signal-card {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.signal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.signal-card h5 {
+  color: #ffd700;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.signal-card code {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  color: #a5d6ff;
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+
+.signal-card p {
+  font-size: 13px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Signal advantage cards */
+.signal-advantage {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.signal-advantage h4 {
+  color: #ffd700;
+}
+
+.signal-advantage p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 600px) {
+  .signal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .signals-intro {
+    padding: 15px;
+  }
+}

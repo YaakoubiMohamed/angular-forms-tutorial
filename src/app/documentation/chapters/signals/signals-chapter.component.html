@@ -1,0 +1,738 @@
+<div class="chapter-content" (click)="onAnchorClick($event)">
+  <h1>⚡ Angular Signals</h1>
+
+  <div style="text-align: center;">
+    <p><strong>Angular Forms - Réactivité avec Signals</strong></p>
+    <p>
+      <a routerLink="/documentation/patterns">← Patterns</a> | 
+      <a routerLink="/documentation/index">Index</a>
+    </p>
+  </div>
+
+  <hr>
+
+  <h2 id="table-des-matieres">Table des Matières</h2>
+  <ul>
+    <li><a href="#introduction">Introduction aux Signals</a></li>
+    <li><a href="#concepts-cles">Concepts Clés</a></li>
+    <li><a href="#signal-writable">signal() - Signal Modifiable</a></li>
+    <li><a href="#computed">computed() - Signal Dérivé</a></li>
+    <li><a href="#effect">effect() - Effets de Bord</a></li>
+    <li><a href="#tosignal">toSignal() - Conversion Observable</a></li>
+    <li><a href="#integration-formulaires">Intégration avec les Formulaires</a></li>
+    <li><a href="#exemples-pratiques">Exemples Pratiques</a></li>
+    <li><a href="#bonnes-pratiques">Bonnes Pratiques</a></li>
+  </ul>
+
+  <hr>
+
+  <h2 id="introduction">Introduction aux Signals</h2>
+  
+  <p>Les <strong>Signals</strong> sont une primitive de réactivité introduite dans Angular 16 et stabilisée dans Angular 17+. Ils offrent une alternative plus simple et performante aux Observables RxJS pour la gestion d'état local.</p>
+
+  <div class="info-box">
+    <strong>💡 Qu'est-ce qu'un Signal ?</strong>
+    <p>Un Signal est une valeur qui notifie automatiquement les consommateurs intéressés lorsqu'elle change. C'est comme une variable "intelligente" qui sait qui l'observe.</p>
+  </div>
+
+  <div ngNonBindable><pre><code>+------------------------------------------------------------------+
+|                      SIGNALS ANGULAR                              |
++------------------------------------------------------------------+
+|                                                                    |
+|   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐        |
+|   │  signal()   │────▶│ computed()  │────▶│  effect()   │        |
+|   │  Écriture   │     │   Lecture   │     │   Réaction  │        |
+|   └─────────────┘     └─────────────┘     └─────────────┘        |
+|         │                   │                   │                  |
+|         ▼                   ▼                   ▼                  |
+|   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐        |
+|   │ .set()      │     │ Recalcul    │     │ Exécution   │        |
+|   │ .update()   │     │ Automatique │     │ Automatique │        |
+|   └─────────────┘     └─────────────┘     └─────────────┘        |
+|                                                                    |
++------------------------------------------------------------------+</code></pre></div>
+
+  <h3>Avantages des Signals</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Avantage</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🚀 Performance</td>
+        <td>Détection de changement granulaire, permet le mode "Zoneless"</td>
+      </tr>
+      <tr>
+        <td>📝 Simplicité</td>
+        <td>API plus simple que RxJS pour l'état local</td>
+      </tr>
+      <tr>
+        <td>🔒 Typage</td>
+        <td>Excellent support TypeScript natif</td>
+      </tr>
+      <tr>
+        <td>🐛 Débogage</td>
+        <td>Plus facile à tracer et déboguer</td>
+      </tr>
+      <tr>
+        <td>🔄 Interopérabilité</td>
+        <td>Fonctionne avec RxJS via toSignal() et toObservable()</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2 id="concepts-cles">Concepts Clés</h2>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; signal, computed, effect &rbrace; from '&#64;angular/core';
+import &lbrace; toSignal, toObservable &rbrace; from '&#64;angular/core/rxjs-interop';
+
+// Types de Signals
+type WritableSignal&lt;T&gt;  // Signal modifiable (signal())
+type Signal&lt;T&gt;          // Signal en lecture seule (computed(), toSignal())</code></pre></div>
+
+  <h3>Tableau Comparatif</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Fonction</th>
+        <th>Type Retourné</th>
+        <th>Usage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>signal()</code></td>
+        <td><code>WritableSignal&lt;T&gt;</code></td>
+        <td>Créer un état modifiable</td>
+      </tr>
+      <tr>
+        <td><code>computed()</code></td>
+        <td><code>Signal&lt;T&gt;</code></td>
+        <td>Créer une valeur dérivée</td>
+      </tr>
+      <tr>
+        <td><code>effect()</code></td>
+        <td><code>EffectRef</code></td>
+        <td>Exécuter des effets de bord</td>
+      </tr>
+      <tr>
+        <td><code>toSignal()</code></td>
+        <td><code>Signal&lt;T&gt;</code></td>
+        <td>Convertir Observable → Signal</td>
+      </tr>
+      <tr>
+        <td><code>toObservable()</code></td>
+        <td><code>Observable&lt;T&gt;</code></td>
+        <td>Convertir Signal → Observable</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2 id="signal-writable">signal() - Signal Modifiable</h2>
+
+  <p>La fonction <code>signal()</code> crée un signal avec une valeur initiale que vous pouvez modifier.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; signal, WritableSignal &rbrace; from '&#64;angular/core';
+
+// Création d'un signal
+const count: WritableSignal&lt;number&gt; = signal(0);
+const name = signal('Jean');  // Type inféré: WritableSignal&lt;string&gt;
+const user = signal&lt;User | null&gt;(null);  // Type explicite
+
+// Lecture de la valeur (appeler comme une fonction)
+console.log(count());  // 0
+console.log(name());   // 'Jean'
+
+// Modification avec .set() - Remplace la valeur
+count.set(5);
+console.log(count());  // 5
+
+// Modification avec .update() - Basée sur la valeur précédente
+count.update(current => current + 1);
+console.log(count());  // 6
+
+// Pour les objets/tableaux, utilisez .update() pour l'immutabilité
+const users = signal&lt;string[]&gt;([]);
+users.update(list => [...list, 'Pierre']);
+users.update(list => [...list, 'Marie']);
+console.log(users());  // ['Pierre', 'Marie']</code></pre></div>
+
+  <h3>Exemple dans un Composant</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  selector: 'app-counter',
+  standalone: true,
+  template: `
+    &lt;div class="counter"&gt;
+      &lt;button (click)="decrement()"&gt;-&lt;/button&gt;
+      &lt;span&gt;&lbrace;&lbrace; count() &rbrace;&rbrace;&lt;/span&gt;
+      &lt;button (click)="increment()"&gt;+&lt;/button&gt;
+    &lt;/div&gt;
+  `
+&rbrace;)
+export class CounterComponent &lbrace;
+  count = signal(0);
+
+  increment() &lbrace;
+    this.count.update(n => n + 1);
+  &rbrace;
+
+  decrement() &lbrace;
+    this.count.update(n => n - 1);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="computed">computed() - Signal Dérivé</h2>
+
+  <p>La fonction <code>computed()</code> crée un signal en lecture seule dont la valeur est automatiquement recalculée lorsque ses dépendances changent.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; signal, computed, Signal &rbrace; from '&#64;angular/core';
+
+const firstName = signal('Jean');
+const lastName = signal('Dupont');
+
+// Signal computed - recalculé automatiquement
+const fullName: Signal&lt;string&gt; = computed(() => &lbrace;
+  return `$&lbrace;firstName()&rbrace; $&lbrace;lastName()&rbrace;`;
+&rbrace;);
+
+console.log(fullName());  // 'Jean Dupont'
+
+// Quand une dépendance change, le computed se recalcule
+firstName.set('Pierre');
+console.log(fullName());  // 'Pierre Dupont'</code></pre></div>
+
+  <h3>Computed avec Conditions</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">const price = signal(100);
+const quantity = signal(2);
+const discount = signal(0.1);  // 10%
+
+const subtotal = computed(() => price() * quantity());
+const discountAmount = computed(() => subtotal() * discount());
+const total = computed(() => subtotal() - discountAmount());
+
+console.log(total());  // 180 (200 - 20)
+
+// Changement de quantité
+quantity.set(3);
+console.log(total());  // 270 (300 - 30) - Tout est recalculé!</code></pre></div>
+
+  <h3>Computed pour l'État du Formulaire</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;input formControlName="email"&gt;
+      &lt;input formControlName="password" type="password"&gt;
+      
+      &lt;div class="status"&gt;
+        &lt;span [class.valid]="formValid()"&gt;
+          &lbrace;&lbrace; formValid() ? '✓ Valide' : '✗ Invalide' &rbrace;&rbrace;
+        &lt;/span&gt;
+        &lt;span&gt;Champs remplis: &lbrace;&lbrace; filledFieldsCount() &rbrace;&rbrace;/2&lt;/span&gt;
+      &lt;/div&gt;
+      
+      &lt;button [disabled]="!formValid()"&gt;Soumettre&lt;/button&gt;
+    &lt;/form&gt;
+  `
+&rbrace;)
+export class LoginFormComponent &lbrace;
+  form = new FormGroup(&lbrace;
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8)])
+  &rbrace;);
+
+  // Computed signals pour l'état du formulaire
+  formValid = computed(() => this.form.valid);
+  
+  filledFieldsCount = computed(() => &lbrace;
+    let count = 0;
+    if (this.form.get('email')?.value) count++;
+    if (this.form.get('password')?.value) count++;
+    return count;
+  &rbrace;);
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="effect">effect() - Effets de Bord</h2>
+
+  <p>La fonction <code>effect()</code> exécute une fonction chaque fois que les signals qu'elle lit changent. Utile pour le logging, la synchronisation avec le localStorage, ou les appels API.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; signal, effect &rbrace; from '&#64;angular/core';
+
+const user = signal&lt;User | null&gt;(null);
+const theme = signal('light');
+
+// Effect pour le logging
+effect(() => &lbrace;
+  console.log('Utilisateur actuel:', user());
+&rbrace;);
+
+// Effect pour synchroniser avec localStorage
+effect(() => &lbrace;
+  localStorage.setItem('theme', theme());
+  document.body.className = theme();
+&rbrace;);
+
+// Les effects se déclenchent automatiquement quand les signals changent
+user.set(&lbrace; name: 'Jean', email: 'jean&#64;example.com' &rbrace;);
+// Console: 'Utilisateur actuel: &lbrace; name: "Jean", email: "jean&#64;example.com" &rbrace;'</code></pre></div>
+
+  <div class="warning-box">
+    <strong>⚠️ Attention</strong>
+    <p>Les effects doivent être créés dans un contexte d'injection (constructeur ou avec <code>inject()</code>). Évitez de modifier des signals dans un effect pour prévenir les boucles infinies.</p>
+  </div>
+
+  <h3>Effect avec Cleanup</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;...&rbrace;)
+export class TimerComponent &lbrace;
+  seconds = signal(0);
+  isRunning = signal(false);
+
+  constructor() &lbrace;
+    // Effect avec fonction de nettoyage
+    effect((onCleanup) => &lbrace;
+      if (this.isRunning()) &lbrace;
+        const interval = setInterval(() => &lbrace;
+          this.seconds.update(s => s + 1);
+        &rbrace;, 1000);
+
+        // Nettoyage quand l'effect se ré-exécute ou le composant est détruit
+        onCleanup(() => clearInterval(interval));
+      &rbrace;
+    &rbrace;);
+  &rbrace;
+
+  toggle() &lbrace;
+    this.isRunning.update(r => !r);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Effect pour Debug de Formulaire</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;...&rbrace;)
+export class DebugFormComponent &lbrace;
+  submitted = signal(false);
+  submittedData = signal&lt;any&gt;(null);
+
+  constructor() &lbrace;
+    // Log automatique quand le formulaire est soumis
+    effect(() => &lbrace;
+      const data = this.submittedData();
+      if (data) &lbrace;
+        console.log('📧 Formulaire soumis:', data);
+        console.log('📅 Timestamp:', new Date().toISOString());
+      &rbrace;
+    &rbrace;);
+  &rbrace;
+
+  onSubmit(formValue: any) &lbrace;
+    this.submitted.set(true);
+    this.submittedData.set(formValue);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="tosignal">toSignal() - Conversion Observable → Signal</h2>
+
+  <p>La fonction <code>toSignal()</code> convertit un Observable RxJS en Signal. C'est particulièrement utile pour intégrer les Signals avec les formulaires réactifs.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; toSignal &rbrace; from '&#64;angular/core/rxjs-interop';
+import &lbrace; FormControl &rbrace; from '&#64;angular/forms';
+
+const email = new FormControl('');
+
+// Convertir valueChanges en Signal
+const emailValue = toSignal(email.valueChanges, &lbrace; initialValue: '' &rbrace;);
+const emailStatus = toSignal(email.statusChanges, &lbrace; initialValue: 'VALID' &rbrace;);
+
+// Utilisation dans le template
+console.log(emailValue());  // Valeur actuelle
+console.log(emailStatus()); // 'VALID', 'INVALID', 'PENDING'</code></pre></div>
+
+  <h3>Options de toSignal()</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>initialValue</code></td>
+        <td>Valeur initiale avant la première émission</td>
+      </tr>
+      <tr>
+        <td><code>requireSync</code></td>
+        <td>Force une valeur synchrone (erreur si pas disponible)</td>
+      </tr>
+      <tr>
+        <td><code>manualCleanup</code></td>
+        <td>Désactive le nettoyage automatique</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div ngNonBindable><pre><code class="language-typescript">// Sans initialValue - le type inclut undefined
+const value1 = toSignal(observable$);
+// Type: Signal&lt;T | undefined&gt;
+
+// Avec initialValue - type exact
+const value2 = toSignal(observable$, &lbrace; initialValue: 0 &rbrace;);
+// Type: Signal&lt;T&gt;
+
+// Pour les BehaviorSubject (valeur synchrone garantie)
+const value3 = toSignal(behaviorSubject$, &lbrace; requireSync: true &rbrace;);
+// Type: Signal&lt;T&gt;</code></pre></div>
+
+  <h3>toObservable() - Conversion Signal → Observable</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; toObservable &rbrace; from '&#64;angular/core/rxjs-interop';
+
+const count = signal(0);
+
+// Convertir Signal en Observable
+const count$ = toObservable(count);
+
+// Utiliser avec les opérateurs RxJS
+count$.pipe(
+  filter(n => n > 0),
+  debounceTime(300)
+).subscribe(value => &lbrace;
+  this.saveToServer(value);
+&rbrace;);</code></pre></div>
+
+  <hr>
+
+  <h2 id="integration-formulaires">Intégration avec les Formulaires Réactifs</h2>
+
+  <p>Voici un exemple complet d'intégration des Signals avec les Reactive Forms d'Angular.</p>
+
+  <div ngNonBindable><pre><code class="language-typescript">import &lbrace; Component, signal, computed, effect &rbrace; from '&#64;angular/core';
+import &lbrace; FormBuilder, FormGroup, Validators, ReactiveFormsModule &rbrace; from '&#64;angular/forms';
+import &lbrace; toSignal &rbrace; from '&#64;angular/core/rxjs-interop';
+
+&#64;Component(&lbrace;
+  selector: 'app-registration',
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  template: `
+    &lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+      &lt;!-- Champs du formulaire --&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      &lt;input formControlName="password" type="password" placeholder="Mot de passe"&gt;
+      
+      &lt;!-- État avec Signals --&gt;
+      &lt;div class="form-status"&gt;
+        &lt;span&gt;Valide: &lbrace;&lbrace; formValid() &rbrace;&rbrace;&lt;/span&gt;
+        &lt;span&gt;Modifié: &lbrace;&lbrace; formDirty() &rbrace;&rbrace;&lt;/span&gt;
+        &lt;span&gt;Status: &lbrace;&lbrace; formStatus() &rbrace;&rbrace;&lt;/span&gt;
+      &lt;/div&gt;
+      
+      &lt;!-- Erreur de soumission --&gt;
+      &#64;if (submitError()) &lbrace;
+        &lt;div class="error"&gt;&lbrace;&lbrace; submitError() &rbrace;&rbrace;&lt;/div&gt;
+      &rbrace;
+      
+      &lt;!-- Succès --&gt;
+      &#64;if (submitted() && !submitError()) &lbrace;
+        &lt;div class="success"&gt;Formulaire soumis avec succès!&lt;/div&gt;
+      &rbrace;
+      
+      &lt;button type="submit" [disabled]="!canSubmit()"&gt;
+        &lbrace;&lbrace; isLoading() ? 'Envoi...' : 'Soumettre' &rbrace;&rbrace;
+      &lt;/button&gt;
+    &lt;/form&gt;
+  `
+&rbrace;)
+export class RegistrationComponent &lbrace;
+  // Formulaire réactif
+  form: FormGroup;
+
+  // ===== WRITABLE SIGNALS (état modifiable) =====
+  submitted = signal(false);
+  submitError = signal&lt;string | null&gt;(null);
+  isLoading = signal(false);
+
+  // ===== SIGNALS DÉRIVÉS DES OBSERVABLES =====
+  formValue: Signal&lt;any&gt;;
+  formStatus: Signal&lt;string | undefined&gt;;
+
+  // ===== COMPUTED SIGNALS (état dérivé) =====
+  formValid = computed(() => this.form.valid);
+  formDirty = computed(() => this.form.dirty);
+  
+  canSubmit = computed(() => &lbrace;
+    return this.formValid() && !this.isLoading() && !this.submitted();
+  &rbrace;);
+
+  constructor(private fb: FormBuilder) &lbrace;
+    this.form = this.fb.group(&lbrace;
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    &rbrace;);
+
+    // Convertir les Observables en Signals
+    this.formValue = toSignal(this.form.valueChanges, &lbrace; 
+      initialValue: this.form.value 
+    &rbrace;);
+    this.formStatus = toSignal(this.form.statusChanges, &lbrace; 
+      initialValue: this.form.status 
+    &rbrace;);
+
+    // Effect pour le logging
+    effect(() => &lbrace;
+      if (this.submitted() && !this.submitError()) &lbrace;
+        console.log('✅ Données soumises:', this.formValue());
+      &rbrace;
+    &rbrace;);
+  &rbrace;
+
+  async onSubmit() &lbrace;
+    if (!this.form.valid) return;
+
+    this.isLoading.set(true);
+    this.submitError.set(null);
+
+    try &lbrace;
+      // Simuler un appel API
+      await this.fakeApiCall(this.form.value);
+      this.submitted.set(true);
+    &rbrace; catch (error) &lbrace;
+      this.submitError.set('Erreur lors de la soumission');
+    &rbrace; finally &lbrace;
+      this.isLoading.set(false);
+    &rbrace;
+  &rbrace;
+
+  private fakeApiCall(data: any): Promise&lt;void&gt; &lbrace;
+    return new Promise((resolve) => setTimeout(resolve, 1000));
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="exemples-pratiques">Exemples Pratiques</h2>
+
+  <h3>Toggle Password Visibility</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  template: `
+    &lt;div class="password-field"&gt;
+      &lt;input 
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="Mot de passe"&gt;
+      &lt;button 
+        type="button" 
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'Masquer' : 'Afficher'"&gt;
+        &lbrace;&lbrace; showPassword() ? '🙈' : '👁️' &rbrace;&rbrace;
+      &lt;/button&gt;
+    &lt;/div&gt;
+  `
+&rbrace;)
+export class PasswordFieldComponent &lbrace;
+  showPassword = signal(false);
+
+  togglePassword() &lbrace;
+    this.showPassword.update(show => !show);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Compteur d'Emails Dynamique (FormArray)</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  template: `
+    &lt;fieldset&gt;
+      &lt;legend&gt;Emails (&lbrace;&lbrace; emailCount() &rbrace;&rbrace;)&lt;/legend&gt;
+      
+      &#64;for (email of emailsArray.controls; track $index) &lbrace;
+        &lt;div class="email-row"&gt;
+          &lt;input [formControl]="$any(email)" placeholder="Email"&gt;
+          &lt;button type="button" (click)="removeEmail($index)"&gt;❌&lt;/button&gt;
+        &lt;/div&gt;
+      &rbrace;
+      
+      &lt;button type="button" (click)="addEmail()" [disabled]="!canAddMore()"&gt;
+        ➕ Ajouter (&lbrace;&lbrace; remainingSlots() &rbrace;&rbrace; restants)
+      &lt;/button&gt;
+    &lt;/fieldset&gt;
+  `
+&rbrace;)
+export class DynamicEmailsComponent &lbrace;
+  form = new FormGroup(&lbrace;
+    emails: new FormArray([])
+  &rbrace;);
+
+  maxEmails = 5;
+
+  // Computed signals
+  emailCount = computed(() => this.emailsArray.length);
+  canAddMore = computed(() => this.emailCount() &lt; this.maxEmails);
+  remainingSlots = computed(() => this.maxEmails - this.emailCount());
+
+  get emailsArray(): FormArray &lbrace;
+    return this.form.get('emails') as FormArray;
+  &rbrace;
+
+  addEmail() &lbrace;
+    if (this.canAddMore()) &lbrace;
+      this.emailsArray.push(new FormControl('', [Validators.required, Validators.email]));
+    &rbrace;
+  &rbrace;
+
+  removeEmail(index: number) &lbrace;
+    this.emailsArray.removeAt(index);
+  &rbrace;
+&rbrace;</code></pre></div>
+
+  <h3>Validation Progress Bar</h3>
+
+  <div ngNonBindable><pre><code class="language-typescript">&#64;Component(&lbrace;
+  template: `
+    &lt;form [formGroup]="form"&gt;
+      &lt;div class="progress-bar"&gt;
+        &lt;div class="progress" [style.width.%]="validationProgress()"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;p&gt;&lbrace;&lbrace; validationProgress() &rbrace;&rbrace;% complété&lt;/p&gt;
+      
+      &lt;input formControlName="name" placeholder="Nom"&gt;
+      &lt;input formControlName="email" placeholder="Email"&gt;
+      &lt;input formControlName="phone" placeholder="Téléphone"&gt;
+      &lt;textarea formControlName="message" placeholder="Message"&gt;&lt;/textarea&gt;
+    &lt;/form&gt;
+  `,
+  styles: [`
+    .progress-bar &lbrace; height: 8px; background: #e0e0e0; border-radius: 4px; &rbrace;
+    .progress &lbrace; height: 100%; background: #4caf50; transition: width 0.3s; &rbrace;
+  `]
+&rbrace;)
+export class ProgressFormComponent &lbrace;
+  form = new FormGroup(&lbrace;
+    name: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    phone: new FormControl(''),
+    message: new FormControl('', Validators.required)
+  &rbrace;);
+
+  validationProgress = computed(() => &lbrace;
+    const controls = Object.values(this.form.controls);
+    const validCount = controls.filter(c => c.valid).length;
+    return Math.round((validCount / controls.length) * 100);
+  &rbrace;);
+&rbrace;</code></pre></div>
+
+  <hr>
+
+  <h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
+
+  <h3>✅ À Faire</h3>
+  <ul>
+    <li>Utiliser <code>signal()</code> pour l'état local du composant</li>
+    <li>Utiliser <code>computed()</code> pour les valeurs dérivées</li>
+    <li>Utiliser <code>toSignal()</code> pour les <code>valueChanges</code> et <code>statusChanges</code></li>
+    <li>Typer explicitement vos signals quand nécessaire</li>
+    <li>Utiliser <code>.update()</code> plutôt que <code>.set()</code> quand la nouvelle valeur dépend de l'ancienne</li>
+  </ul>
+
+  <h3>❌ À Éviter</h3>
+  <ul>
+    <li>Modifier des signals dans un <code>effect()</code> (risque de boucle infinie)</li>
+    <li>Créer des <code>effect()</code> en dehors d'un contexte d'injection</li>
+    <li>Oublier d'appeler le signal comme une fonction: <code>count()</code> et non <code>count</code></li>
+    <li>Utiliser des Signals pour des flux de données complexes (préférer RxJS)</li>
+  </ul>
+
+  <h3>Quand Utiliser Signals vs RxJS</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cas d'Usage</th>
+        <th>Signals</th>
+        <th>RxJS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>État local du composant</td>
+        <td>✅ Recommandé</td>
+        <td>Possible</td>
+      </tr>
+      <tr>
+        <td>État du formulaire</td>
+        <td>✅ Avec toSignal()</td>
+        <td>✅ valueChanges</td>
+      </tr>
+      <tr>
+        <td>Appels HTTP</td>
+        <td>❌</td>
+        <td>✅ Recommandé</td>
+      </tr>
+      <tr>
+        <td>WebSocket, événements</td>
+        <td>❌</td>
+        <td>✅ Recommandé</td>
+      </tr>
+      <tr>
+        <td>Transformations complexes</td>
+        <td>❌</td>
+        <td>✅ Opérateurs RxJS</td>
+      </tr>
+      <tr>
+        <td>UI réactive simple</td>
+        <td>✅ Recommandé</td>
+        <td>Overkill</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2 id="resume">Résumé</h2>
+
+  <div ngNonBindable><pre><code class="language-typescript">// 📦 Créer un état modifiable
+const count = signal(0);
+
+// 🔄 Créer une valeur dérivée
+const doubled = computed(() => count() * 2);
+
+// 👁️ Réagir aux changements
+effect(() => console.log('Count:', count()));
+
+// 🔗 Convertir Observable → Signal
+const formValue = toSignal(form.valueChanges, &lbrace; initialValue: &lbrace;&rbrace; &rbrace;);
+
+// 📤 Convertir Signal → Observable
+const count$ = toObservable(count);
+
+// ✏️ Modifier le signal
+count.set(5);           // Remplacer
+count.update(n => n+1); // Basé sur la valeur précédente</code></pre></div>
+
+  <hr>
+
+  <div style="text-align: center;">
+    <p>
+      <a routerLink="/documentation/patterns">← Patterns</a> | 
+      <a routerLink="/documentation/index">Index</a>
+    </p>
+  </div>
+
+</div>

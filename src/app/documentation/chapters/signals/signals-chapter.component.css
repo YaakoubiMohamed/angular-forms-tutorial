@@ -1,0 +1,39 @@
+/* Signals Chapter Styles */
+
+.info-box {
+  background: linear-gradient(135deg, #e8f4fd 0%, #d1e8ff 100%);
+  border-left: 4px solid #2196f3;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.info-box strong {
+  color: #1565c0;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.info-box p {
+  margin: 0;
+  color: #333;
+}
+
+.warning-box {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border-left: 4px solid #ff9800;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.warning-box strong {
+  color: #e65100;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.warning-box p {
+  margin: 0;
+  color: #333;
+}

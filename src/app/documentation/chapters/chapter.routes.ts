@@ -8,6 +8,7 @@ import { ValidationChapterComponent } from './validation/validation-chapter.comp
 import { ReactiveProgrammingChapterComponent } from './reactive-programming/reactive-programming-chapter.component';
 import { ModulesChapterComponent } from './modules/modules-chapter.component';
 import { PatternsChapterComponent } from './patterns/patterns-chapter.component';
+import { SignalsChapterComponent } from './signals/signals-chapter.component';
 
 export const CHAPTER_ROUTES: Routes = [
   { path: '', redirectTo: 'index', pathMatch: 'full' },
@@ -19,5 +20,6 @@ export const CHAPTER_ROUTES: Routes = [
   { path: 'validation', component: ValidationChapterComponent },
   { path: 'reactive-programming', component: ReactiveProgrammingChapterComponent },
   { path: 'modules', component: ModulesChapterComponent },
-  { path: 'patterns', component: PatternsChapterComponent }
+  { path: 'patterns', component: PatternsChapterComponent },
+  { path: 'signals', component: SignalsChapterComponent }
 ];
